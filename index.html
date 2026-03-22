@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>TV PRO</title>
+<title>TV PRO DEBUG</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
@@ -39,7 +39,7 @@ video {
 #canalNombre { font-size:22px; }
 #estado { font-size:16px; opacity:0.7; }
 
-/* 🔊 BOTÓN INICIAL */
+/* 🔊 BOTÓN */
 #startOverlay {
   position:absolute;
   top:0;
@@ -56,11 +56,16 @@ video {
   z-index:10;
 }
 
-#startBtn {
-  padding:20px 40px;
-  background:#1e90ff;
-  border-radius:12px;
-  font-size:26px;
+/* 🧪 DEBUG POPUP */
+#debug {
+  position:absolute;
+  top:20px;
+  left:20px;
+  background:rgba(0,0,0,0.7);
+  color:#00ff00;
+  padding:10px;
+  font-size:14px;
+  border-radius:8px;
 }
 
 * { user-select:none; }
@@ -71,9 +76,8 @@ video {
 
 <video id="player" autoplay muted playsinline></video>
 
-<!-- 🔊 OVERLAY INICIAL -->
 <div id="startOverlay">
-  <div id="startBtn">🔊 Presione OK para activar sonido</div>
+  🔊 Presione cualquier botón para activar sonido
 </div>
 
 <div id="infoBar">
@@ -81,6 +85,8 @@ video {
   <div id="canalNombre"></div>
   <div id="estado"></div>
 </div>
+
+<div id="debug">Esperando botón...</div>
 
 <script>
 const canales = [
@@ -91,10 +97,6 @@ const canales = [
   {
     nombre: "Telemicro",
     url: "https://live4.telemicro.com.do/live/55/playlist.m3u8"
-  },
-  {
-    nombre: "Antena 7",
-    url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8"
   }
 ];
 
@@ -107,6 +109,7 @@ const bar = document.getElementById("infoBar");
 const num = document.getElementById("canalNum");
 const nombre = document.getElementById("canalNombre");
 const estado = document.getElementById("estado");
+const debug = document.getElementById("debug");
 const startOverlay = document.getElementById("startOverlay");
 
 /* 📺 BARRA */
@@ -116,8 +119,7 @@ function mostrarBarra(txt="En vivo"){
   estado.innerText = txt;
 
   bar.style.transform = "translateY(0)";
-  clearTimeout(bar.timer);
-  bar.timer = setTimeout(()=> bar.style.transform="translateY(100%)", 3000);
+  setTimeout(()=> bar.style.transform="translateY(100%)", 3000);
 }
 
 /* 🎥 CARGAR */
@@ -143,7 +145,7 @@ function cargarCanal(i){
   mostrarBarra("Cargando...");
 }
 
-/* 🔁 RECONEXIÓN */
+/* 🔁 ERROR */
 video.onerror = () => {
   retry++;
   if (retry <= 3){
@@ -156,23 +158,29 @@ video.onerror = () => {
 
 video.onplaying = () => mostrarBarra("En vivo");
 
-/* 🎮 CONTROL */
+/* 🔊 ACTIVAR AUDIO */
+function activarSonido(){
+  video.muted = false;
+  startOverlay.style.display = "none";
+  mostrarBarra("🔊 Sonido activado");
+}
+
+/* 🎮 CONTROL + DEBUG */
 function manejarControl(e){
-  const key = e.key || e.keyCode;
+  const key = e.key;
+  const code = e.keyCode;
 
-  if (key === "ArrowUp" || key === 38) cargarCanal(index+1);
-  if (key === "ArrowDown" || key === 40) cargarCanal(index-1);
+  // 🧪 mostrar en pantalla
+  debug.innerText = "KEY: " + key + " | CODE: " + code;
 
-  if (key === "Enter" || key === 13){
-    video.muted = false;
-    startOverlay.style.display = "none";
-    mostrarBarra("🔊 Sonido activado");
-  }
+  // 🔊 activar con cualquier botón
+  activarSonido();
 
-  if (key === "Mute" || key === "VolumeMute"){
-    video.muted = !video.muted;
-    mostrarBarra(video.muted ? "🔇 Mute" : "🔊 Sonido");
-  }
+  // 🔼
+  if (code === 38 || key === "ArrowUp") cargarCanal(index+1);
+
+  // 🔽
+  if (code === 40 || key === "ArrowDown") cargarCanal(index-1);
 }
 
 document.addEventListener("keydown", manejarControl);
