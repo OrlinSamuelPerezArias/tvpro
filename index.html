@@ -13,7 +13,7 @@ body {
   background:black;
   overflow:hidden;
   cursor:none;
-  font-family:Arial, sans-serif;
+  font-family:Arial;
 }
 
 video {
@@ -22,45 +22,59 @@ video {
   object-fit:cover;
 }
 
-/* 📺 BARRA TIPO TV */
+/* 📺 BARRA */
 #infoBar {
   position:absolute;
   bottom:0;
   left:0;
   width:100%;
   padding:20px 30px;
-  background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
+  background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
   color:white;
   transform:translateY(100%);
-  transition:0.4s ease;
+  transition:0.4s;
 }
 
-/* CONTENIDO */
-#canalNum {
+#canalNum { font-size:28px; font-weight:bold; }
+#canalNombre { font-size:22px; }
+#estado { font-size:16px; opacity:0.7; }
+
+/* 🔊 BOTÓN INICIAL */
+#startOverlay {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
   font-size:28px;
-  font-weight:bold;
+  text-align:center;
+  z-index:10;
 }
 
-#canalNombre {
-  font-size:22px;
-  opacity:0.9;
+#startBtn {
+  padding:20px 40px;
+  background:#1e90ff;
+  border-radius:12px;
+  font-size:26px;
 }
 
-#estado {
-  font-size:16px;
-  opacity:0.7;
-  margin-top:5px;
-}
-
-* {
-  user-select:none;
-}
+* { user-select:none; }
 </style>
 </head>
 
 <body>
 
 <video id="player" autoplay muted playsinline></video>
+
+<!-- 🔊 OVERLAY INICIAL -->
+<div id="startOverlay">
+  <div id="startBtn">🔊 Presione OK para activar sonido</div>
+</div>
 
 <div id="infoBar">
   <div id="canalNum"></div>
@@ -81,10 +95,6 @@ const canales = [
   {
     nombre: "Antena 7",
     url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8"
-  },
-  {
-    nombre: "Ready TV",
-    url: "https://streaming.telecablecentral.com.do/ReadyTV/ReadyHD/playlist.m3u8"
   }
 ];
 
@@ -97,29 +107,27 @@ const bar = document.getElementById("infoBar");
 const num = document.getElementById("canalNum");
 const nombre = document.getElementById("canalNombre");
 const estado = document.getElementById("estado");
+const startOverlay = document.getElementById("startOverlay");
 
-/* 📺 MOSTRAR BARRA */
-function mostrarBarra(textoEstado="En vivo") {
-  num.innerText = "Canal " + (index + 1);
+/* 📺 BARRA */
+function mostrarBarra(txt="En vivo"){
+  num.innerText = "Canal " + (index+1);
   nombre.innerText = canales[index].nombre;
-  estado.innerText = textoEstado;
+  estado.innerText = txt;
 
   bar.style.transform = "translateY(0)";
-
   clearTimeout(bar.timer);
-  bar.timer = setTimeout(() => {
-    bar.style.transform = "translateY(100%)";
-  }, 3500);
+  bar.timer = setTimeout(()=> bar.style.transform="translateY(100%)", 3000);
 }
 
-/* 🎥 CARGAR CANAL */
+/* 🎥 CARGAR */
 function cargarCanal(i){
   index = (i + canales.length) % canales.length;
   retry = 0;
 
   if (hls) hls.destroy();
 
-  const url = canales[index].url;
+  let url = canales[index].url;
 
   if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = url;
@@ -131,79 +139,63 @@ function cargarCanal(i){
     video.src = url;
   }
 
-  video.muted = true;
-  video.play();
-
+  video.play().catch(()=>{});
   mostrarBarra("Cargando...");
 }
 
 /* 🔁 RECONEXIÓN */
-video.addEventListener("error", () => {
+video.onerror = () => {
   retry++;
-
-  if (retry <= 3) {
+  if (retry <= 3){
     mostrarBarra("Reconectando...");
-    setTimeout(() => {
-      video.load();
-      video.play();
-    }, 2000);
+    setTimeout(()=> video.load(),2000);
   } else {
-    mostrarBarra("Canal no disponible");
-    setTimeout(() => cargarCanal(index + 1), 2000);
+    cargarCanal(index+1);
   }
-});
+};
 
-/* ▶️ CUANDO YA ESTÁ LISTO */
-video.addEventListener("playing", () => {
-  mostrarBarra("En vivo");
-});
+video.onplaying = () => mostrarBarra("En vivo");
 
-/* 🎮 CONTROL REMOTO */
-document.addEventListener("keydown",(e)=>{
-
+/* 🎮 CONTROL */
+function manejarControl(e){
   const key = e.key || e.keyCode;
 
-  switch(key){
+  if (key === "ArrowUp" || key === 38) cargarCanal(index+1);
+  if (key === "ArrowDown" || key === 40) cargarCanal(index-1);
 
-    case "ArrowUp":
-    case 38:
-    case "ChannelUp":
-      cargarCanal(index+1);
-      break;
-
-    case "ArrowDown":
-    case 40:
-    case "ChannelDown":
-      cargarCanal(index-1);
-      break;
-
-    case "Enter":
-    case 13:
-      video.muted = false;
-      mostrarBarra("🔊 Sonido activado");
-      break;
-
-    case "Mute":
-    case "VolumeMute":
-      video.muted = !video.muted;
-      mostrarBarra(video.muted ? "🔇 Mute" : "🔊 Sonido");
-      break;
+  if (key === "Enter" || key === 13){
+    video.muted = false;
+    startOverlay.style.display = "none";
+    mostrarBarra("🔊 Sonido activado");
   }
 
+  if (key === "Mute" || key === "VolumeMute"){
+    video.muted = !video.muted;
+    mostrarBarra(video.muted ? "🔇 Mute" : "🔊 Sonido");
+  }
+}
+
+document.addEventListener("keydown", manejarControl);
+document.addEventListener("keyup", manejarControl);
+
+/* 🚫 MOUSE */
+let mouseTimer;
+document.addEventListener("mousemove", () => {
+  document.body.style.cursor = "default";
+  clearTimeout(mouseTimer);
+  mouseTimer = setTimeout(()=> document.body.style.cursor="none",1000);
 });
 
-/* 📺 PANTALLA COMPLETA */
-function pantallaCompleta() {
-  const elem = document.documentElement;
-
-  if (elem.requestFullscreen) elem.requestFullscreen();
-  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+/* 📺 FULLSCREEN */
+function fullscreen(){
+  let el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 }
 
 /* ▶️ INICIO */
 window.onload = () => {
-  pantallaCompleta();
+  fullscreen();
   cargarCanal(0);
 };
 </script>
