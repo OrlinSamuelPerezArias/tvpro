@@ -198,7 +198,7 @@ video.onplaying = () => mostrarBarra("En vivo");
 /* 🔊 SONIDO */
 function activarSonido(){
   if (overlay.style.display !== "none"){
-    video.muted = false;
+    video.muted = true;
     overlay.style.display = "none";
     mostrarBarra("🔊 Sonido activado");
   }
