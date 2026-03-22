@@ -8,35 +8,65 @@
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-body { margin:0; background:black; overflow:hidden; font-family:sans-serif;}
-video { width:100vw; height:100vh; object-fit:cover; }
-
-#overlay {
-  position:absolute; bottom:20px; left:20px;
-  color:white; background:rgba(0,0,0,0.6);
-  padding:12px 16px; border-radius:12px;
-  opacity:0; transition:0.3s;
+body {
+  margin:0;
+  background:black;
+  overflow:hidden;
+  cursor:none;
+  font-family:Arial, sans-serif;
 }
 
-#guide {
-  position:absolute; top:0; left:0;
-  width:320px; height:100%;
-  background:rgba(0,0,0,0.95);
-  color:white; overflow-y:auto;
-  transform:translateX(-100%);
-  transition:0.3s;
+video {
+  width:100vw;
+  height:100vh;
+  object-fit:cover;
 }
 
-.channel { padding:10px; border-bottom:1px solid #333; }
-.channel.active { background:#1e90ff; }
+/* 📺 BARRA TIPO TV */
+#infoBar {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  padding:20px 30px;
+  background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
+  color:white;
+  transform:translateY(100%);
+  transition:0.4s ease;
+}
+
+/* CONTENIDO */
+#canalNum {
+  font-size:28px;
+  font-weight:bold;
+}
+
+#canalNombre {
+  font-size:22px;
+  opacity:0.9;
+}
+
+#estado {
+  font-size:16px;
+  opacity:0.7;
+  margin-top:5px;
+}
+
+* {
+  user-select:none;
+}
 </style>
 </head>
 
 <body>
 
 <video id="player" autoplay muted playsinline></video>
-<div id="overlay"></div>
-<div id="guide"></div>
+
+<div id="infoBar">
+  <div id="canalNum"></div>
+  <div id="canalNombre"></div>
+  <div id="estado"></div>
+</div>
 
 <script>
 const canales = [
@@ -58,36 +88,43 @@ const canales = [
   }
 ];
 
-let index = parseInt(localStorage.getItem("last")) || 0;
-let numeroBuffer = "";
-let favoritos = JSON.parse(localStorage.getItem("fav") || "[]");
+let index = 0;
+let hls;
+let retry = 0;
 
 const video = document.getElementById("player");
-const overlay = document.getElementById("overlay");
-const guide = document.getElementById("guide");
+const bar = document.getElementById("infoBar");
+const num = document.getElementById("canalNum");
+const nombre = document.getElementById("canalNombre");
+const estado = document.getElementById("estado");
 
-let hls;
-let retryCount = 0;
+/* 📺 MOSTRAR BARRA */
+function mostrarBarra(textoEstado="En vivo") {
+  num.innerText = "Canal " + (index + 1);
+  nombre.innerText = canales[index].nombre;
+  estado.innerText = textoEstado;
 
-// 🎥 CARGAR CANAL
+  bar.style.transform = "translateY(0)";
+
+  clearTimeout(bar.timer);
+  bar.timer = setTimeout(() => {
+    bar.style.transform = "translateY(100%)";
+  }, 3500);
+}
+
+/* 🎥 CARGAR CANAL */
 function cargarCanal(i){
   index = (i + canales.length) % canales.length;
-  localStorage.setItem("last", index);
-  retryCount = 0;
+  retry = 0;
 
-  if (hls) {
-    hls.destroy();
-  }
+  if (hls) hls.destroy();
 
   const url = canales[index].url;
 
   if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = url;
   } else if (Hls.isSupported()) {
-    hls = new Hls({
-      maxBufferLength: 30,
-      maxMaxBufferLength: 60
-    });
+    hls = new Hls();
     hls.loadSource(url);
     hls.attachMedia(video);
   } else {
@@ -97,102 +134,78 @@ function cargarCanal(i){
   video.muted = true;
   video.play();
 
-  mostrar("📺 " + canales[index].nombre);
-  renderGuide();
+  mostrarBarra("Cargando...");
 }
 
-// 🔁 RECONEXIÓN INTELIGENTE
+/* 🔁 RECONEXIÓN */
 video.addEventListener("error", () => {
-  retryCount++;
+  retry++;
 
-  if (retryCount <= 3) {
-    mostrar("Reconectando...");
+  if (retry <= 3) {
+    mostrarBarra("Reconectando...");
     setTimeout(() => {
       video.load();
       video.play();
     }, 2000);
   } else {
-    mostrar("Canal no disponible");
-    setTimeout(() => cargarCanal(index+1), 2000);
+    mostrarBarra("Canal no disponible");
+    setTimeout(() => cargarCanal(index + 1), 2000);
   }
 });
 
-// 📺 GUÍA
-function renderGuide(){
-  guide.innerHTML = "";
-  canales.forEach((c,i)=>{
-    let div = document.createElement("div");
-    div.className = "channel" + (i===index?" active":"");
-    div.innerText = (i+1)+" - "+c.nombre + (favoritos.includes(i)?" ❤️":"");
-    guide.appendChild(div);
-  });
-}
+/* ▶️ CUANDO YA ESTÁ LISTO */
+video.addEventListener("playing", () => {
+  mostrarBarra("En vivo");
+});
 
-// 🖥️ MENSAJES
-function mostrar(txt){
-  overlay.innerText = txt;
-  overlay.style.opacity = 1;
-  setTimeout(()=> overlay.style.opacity=0,2000);
-}
-
-// 🎮 CONTROL REMOTO
+/* 🎮 CONTROL REMOTO */
 document.addEventListener("keydown",(e)=>{
 
-  // números
-  if(!isNaN(e.key)){
-    numeroBuffer += e.key;
-    mostrar("Canal: " + numeroBuffer);
+  const key = e.key || e.keyCode;
 
-    setTimeout(()=>{
-      let n = parseInt(numeroBuffer)-1;
-      if(canales[n]) cargarCanal(n);
-      numeroBuffer="";
-    },1000);
-  }
-
-  switch(e.key){
+  switch(key){
 
     case "ArrowUp":
-    case "ArrowRight":
-      cargarCanal(index+1); break;
+    case 38:
+    case "ChannelUp":
+      cargarCanal(index+1);
+      break;
 
     case "ArrowDown":
-    case "ArrowLeft":
-      cargarCanal(index-1); break;
+    case 40:
+    case "ChannelDown":
+      cargarCanal(index-1);
+      break;
 
     case "Enter":
+    case 13:
       video.muted = false;
-      mostrar("🔊 Sonido");
+      mostrarBarra("🔊 Sonido activado");
       break;
 
-    case "m":
     case "Mute":
+    case "VolumeMute":
       video.muted = !video.muted;
-      mostrar(video.muted?"🔇":"🔊");
-      break;
-
-    case "g":
-      guide.style.transform = "translateX(0)";
-      break;
-
-    case "Escape":
-      guide.style.transform = "translateX(-100%)";
-      break;
-
-    case "f":
-      if(!favoritos.includes(index)) favoritos.push(index);
-      else favoritos = favoritos.filter(x=>x!==index);
-
-      localStorage.setItem("fav",JSON.stringify(favoritos));
-      mostrar("⭐ Favorito");
-      renderGuide();
+      mostrarBarra(video.muted ? "🔇 Mute" : "🔊 Sonido");
       break;
   }
 
 });
 
-// ▶️ iniciar
-cargarCanal(index);
+/* 📺 PANTALLA COMPLETA */
+function pantallaCompleta() {
+  const elem = document.documentElement;
+
+  if (elem.requestFullscreen) elem.requestFullscreen();
+  else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+  else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+}
+
+/* ▶️ INICIO */
+window.onload = () => {
+  pantallaCompleta();
+  cargarCanal(0);
+};
 </script>
 
 </body>
