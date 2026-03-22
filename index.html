@@ -2,234 +2,233 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>TV PRO</title>
+<title>TV PRO - Discovery Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-body {
-  margin:0;
-  background:black;
-  overflow:hidden;
-  cursor:none;
-  font-family:'Segoe UI', Arial;
-}
+  body {
+    margin:0;
+    background:black;
+    overflow:hidden;
+    cursor:none;
+    font-family:'Segoe UI', Roboto, Arial, sans-serif;
+  }
 
-video {
-  width:100vw;
-  height:100vh;
-  object-fit:cover;
-}
+  video {
+    width:100vw;
+    height:100vh;
+    object-fit:cover;
+  }
 
-/* 🔊 OVERLAY */
-#startOverlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
-  font-size:22px; /* 🔽 más pequeño */
-  text-align:center;
-  z-index:10;
-}
+  /* 🔊 OVERLAY */
+  #startOverlay {
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.9);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:24px;
+    text-align:center;
+    z-index:100;
+  }
 
-/* 📺 BARRA */
-#infoBar {
-  position:absolute;
-  bottom:0;
-  width:100%;
-  padding:20px 30px;
-  background:linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-  color:white;
-  transform:translateY(100%);
-  transition:0.4s ease;
-}
+  /* 📺 BARRA DE INFO */
+  #infoBar {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    padding:30px;
+    background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    color:white;
+    transform:translateY(100%);
+    transition:transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index:50;
+  }
 
-#infoContent {
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
+  #infoContent {
+    display:flex;
+    align-items:center;
+    gap:20px;
+  }
 
-#canalNum {
-  font-size:32px; /* 🔽 reducido */
-  font-weight:bold;
-  color:#00c3ff;
-}
+  #canalNum {
+    font-size:45px;
+    font-weight:bold;
+    color:#00c3ff;
+    text-shadow: 0 0 10px rgba(0,195,255,0.5);
+  }
 
-#canalNombre {
-  font-size:18px;
-  font-weight:600;
-}
+  #canalNombre {
+    font-size:22px;
+    font-weight:600;
+  }
 
-#estado {
-  font-size:14px;
-  opacity:0.7;
-}
+  #estado {
+    font-size:16px;
+    opacity:0.8;
+  }
 
-/* 🧪 DEBUG */
-#debug {
-  position:absolute;
-  top:15px;
-  left:15px;
-  background:rgba(0,0,0,0.6);
-  color:#00ff00;
-  padding:8px 12px;
-  font-size:12px;
-  border-radius:6px;
-  z-index:20;
-}
+  /* 🧪 DEBUG PANEL */
+  #debug {
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:rgba(0,0,0,0.7);
+    color:#00ff00;
+    padding:10px 15px;
+    font-family: monospace;
+    font-size:14px;
+    border-radius:5px;
+    z-index:1000;
+    border: 1px solid #333;
+  }
 
-* { user-select:none; }
+  * { user-select:none; outline: none; }
 </style>
 </head>
 
 <body>
 
-<video id="player" autoplay muted playsinline></video>
+<div id="debug">Esperando señal de control...</div>
 
 <div id="startOverlay">
-  🔊 Presiona el número 1 para activar sonido
+  <div>
+    <div style="font-size: 50px; margin-bottom: 10px;">📺</div>
+    PRESIONA CUALQUIER TECLA<br>
+    <span style="font-size:16px; opacity:0.6;">(Para activar video y sonido)</span>
+  </div>
 </div>
+
+<video id="player" autoplay muted playsinline></video>
 
 <div id="infoBar">
   <div id="infoContent">
-    <div id="canalNum"></div>
+    <div id="canalNum">1</div>
     <div>
-      <div id="canalNombre"></div>
-      <div id="estado"></div>
+      <div id="canalNombre">Cargando...</div>
+      <div id="estado">Iniciando sistema</div>
     </div>
   </div>
 </div>
 
-<div id="debug">Esperando tecla...</div>
-
 <script>
 const canales = [
-  {
-    nombre: "La Voz de María",
-    url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8"
-  },
-  {
-    nombre: "Telemicro",
-    url: "https://live4.telemicro.com.do/live/55/playlist.m3u8"
-  },
-  {
-    nombre: "Antena 7",
-    url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8"
-  }
+  { nombre: "La Voz de María", url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8" },
+  { nombre: "Telemicro", url: "https://live4.telemicro.com.do/live/55/playlist.m3u8" },
+  { nombre: "Antena 7", url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8" }
 ];
 
 let index = 0;
 let hls;
-let retry = 0;
-
 const video = document.getElementById("player");
 const overlay = document.getElementById("startOverlay");
-
 const bar = document.getElementById("infoBar");
-const num = document.getElementById("canalNum");
-const nombre = document.getElementById("canalNombre");
-const estado = document.getElementById("estado");
 const debug = document.getElementById("debug");
 
-/* 📺 MOSTRAR */
-function mostrarBarra(txt="En vivo"){
-  num.innerText = (index+1);
-  nombre.innerText = canales[index].nombre;
-  estado.innerText = txt;
+/* 📺 MOSTRAR INTERFAZ */
+function mostrarBarra(txt = "En vivo") {
+  document.getElementById("canalNum").innerText = (index + 1);
+  document.getElementById("canalNombre").innerText = canales[index].nombre;
+  document.getElementById("estado").innerText = txt;
 
   bar.style.transform = "translateY(0)";
   clearTimeout(bar.timer);
-  bar.timer = setTimeout(()=> bar.style.transform="translateY(100%)", 3500);
+  bar.timer = setTimeout(() => {
+    bar.style.transform = "translateY(100%)";
+  }, 4000);
 }
 
-/* 🎥 CARGAR */
-function cargarCanal(i){
+/* 🎥 CARGAR STREAM */
+function cargarCanal(i) {
   index = (i + canales.length) % canales.length;
-  retry = 0;
-
+  
   if (hls) hls.destroy();
+  
+  const url = canales[index].url;
+  mostrarBarra("Cargando señal...");
 
-  let url = canales[index].url;
-
-  if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = url;
-  } else if (Hls.isSupported()) {
-    hls = new Hls();
+  if (Hls.isSupported()) {
+    hls = new Hls({
+        manifestLoadingTimeOut: 10000,
+        lowLatencyMode: true
+    });
     hls.loadSource(url);
     hls.attachMedia(video);
+    hls.on(Hls.Events.ERROR, (event, data) => {
+        if (data.fatal) {
+            console.error("Error fatal de HLS, reintentando...");
+            setTimeout(() => cargarCanal(index), 3000);
+        }
+    });
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = url;
   }
 
-  video.play().catch(()=>{});
-  mostrarBarra("Cargando...");
+  video.play().catch(e => console.log("Esperando interacción..."));
 }
 
-/* 🔁 ERROR */
-video.onerror = () => {
-  retry++;
-
-  if (retry <= 3){
-    mostrarBarra("Reconectando...");
-    setTimeout(()=> video.load(),2000);
-  } else {
-    mostrarBarra("Canal no disponible");
-    setTimeout(()=> cargarCanal(index+1),2000);
-  }
-};
-
-video.onplaying = () => mostrarBarra("En vivo");
-
-/* 🔊 SONIDO */
-function activarSonido(){
-  if (overlay.style.display !== "none"){
+/* 🔊 DESBLOQUEAR AUDIO */
+function desbloquearUI() {
+  if (video.muted) {
     video.muted = false;
-    overlay.style.display = "none";
-    mostrarBarra("🔊 Sonido activado");
+    overlay.style.opacity = "0";
+    setTimeout(() => overlay.style.display = "none", 500);
+    mostrarBarra("Audio activado");
   }
 }
 
-/* 🎮 CONTROL + DEBUG */
-function manejarControl(e){
+/* 🎮 LÓGICA DEL CONTROL REMOTO */
+function manejarControl(e) {
   const key = e.key;
   const code = e.keyCode;
 
-  // 🧪 mostrar en pantalla
-  debug.innerText = "KEY: " + key + " | CODE: " + code;
+  // Debug visual
+  debug.innerHTML = `TECLA: <span style="color:white">${key}</span> | CODE: <span style="color:white">${code}</span>`;
 
-  activarSonido();
+  // Desbloqueo inicial
+  desbloquearUI();
 
-  if (key === "PageUp" || code === 33){
-    cargarCanal(index+1);
+  // 1. Cambio de canales (Flechas Arriba/Abajo o CH+/CH-)
+  // Códigos 33, 34 son PageUp/Down. 38, 40 son Flechas. 427, 428 son Channel +/-
+  if (code === 33 || code === 38 || code === 427 || key === "ArrowUp" || key === "ChannelUp") {
+    cargarCanal(index + 1);
+  } 
+  else if (code === 34 || code === 40 || code === 428 || key === "ArrowDown" || key === "ChannelDown") {
+    cargarCanal(index - 1);
   }
 
-  if (key === "PageDown" || code === 34){
-    cargarCanal(index-1);
-  }
-
-  if (!isNaN(key)){
-    let n = parseInt(key)-1;
-    if (canales[n]) cargarCanal(n);
+  // 2. Teclado numérico (0-9)
+  // keyCodes 48-57 son los números en la mayoría de teclados y controles
+  if (code >= 48 && code <= 57) {
+    const numPresionado = code - 48;
+    const i = numPresionado - 1; // Canal 1 es índice 0
+    if (canales[i]) {
+      cargarCanal(i);
+    } else if (numPresionado === 0 && canales[9]) {
+      cargarCanal(9); // Manejo del cero como canal 10
+    }
   }
 }
 
-document.addEventListener("keydown", manejarControl);
-document.addEventListener("keyup", manejarControl);
+// Escuchar en window para capturar todo el foco de la TV
+window.addEventListener("keydown", manejarControl);
 
-/* 📺 FULLSCREEN */
-function fullscreen(){
-  let el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen();
-  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-}
-
+// Iniciar primer canal al cargar
 window.onload = () => {
-  fullscreen();
   cargarCanal(0);
+  // Forzar foco para que la TV reconozca las teclas
+  window.focus();
+};
+
+/* 🔁 REINTENTO POR ERROR DE RED */
+video.onerror = () => {
+  mostrarBarra("Error de conexión... Reintentando");
+  setTimeout(() => cargarCanal(index), 5000);
 };
 </script>
 
