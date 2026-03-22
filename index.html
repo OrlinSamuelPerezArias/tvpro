@@ -2,78 +2,31 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>TV PRO</title>
+<title>TV PRO GLOBAL</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
-  body {
-    margin: 0;
-    background: black;
-    overflow: hidden;
-    cursor: none;
-    font-family: 'Segoe UI', Roboto, Arial;
-  }
+  body { margin: 0; background: black; overflow: hidden; cursor: none; font-family: 'Segoe UI', Arial; }
+  video { width: 100vw; height: 100vh; object-fit: cover; }
 
-  video {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-  }
-
-  /* 🔊 OVERLAY INICIAL */
   #startOverlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 26px;
-    text-align: center;
-    z-index: 100;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); display: flex; justify-content: center;
+    align-items: center; color: white; font-size: 26px; text-align: center; z-index: 100;
     transition: opacity 0.5s ease;
   }
 
-  /* 📺 BARRA DE INFO */
   #infoBar {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 25px 40px;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-    color: white;
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
-    z-index: 50;
+    position: absolute; bottom: 0; width: 100%; padding: 25px 40px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1) 50%, transparent);
+    color: white; transform: translateY(100%); transition: 0.4s ease-out; z-index: 50;
   }
 
-  #infoContent {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-
-  #canalNum {
-    font-size: 40px;
-    font-weight: bold;
-    color: #00c3ff;
-  }
-
-  #canalNombre {
-    font-size: 22px;
-    font-weight: 600;
-  }
-
-  #estado {
-    font-size: 16px;
-    opacity: 0.7;
-  }
-
+  #infoContent { display: flex; align-items: center; gap: 20px; }
+  #canalNum { font-size: 45px; font-weight: bold; color: #00c3ff; }
+  #canalNombre { font-size: 24px; font-weight: 600; }
+  #estado { font-size: 16px; opacity: 0.8; color: #00ff00; }
   * { user-select: none; outline: none; }
 </style>
 </head>
@@ -82,7 +35,7 @@
 
 <div id="startOverlay">
   <div>
-    <span style="font-size: 50px;">🔊</span><br>
+    <span style="font-size: 60px;">🔊</span><br>
     Presiona el número 1 para activar sonido
   </div>
 </div>
@@ -101,9 +54,31 @@
 
 <script>
 const canales = [
+  // --- PRIORIDAD ---
   { nombre: "La Voz de María", url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8" },
-  { nombre: "Telemicro", url: "https://live4.telemicro.com.do/live/55/playlist.m3u8" },
-  { nombre: "Antena 7", url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8" }
+  
+  // --- DOMINICANOS (CON ENLACES DE RESPALDO PARA EVITAR BLOQUEOS) ---
+  { nombre: "Color Visión 9", url: "https://cv9.colorvision.com.do/live/playlist.m3u8", b: "https://colorvision.logicatv.com/colorvision/index.m3u8" },
+  { nombre: "Telemicro 5", url: "https://live4.telemicro.com.do/live/55/playlist.m3u8", b: "https://telemicro.logicatv.com/telemicro/index.m3u8" },
+  { nombre: "CDN 37", url: "https://cdn.cdndigital.com.do/live/cdn37/playlist.m3u8", b: "https://cdn37.logicatv.com/cdn37/index.m3u8" },
+  { nombre: "Antena 7", url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8" },
+  { nombre: "Telesistema 11", url: "https://alba-do-telesistema-telesistema.stream.mediatiquestream.com/original.m3u8" },
+  { nombre: "Digital 15", url: "https://live4.telemicro.com.do/live/15/playlist.m3u8", b: "https://digital15.logicatv.com/digital15/index.m3u8" },
+  { nombre: "Teleantillas 2", url: "https://alba-do-teleantillas-teleantillas.stream.mediatiquestream.com/original.m3u8" },
+  { nombre: "RNN 27", url: "https://rnn.logicatv.com/rnn/index.m3u8" },
+  { nombre: "Teleuniverso 29", url: "https://teleuniverso.logicatv.com/teleuniverso/index.m3u8" },
+  { nombre: "RTVD 4", url: "https://rtvd4.rtvd.gob.do/live/playlist.m3u8" },
+
+  // --- INTERNACIONALES ---
+  { nombre: "RT en Español", url: "https://rt-esp.rt.com/hls/rt_esp/main.m3u8" },
+  { nombre: "France 24", url: "https://static.france24.com/live/f24_es.video/playlist.m3u8" },
+  { nombre: "DW Español", url: "https://dwamdstream102.akamaized.net/hls/live/2015430/dwamdstream102/index.m3u8" },
+  { nombre: "EuroNews", url: "https://instrument-24258.live.mre.apple.com/playlist.m3u8" },
+  { nombre: "Venevisión", url: "https://stream.adsplay.tv/venevision/index.m3u8" },
+  { nombre: "Milenio TV", url: "https://milenio-multimedios.amagi.tv/playlist.m3u8" },
+  { nombre: "NASA TV", url: "https://ntv.nasa.gov/hls/main/index.m3u8" },
+  { nombre: "Red Bull TV", url: "https://rbmn-live.akamaized.net/hls/live/590964/fl_global/master.m3u8" },
+  { nombre: "Cine Clásico", url: "https://d2e1afv969vpx8.cloudfront.net/out/v1/4b901a18c303496e8388ed3e33f3e792/index.m3u8" }
 ];
 
 let index = 0;
@@ -112,41 +87,53 @@ const video = document.getElementById("player");
 const overlay = document.getElementById("startOverlay");
 const bar = document.getElementById("infoBar");
 
-/* 📺 INTERFAZ ACTUALIZADA */
 function mostrarBarra(txt = "En vivo") {
   document.getElementById("canalNum").innerText = (index + 1);
   document.getElementById("canalNombre").innerText = canales[index].nombre;
   document.getElementById("estado").innerText = txt;
-
   bar.style.transform = "translateY(0)";
   clearTimeout(bar.timer);
   bar.timer = setTimeout(() => bar.style.transform = "translateY(100%)", 3500);
 }
 
-/* 🎥 CARGA RÁPIDA (HLS OPTIMIZADO) */
-function cargarCanal(i) {
+function cargarCanal(i, usarRespaldo = false) {
   index = (i + canales.length) % canales.length;
-  if (hls) hls.destroy();
+  
+  // Limpieza profunda para evitar bloqueos
+  if (hls) { hls.destroy(); }
+  video.pause();
+  video.src = "";
+  video.load();
 
-  mostrarBarra("Sintonizando...");
+  const canalActual = canales[index];
+  const urlFinal = (usarRespaldo && canalActual.b) ? canalActual.b : canalActual.url;
+
+  mostrarBarra(usarRespaldo ? "Usando señal alternativa..." : "Sintonizando...");
 
   if (Hls.isSupported()) {
-    hls = new Hls({
-      capLevelToPlayerSize: true,
+    hls = new Hls({ 
+      enableWorker: true, 
       lowLatencyMode: true,
-      startLevel: -1,
-      liveSyncDurationCount: 2 // Empieza reproducción más rápido
+      manifestLoadingTimeOut: 10000 
     });
-    hls.loadSource(canales[index].url);
+    hls.loadSource(urlFinal);
     hls.attachMedia(video);
+    
+    hls.on(Hls.Events.ERROR, (event, data) => {
+      if (data.fatal) {
+        if (!usarRespaldo && canalActual.b) {
+          cargarCanal(index, true); // Prueba el respaldo si falla el primero
+        } else {
+          mostrarBarra("Señal no disponible");
+          setTimeout(() => cargarCanal(index + 1), 2000);
+        }
+      }
+    });
+
     hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
-  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = canales[index].url;
-    video.play().catch(()=>{});
   }
 }
 
-/* 🔊 ACTIVACIÓN INSTANTÁNEA */
 function activarTodo() {
   if (video.muted) {
     video.muted = false;
@@ -155,49 +142,22 @@ function activarTodo() {
   }
 }
 
-/* 🎮 CONTROL PARA DISCOVERY HOME */
 function manejarControl(e) {
-  // Captura inmediata para evitar lag del sistema
   e.stopImmediatePropagation();
-  
-  const code = e.keyCode;
-  const key = e.key;
-
-  // Desbloquea sonido con cualquier tecla
   activarTodo();
-
-  // 1. Canal Siguiente (CH+, Flecha Arriba, PageUp)
-  if ([33, 38, 427, 166].includes(code) || key === "ArrowUp" || key === "ChannelUp") {
-    e.preventDefault();
-    cargarCanal(index + 1);
-  }
-  // 2. Canal Anterior (CH-, Flecha Abajo, PageDown)
-  else if ([34, 40, 428, 167].includes(code) || key === "ArrowDown" || key === "ChannelDown") {
-    e.preventDefault();
-    cargarCanal(index - 1);
-  }
-  // 3. Teclado Numérico
-  else if (code >= 48 && code <= 57) {
-    e.preventDefault();
-    // Ajuste para que '1' sea índice 0, y '0' sea el canal 10 si existiera
-    let n = (code === 48) ? 9 : (code - 49); 
+  const code = e.keyCode;
+  
+  if ([33, 38, 427, 166].includes(code)) { cargarCanal(index + 1); } 
+  else if ([34, 40, 428, 167].includes(code)) { cargarCanal(index - 1); }
+  else if (code >= 49 && code <= 57) {
+    let n = code - 49;
     if (canales[n]) cargarCanal(n);
   }
 }
 
-// Usar 'keydown' en 'window' con captura activa para máxima velocidad
 window.addEventListener("keydown", manejarControl, { capture: true });
-
-/* 🔁 REINTENTO AUTOMÁTICO */
-video.onerror = () => {
-  setTimeout(() => cargarCanal(index), 3000);
-};
-
-window.onload = () => {
-  cargarCanal(0);
-  window.focus();
-};
+window.onload = () => { cargarCanal(0); window.focus(); };
+video.onerror = () => { setTimeout(() => cargarCanal(index + 1), 3000); };
 </script>
-
 </body>
 </html>
