@@ -32,7 +32,7 @@ video {
   justify-content:center;
   align-items:center;
   color:white;
-  font-size:30px;
+  font-size:22px; /* 🔽 más pequeño */
   text-align:center;
   z-index:10;
 }
@@ -42,7 +42,7 @@ video {
   position:absolute;
   bottom:0;
   width:100%;
-  padding:30px 50px;
+  padding:20px 30px;
   background:linear-gradient(to top, rgba(0,0,0,0.95), transparent);
   color:white;
   transform:translateY(100%);
@@ -52,28 +52,36 @@ video {
 #infoContent {
   display:flex;
   align-items:center;
-  gap:25px;
+  gap:15px;
 }
 
 #canalNum {
-  font-size:60px;
+  font-size:32px; /* 🔽 reducido */
   font-weight:bold;
   color:#00c3ff;
 }
 
-#textos {
-  display:flex;
-  flex-direction:column;
-}
-
 #canalNombre {
-  font-size:28px;
+  font-size:18px;
   font-weight:600;
 }
 
 #estado {
-  font-size:18px;
+  font-size:14px;
   opacity:0.7;
+}
+
+/* 🧪 DEBUG */
+#debug {
+  position:absolute;
+  top:15px;
+  left:15px;
+  background:rgba(0,0,0,0.6);
+  color:#00ff00;
+  padding:8px 12px;
+  font-size:12px;
+  border-radius:6px;
+  z-index:20;
 }
 
 * { user-select:none; }
@@ -91,12 +99,14 @@ video {
 <div id="infoBar">
   <div id="infoContent">
     <div id="canalNum"></div>
-    <div id="textos">
+    <div>
       <div id="canalNombre"></div>
       <div id="estado"></div>
     </div>
   </div>
 </div>
+
+<div id="debug">Esperando tecla...</div>
 
 <script>
 const canales = [
@@ -125,6 +135,7 @@ const bar = document.getElementById("infoBar");
 const num = document.getElementById("canalNum");
 const nombre = document.getElementById("canalNombre");
 const estado = document.getElementById("estado");
+const debug = document.getElementById("debug");
 
 /* 📺 MOSTRAR */
 function mostrarBarra(txt="En vivo"){
@@ -173,7 +184,7 @@ video.onerror = () => {
 
 video.onplaying = () => mostrarBarra("En vivo");
 
-/* 🔊 ACTIVAR SONIDO */
+/* 🔊 SONIDO */
 function activarSonido(){
   if (overlay.style.display !== "none"){
     video.muted = false;
@@ -182,32 +193,30 @@ function activarSonido(){
   }
 }
 
-/* 🎮 CONTROL */
+/* 🎮 CONTROL + DEBUG */
 function manejarControl(e){
   const key = e.key;
   const code = e.keyCode;
 
-  // activar sonido con cualquier tecla (solo una vez)
+  // 🧪 mostrar en pantalla
+  debug.innerText = "KEY: " + key + " | CODE: " + code;
+
   activarSonido();
 
-  // 🔼 Canal arriba
   if (key === "PageUp" || code === 33){
     cargarCanal(index+1);
   }
 
-  // 🔽 Canal abajo
   if (key === "PageDown" || code === 34){
     cargarCanal(index-1);
   }
 
-  // 🔢 números
   if (!isNaN(key)){
     let n = parseInt(key)-1;
     if (canales[n]) cargarCanal(n);
   }
 }
 
-/* 👇 EVENTOS BIEN COLOCADOS */
 document.addEventListener("keydown", manejarControl);
 document.addEventListener("keyup", manejarControl);
 
@@ -218,7 +227,6 @@ function fullscreen(){
   else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
 }
 
-/* ▶️ INICIO */
 window.onload = () => {
   fullscreen();
   cargarCanal(0);
