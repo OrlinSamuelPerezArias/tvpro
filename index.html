@@ -219,14 +219,11 @@ function manejarControl(e){
     cargarCanal(index-1);
   }
 
-  if (!isNaN(key)){
-    let n = parseInt(key)-1;
-    if (canales[n]) cargarCanal(n);
-  }
+
 }
 
 document.addEventListener("keydown", manejarControl);
-document.addEventListener("keyup", manejarControl);
+
 
 /* 📺 FULLSCREEN */
 function fullscreen(){
