@@ -177,36 +177,35 @@ video.onerror = () => {
 video.onplaying = () => mostrarBarra("En vivo");
 
 /* 🔊 ACTIVAR SONIDO */
+
 function activarSonido(){
-  if (overlay.style.display !== "none"){
-    video.muted = false;
-    overlay.style.display = "none";
-    mostrarBarra("🔊 Sonido activado");
-  }
+  video.muted = false;
+  startOverlay.style.display = "none";
+  mostrarBarra("🔊 Sonido activado");
 }
 
-/* 🎮 CONTROL (TU CONFIGURACIÓN REAL) */
-document.addEventListener("keydown",(e)=>{
+  /* 🎮 CONTROL + DEBUG */
+function manejarControl(e){
+  const key = e.key;
+  const code = e.keyCode;
 
-  activarSonido(); // cualquier tecla activa audio
+ 
 
-  // 🔼 Canal arriba
-  if (e.key === "PageUp" || e.keyCode === 33){
+  // 🔊 activar con cualquier botón
+  activarSonido();
+
+   // 🔼 Canal arriba
+  if (key == "PageUp" || code == 33){
     cargarCanal(index+1);
   }
 
   // 🔽 Canal abajo
-  if (e.key === "PageDown" || e.keyCode === 34){
+  if (key == "PageDown" || code == 34){
     cargarCanal(index-1);
-  }
+}
 
-  // 🔢 cambio directo
-  if (!isNaN(e.key)){
-    let n = parseInt(e.key)-1;
-    if (canales[n]) cargarCanal(n);
-  }
-
-});
+document.addEventListener("keydown", manejarControl);
+document.addEventListener("keyup", manejarControl);
 
 /* 📺 FULLSCREEN */
 function fullscreen(){
