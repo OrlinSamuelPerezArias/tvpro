@@ -4,76 +4,25 @@
 <meta charset="UTF-8">
 <title>TV PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
 <style>
-body {
-  margin:0;
-  background:black;
-  overflow:hidden;
-  cursor:none;
-  font-family:'Segoe UI', Arial;
-}
-
-video {
-  width:100vw;
-  height:100vh;
-  object-fit:cover;
-}
-
-/* 🔊 OVERLAY */
-#startOverlay {
-  position:absolute;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
-  font-size:22px;
-  text-align:center;
-  z-index:10;
-  pointer-events:none;
-}
-
-/* 📺 BARRA */
-#infoBar {
-  position:absolute;
-  bottom:0;
-  width:100%;
-  padding:20px 30px;
-  background:linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-  color:white;
-  transform:translateY(100%);
-  transition:0.4s ease;
-  z-index:8;
-}
-
-#infoContent {
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-#canalNum {
-  font-size:32px;
-  font-weight:bold;
-  color:#00c3ff;
-}
-
-#canalNombre {
-  font-size:18px;
-  font-weight:600;
-}
-
-#estado {
-  font-size:14px;
-  opacity:0.7;
-}
-
-* { user-select:none; }
+  body { margin:0; background:black; overflow:hidden; cursor:none; font-family:'Segoe UI', Arial; }
+  video { width:100vw; height:100vh; object-fit:cover; }
+  #startOverlay {
+    position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.85);
+    display:flex; justify-content:center; align-items:center; color:white;
+    font-size:22px; text-align:center; z-index:10; pointer-events:none;
+  }
+  #infoBar {
+    position:absolute; bottom:0; width:100%; padding:20px 30px;
+    background:linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+    color:white; transform:translateY(100%); transition:0.4s ease; z-index:8;
+  }
+  #infoContent { display:flex; align-items:center; gap:15px; }
+  #canalNum { font-size:32px; font-weight:bold; color:#00c3ff; }
+  #canalNombre { font-size:18px; font-weight:600; }
+  #estado { font-size:14px; opacity:0.7; }
+  * { user-select:none; }
 </style>
 </head>
 
@@ -82,7 +31,7 @@ video {
 <video id="player" autoplay muted playsinline></video>
 
 <div id="startOverlay">
-  🔊 Presiona el número 1 o Enter para activar sonido
+  🔊 Presiona cualquier tecla para activar sonido y navegar
 </div>
 
 <div id="infoBar">
@@ -96,170 +45,127 @@ video {
 </div>
 
 <script>
-// 🔥 TUS CANALES BASE
+// Canales iniciales (locales)
 let canales = [
-  {
-    nombre: "La Voz de María",
-    url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8"
-  },
-  {
-    nombre: "Telemicro",
-    url: "https://live4.telemicro.com.do/live/55/playlist.m3u8"
-  },
-  {
-    nombre: "Antena 7",
-    url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8"
-  }
+  { nombre: "La Voz de María", url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8" },
+  { nombre: "Telemicro", url: "https://live4.telemicro.com.do/live/55/playlist.m3u8" },
+  { nombre: "Antena 7", url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8" }
 ];
 
 let index = 0;
 let hls;
 let retry = 0;
-let solidoActivado = false;
+let sonidoActivado = false;
 
 const video = document.getElementById("player");
 const overlay = document.getElementById("startOverlay");
-
 const bar = document.getElementById("infoBar");
 const num = document.getElementById("canalNum");
 const nombre = document.getElementById("canalNombre");
 const estado = document.getElementById("estado");
 
-/* 📡 CARGAR TDTCHANNELS */
-fetch("https://www.tdtchannels.com/lists/tv.json")
-  .then(res => res.json())
-  .then(data => {
-
-    data.countries.forEach(country => {
-      country.channels.forEach(ch => {
-
-        if (!ch.streams) return;
-
-        ch.streams.forEach(stream => {
-          if (stream.url && stream.url.includes(".m3u8")){
-            canales.push({
-              nombre: ch.name,
-              url: stream.url
-            });
-          }
-        });
-
-      });
-    });
-
-    console.log("Canales cargados:", canales.length);
-  })
-  .catch(()=> console.log("Error cargando TDTChannels"));
-
-/* 📺 MOSTRAR */
-function mostrarBarra(txt="En vivo"){
-  num.innerText = (index+1);
+function mostrarBarra(txt = "En vivo") {
+  num.innerText = (index + 1);
   nombre.innerText = canales[index].nombre;
   estado.innerText = txt;
-
   bar.style.transform = "translateY(0)";
   clearTimeout(bar.timer);
-  bar.timer = setTimeout(()=> bar.style.transform="translateY(100%)", 3500);
+  bar.timer = setTimeout(() => bar.style.transform = "translateY(100%)", 3500);
 }
 
-/* 🎥 CARGAR */
-function cargarCanal(i){
+function cargarCanal(i) {
+  if (canales.length === 0) return;
   index = (i + canales.length) % canales.length;
   retry = 0;
-
+  
   if (hls) hls.destroy();
-
-  let url = canales[index].url;
-
-  if (video.canPlayType('application/vnd.apple.mpegurl')) {
-    video.src = url;
-  } else if (Hls.isSupported()) {
+  
+  const url = canales[index].url;
+  
+  if (Hls.isSupported()) {
     hls = new Hls();
     hls.loadSource(url);
     hls.attachMedia(video);
+  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = url;
   }
-
-  video.play().catch(()=>{});
+  
+  video.play().catch(() => {});
   mostrarBarra("Cargando...");
 }
 
-/* 🔁 ERROR */
 video.onerror = () => {
   retry++;
-
-  if (retry <= 3){
+  if (retry <= 3) {
     mostrarBarra("Reconectando...");
-    setTimeout(()=> video.load(),2000);
+    setTimeout(() => video.load(), 2000);
   } else {
     mostrarBarra("Canal no disponible");
-    setTimeout(()=> cargarCanal(index+1),2000);
+    setTimeout(() => cargarCanal(index + 1), 2000);
   }
 };
 
 video.onplaying = () => mostrarBarra("En vivo");
 
-/* 🔊 SONIDO */
-function activarSonido(){
-  if (!solidoActivado){
+function activarSonido() {
+  if (!sonidoActivado) {
     video.muted = false;
     overlay.style.display = "none";
-    solidoActivado = true;
+    sonidoActivado = true;
     mostrarBarra("🔊 Sonido activado");
   }
 }
 
-/* 🎮 CONTROL - VERSIÓN MEJORADA PARA WEBOS */
-function manejarControl(e){
-  const keyCode = e.keyCode;
-  const key = e.key;
+function manejarControl(e) {
+  const key = e.key.toLowerCase();
+  const keyCode = e.keyCode; // Mantenemos keyCode sin toLowerCase()
 
-  // DEBUG (Abre F12 para ver)
-  console.log("🎮 Tecla presionada - KeyCode:", keyCode, "Key:", key);
+  activarSonido();
 
-  // 🔊 ACTIVAR SONIDO: 1, 13 (Enter), 32 (Espacio)
-  if (keyCode === 49 || keyCode === 13 || keyCode === 32 || key === "1" || key === "Enter" || key === " ") {
-    console.log("✅ Activando sonido");
-    activarSonido();
-    return; // Importante: detener aquí
-  }
-
-  // Asegurar que sonido esté activado
-  if (!solidoActivado) {
-    activarSonido();
-  }
-
-  // ➡️ SIGUIENTE CANAL: PageUp (33), ArrowUp (38), ArrowRight (39)
-  if (keyCode === 33 || keyCode === 38 || keyCode === 39 || key === "PageUp" || key === "ArrowUp" || key === "ArrowRight") {
-    console.log("➡️ Siguiente canal");
+  // SIGUIENTE CANAL (Uso de === estricto)
+  if (key === "arrowup" || key === "pageup" || keyCode === 38 || keyCode === 33) {
     cargarCanal(index + 1);
     e.preventDefault();
   }
 
-  // ⬅️ CANAL ANTERIOR: PageDown (34), ArrowDown (40), ArrowLeft (37)
-  if (keyCode === 34 || keyCode === 40 || keyCode === 37 || key === "PageDown" || key === "ArrowDown" || key === "ArrowLeft") {
-    console.log("⬅️ Canal anterior");
+  // CANAL ANTERIOR
+  if (key === "arrowdown" || key === "pagedown" || keyCode === 40 || keyCode === 34) {
     cargarCanal(index - 1);
     e.preventDefault();
   }
 }
 
-// 📌 ESCUCHADOR GLOBAL
-document.addEventListener("keydown", manejarControl, true); // true = captura en fase de captura
+document.addEventListener("keydown", manejarControl, true);
 
-// Escuchador adicional en window (para asegurar que se captura)
-window.addEventListener("keydown", manejarControl, true);
-
-/* 📺 FULLSCREEN */
-function fullscreen(){
-  let el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen();
-  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+// 📡 CARGAR DESDE TV.JSON LOCAL
+async function cargarCanalesDesdeJSON() {
+  try {
+    const res = await fetch("tv.json"); // Busca el archivo en la misma carpeta
+    if (res.ok) {
+      const datosNuevos = await res.json();
+      // Unimos los canales del JSON a nuestra lista actual
+      canales = [...canales, ...datosNuevos];
+      console.log(`✅ ${datosNuevos.length} canales cargados desde tv.json`);
+      // Actualizamos la barra para reflejar el nuevo total si es necesario
+      mostrarBarra();
+    }
+  } catch (e) {
+    console.error("⚠️ Error al leer tv.json. Asegúrate de que el formato sea correcto.", e);
+  }
 }
 
-window.onload = () => {
-  fullscreen();
+function fullscreen() {
+  let el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen();
+}
+
+window.onload = async () => {
+  // Primero cargamos los canales del JSON
+  await cargarCanalesDesdeJSON();
+  
+  // Luego iniciamos el primer canal
   cargarCanal(0);
-  console.log("🎬 TV PRO iniciado");
+  console.log("🎬 TV PRO iniciado con", canales.length, "canales");
 };
 </script>
 
