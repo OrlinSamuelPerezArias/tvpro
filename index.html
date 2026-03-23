@@ -140,20 +140,55 @@ document.addEventListener("keydown", manejarControl, true);
 // 📡 CARGAR DESDE TV.JSON LOCAL
 async function cargarCanalesDesdeJSON() {
   try {
-    const res = await fetch("tv.json"); // Busca el archivo en la misma carpeta
-    if (res.ok) {
-      const datosNuevos = await res.json();
-      // Unimos los canales del JSON a nuestra lista actual
-      canales = [...canales, ...datosNuevos];
-      console.log(`✅ ${datosNuevos.length} canales cargados desde tv.json`);
-      // Actualizamos la barra para reflejar el nuevo total si es necesario
-      mostrarBarra();
+    const urlRaw = "https://raw.githubusercontent.com/OrlinSamuelPerezArias/tvpro/main/tv.json";
+    const res = await fetch(urlRaw);
+    
+    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+
+    const datosJSON = await res.json();
+    const canalesExtraidos = [];
+
+    // Navegamos por la estructura: countries -> ambits -> channels
+    if (datosJSON.countries && Array.isArray(datosJSON.countries)) {
+      datosJSON.countries.forEach(pais => {
+        if (pais.ambits && Array.isArray(pais.ambits)) {
+          pais.ambits.forEach(ambito => {
+            if (ambito.channels && Array.isArray(ambito.channels)) {
+              
+              ambito.channels.forEach(canal => {
+                // Buscamos la primera opción que tenga una URL válida
+                const primeraOpcion = canal.options && canal.options.find(opt => opt.url);
+                
+                if (primeraOpcion) {
+                  canalesExtraidos.push({
+                    nombre: canal.name,
+                    url: primeraOpcion.url,
+                    logo: canal.logo,
+                    categoria: ambito.name, // "Generalistas", "Informativos", etc.
+                    pais: pais.name,
+                    alternativas: canal.options // Para el Plan B
+                  });
+                }
+              });
+
+            }
+          });
+        }
+      });
     }
+
+    // Actualizamos la lista global
+    canales = [...canales, ...canalesExtraidos];
+    
+    console.log(`✅ ${canalesExtraidos.length} canales importados desde tv.json`);
+    
+    // Si tienes una función para mostrar la lista en pantalla, llámala aquí
+    // actualizarInterfaz(); 
+
   } catch (e) {
-    console.error("⚠️ Error al leer tv.json. Asegúrate de que el formato sea correcto.", e);
+    console.error("❌ Error procesando el JSON:", e.message);
   }
 }
-
 function fullscreen() {
   let el = document.documentElement;
   if (el.requestFullscreen) el.requestFullscreen();
