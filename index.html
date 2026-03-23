@@ -35,6 +35,7 @@ video {
   font-size:22px;
   text-align:center;
   z-index:10;
+  pointer-events:none;
 }
 
 /* 📺 BARRA */
@@ -47,6 +48,7 @@ video {
   color:white;
   transform:translateY(100%);
   transition:0.4s ease;
+  z-index:8;
 }
 
 #infoContent {
@@ -80,7 +82,7 @@ video {
 <video id="player" autoplay muted playsinline></video>
 
 <div id="startOverlay">
-  🔊 Presiona el número 1 para activar sonido
+  🔊 Presiona el número 1 o Enter para activar sonido
 </div>
 
 <div id="infoBar">
@@ -113,6 +115,7 @@ let canales = [
 let index = 0;
 let hls;
 let retry = 0;
+let solidoActivado = false;
 
 const video = document.getElementById("player");
 const overlay = document.getElementById("startOverlay");
@@ -197,33 +200,54 @@ video.onplaying = () => mostrarBarra("En vivo");
 
 /* 🔊 SONIDO */
 function activarSonido(){
-  if (overlay.style.display !== "none"){
-    video.muted = true;
+  if (!solidoActivado){
+    video.muted = false;
     overlay.style.display = "none";
+    solidoActivado = true;
     mostrarBarra("🔊 Sonido activado");
   }
 }
 
-/* 🎮 CONTROL */
+/* 🎮 CONTROL - VERSIÓN MEJORADA PARA WEBOS */
 function manejarControl(e){
+  const keyCode = e.keyCode;
   const key = e.key;
-  const code = e.keyCode;
 
-  activarSonido();
+  // DEBUG (Abre F12 para ver)
+  console.log("🎮 Tecla presionada - KeyCode:", keyCode, "Key:", key);
 
-  if (key === "PageUp" || code === 33){
-    cargarCanal(index+1);
+  // 🔊 ACTIVAR SONIDO: 1, 13 (Enter), 32 (Espacio)
+  if (keyCode === 49 || keyCode === 13 || keyCode === 32 || key === "1" || key === "Enter" || key === " ") {
+    console.log("✅ Activando sonido");
+    activarSonido();
+    return; // Importante: detener aquí
   }
 
-  if (key === "PageDown" || code === 34){
-    cargarCanal(index-1);
+  // Asegurar que sonido esté activado
+  if (!solidoActivado) {
+    activarSonido();
   }
 
+  // ➡️ SIGUIENTE CANAL: PageUp (33), ArrowUp (38), ArrowRight (39)
+  if (keyCode === 33 || keyCode === 38 || keyCode === 39 || key === "PageUp" || key === "ArrowUp" || key === "ArrowRight") {
+    console.log("➡️ Siguiente canal");
+    cargarCanal(index + 1);
+    e.preventDefault();
+  }
 
+  // ⬅️ CANAL ANTERIOR: PageDown (34), ArrowDown (40), ArrowLeft (37)
+  if (keyCode === 34 || keyCode === 40 || keyCode === 37 || key === "PageDown" || key === "ArrowDown" || key === "ArrowLeft") {
+    console.log("⬅️ Canal anterior");
+    cargarCanal(index - 1);
+    e.preventDefault();
+  }
 }
 
-document.addEventListener("keydown", manejarControl);
+// 📌 ESCUCHADOR GLOBAL
+document.addEventListener("keydown", manejarControl, true); // true = captura en fase de captura
 
+// Escuchador adicional en window (para asegurar que se captura)
+window.addEventListener("keydown", manejarControl, true);
 
 /* 📺 FULLSCREEN */
 function fullscreen(){
@@ -235,6 +259,7 @@ function fullscreen(){
 window.onload = () => {
   fullscreen();
   cargarCanal(0);
+  console.log("🎬 TV PRO iniciado");
 };
 </script>
 
