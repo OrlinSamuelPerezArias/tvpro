@@ -160,13 +160,16 @@ function cargarCanal(i) {
 // --- LÓGICA DE TECLADO / CONTROL ---
 
 function manejarTeclado(e) {
-  const key = e.key;
+  // Convertimos a minúsculas para que acepte "PageUp" y "pageup" por igual
+  const key = e.key.toLowerCase();
+  const code = e.keyCode;
+
   activarSonido();
 
-  // 1. Números (0-9)
-  if (/^\d$/.test(key)) {
+  // 1. Números (0-9) - Usamos e.key directamente para detectar el dígito
+  if (/^\d$/.test(e.key)) {
     clearTimeout(inputTimer);
-    inputBuffer += key;
+    inputBuffer += e.key;
     displayNum.innerText = inputBuffer;
     displayNum.style.display = "block";
 
@@ -176,14 +179,51 @@ function manejarTeclado(e) {
       inputBuffer = "";
       displayNum.style.display = "none";
     }, 1500);
+    return; // Salimos para no procesar el número como otra tecla
   }
 
-  // 2. Navegación
-  if (key === "ArrowUp") { cargarCanal(index - 1); e.preventDefault(); }
-  if (key === "ArrowDown") { cargarCanal(index + 1); e.preventDefault(); }
-  if (key === "Enter") { toggleLista(); }
-  if (key === "Escape") { channelList.classList.remove("open"); }
+  // 2. Navegación HACIA ARRIBA (Anterior)
+  // Detecta: Flecha Arriba, PageUp (tecla y código 33)
+  if (key === "arrowup" || key === "pageup" || code === 33) {
+    cargarCanal(index - 1);
+    e.preventDefault();
+  }
+
+  // 3. Navegación HACIA ABAJO (Siguiente)
+  // Detecta: Flecha Abajo, PageDown (tecla y código 34)
+  if (key === "arrowdown" || key === "pagedown" || code === 34) {
+    cargarCanal(index + 1);
+    e.preventDefault();
+  }
+
+  // 4. Extras (Enter y Escape)
+  if (key === "enter") { toggleLista(); }
+  if (key === "escape") { channelList.classList.remove("open"); }
 }
+
+// --- FUNCIÓN PARA EL MOUSE ---
+function manejarMouse(e) {
+  activarSonido();
+  // e.deltaY es positivo cuando bajas la rueda y negativo cuando la subes
+  if (e.deltaY > 0) {
+    cargarCanal(index + 1); // Baja la rueda -> Siguiente canal
+  } else {
+    cargarCanal(index - 1); // Sube la rueda -> Canal anterior
+  }
+}
+
+window.onload = async () => {
+  await cargarCanalesDesdeJSON();
+  cargarCanal(0);
+  
+  // Escuchar Teclado y Control Remoto
+  document.addEventListener("keydown", manejarTeclado);
+  
+  // Escuchar Rueda del Mouse
+  document.addEventListener("wheel", manejarMouse);
+
+  console.log("🎮 Controles híbridos activados: Mouse, Teclado y Control TV");
+};
 
 function activarSonido() {
   if (!sonidoActivado) {
@@ -217,11 +257,7 @@ async function cargarCanalesDesdeJSON() {
   } catch (e) { console.error("Error JSON", e); }
 }
 
-window.onload = async () => {
-  await cargarCanalesDesdeJSON();
-  cargarCanal(0);
-  document.addEventListener("keydown", manejarTeclado);
-};
+
 </script>
 </body>
 </html>
