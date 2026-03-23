@@ -6,87 +6,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <style>
-  body { margin:0; background:black; overflow:hidden; cursor:none; font-family:'Segoe UI', Arial; }
+  body { margin:0; background:black; overflow:hidden; cursor:none; font-family:'Segoe UI', Arial; color: white; }
   video { width:100vw; height:100vh; object-fit:cover; }
+  
   #startOverlay {
     position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.85);
     display:flex; justify-content:center; align-items:center; color:white;
-    font-size:22px; text-align:center; z-index:10; pointer-events:none;
+    font-size:22px; text-align:center; z-index:100;
   }
+
+  /* Barra de Info Inferior */
   #infoBar {
-    position:absolute; bottom:0; width:100%; padding:20px 30px;
-    background:linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-    color:white; transform:translateY(100%); transition:0.4s ease; z-index:8;
+    position:absolute; bottom:0; width:100%; padding:30px;
+    background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    transform:translateY(100%); transition:0.4s ease; z-index:50;
   }
-  #infoContent { display:flex; align-items:center; gap:15px; }
-  #canalNum { font-size:32px; font-weight:bold; color:#00c3ff; }
-  #canalNombre { font-size:18px; font-weight:600; }
-  #estado { font-size:14px; opacity:0.7; }
+  #infoContent { display:flex; align-items:center; gap:20px; }
+  #canalNum { font-size:48px; font-weight:bold; color:#00c3ff; min-width: 60px; }
+  #canalLogo { width: 60px; height: 60px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.1); }
+  #canalNombre { font-size:24px; font-weight:600; }
+
+  /* Indicador de número marcado (Centro) */
+  #inputDisplay {
+    position: absolute; top: 10%; right: 5%; font-size: 80px; font-weight: bold;
+    color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); z-index: 60; display: none;
+  }
+
+  /* Lista de Canales Lateral */
+  #channelList {
+    position: absolute; left: 0; top: 0; width: 300px; height: 100%;
+    background: rgba(0,0,0,0.9); transform: translateX(-100%);
+    transition: 0.3s; z-index: 80; overflow-y: auto; padding: 20px;
+    border-right: 2px solid #00c3ff;
+  }
+  #channelList.open { transform: translateX(0); }
+  .channel-item { 
+    padding: 12px; border-bottom: 1px solid #333; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; font-size: 16px;
+  }
+  .channel-item.active { background: #00c3ff; color: black; font-weight: bold; }
+  .channel-item img { width: 30px; height: 30px; object-fit: contain; }
+
   * { user-select:none; }
 </style>
 </head>
-
 <body>
 
 <video id="player" autoplay muted playsinline></video>
 
-<div id="startOverlay">
-  🔊 Presiona cualquier tecla para activar sonido y navegar
+<div id="startOverlay">🔊 Presiona cualquier tecla para iniciar</div>
+
+<div id="inputDisplay"></div>
+
+<div id="channelList">
+  <h2 style="color:#00c3ff">Canales</h2>
+  <div id="listItems"></div>
 </div>
 
 <div id="infoBar">
   <div id="infoContent">
     <div id="canalNum"></div>
+    <img id="canalLogo" src="" alt="">
     <div>
       <div id="canalNombre"></div>
-      <div id="estado"></div>
+      <div id="estado" style="opacity:0.7">En vivo</div>
     </div>
   </div>
 </div>
 
 <script>
-// Canales iniciales (locales)
 let canales = [
-  { nombre: "La Voz de María", url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8" },
-  { nombre: "Telemicro", url: "https://live4.telemicro.com.do/live/55/playlist.m3u8" },
-  { nombre: "Antena 7", url: "https://alba-do-antena7-antena7.stream.mediatiquestream.com/original.m3u8" }
+  { nombre: "La Voz de María", url: "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&s" },
+  { nombre: "Jarabacoa TV", url: "https://streaming.jarabacoatv.com/Jarabacoa_tv/playlist.m3u8", logo: "https://cablevisionjarabacoa.com/wp-content/uploads/2023/05/JCA_Artboard-1-copy-3.png" },
+  { nombre: "La voz de jesus", url: "https://live20.bozztv.com/giatvplayout7/giatv-208429/playlist.m3u8", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjKQpOjimwanvyUmwkYeDrdACXWNABgZHghQ&s" },
+  { nombre: "Telever", url: "https://soportedvb.click:3413/live/televerlive.m3u8", logo: "https://telever.com.do/wp-content/uploads/2025/07/LOGO-FINAL.svg" },
+  { nombre: "Teleuniverso", url: "https://videoserver.tmcreativos.com:19360/kptjeckkaa/kptjeckkaa.m3u8", logo: "https://stscdn.teleuniversotv.com/wp-content/uploads/2020/11/Teleuniverso.webp" },
+  { nombre: "6 Wise Tv", url: "https://live.enhdtv.com:8081/8150/index.m3u8", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9JTxrz_0LCVISHKDdzNmZfi9tVwQs174J4Q&s" },
+  { nombre: "Univision Noticias", url: "https://amg26269-dogtv-amg26269c2-stirr-us-8504.playouts.now.amagi.tv/playlist.m3u8", logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkoMy8wfofxfOljm8fKQ9mxO2nIkdZ10U37g&s" },
 ];
 
 let index = 0;
 let hls;
-let retry = 0;
 let sonidoActivado = false;
+let inputBuffer = ""; 
+let inputTimer;
 
 const video = document.getElementById("player");
 const overlay = document.getElementById("startOverlay");
 const bar = document.getElementById("infoBar");
-const num = document.getElementById("canalNum");
-const nombre = document.getElementById("canalNombre");
-const estado = document.getElementById("estado");
+const displayNum = document.getElementById("inputDisplay");
+const channelList = document.getElementById("channelList");
+
+// --- LÓGICA DE INTERFAZ ---
 
 function mostrarBarra(txt = "En vivo") {
-  num.innerText = (index + 1);
-  nombre.innerText = canales[index].nombre;
-  estado.innerText = txt;
+  const c = canales[index];
+  document.getElementById("canalNum").innerText = (index + 1);
+  document.getElementById("canalNombre").innerText = c.nombre;
+  document.getElementById("canalLogo").src = c.logo || "";
+  document.getElementById("estado").innerText = txt;
+  
   bar.style.transform = "translateY(0)";
   clearTimeout(bar.timer);
-  bar.timer = setTimeout(() => bar.style.transform = "translateY(100%)", 3500);
+  bar.timer = setTimeout(() => bar.style.transform = "translateY(100%)", 4000);
+  actualizarListaActiva();
 }
+
+function actualizarListaActiva() {
+  const items = document.querySelectorAll('.channel-item');
+  items.forEach((item, i) => {
+    item.classList.toggle('active', i === index);
+    if(i === index && channelList.classList.contains('open')) item.scrollIntoView({block: "center"});
+  });
+}
+
+function generarLista() {
+  const container = document.getElementById("listItems");
+  container.innerHTML = "";
+  canales.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "channel-item";
+    div.innerHTML = `<span>${i+1}</span> <img src="${c.logo}"> <span>${c.nombre}</span>`;
+    div.onclick = () => { cargarCanal(i); toggleLista(); };
+    container.appendChild(div);
+  });
+}
+
+function toggleLista() {
+  channelList.classList.toggle("open");
+}
+
+// --- LÓGICA DE REPRODUCCIÓN ---
 
 function cargarCanal(i) {
   if (canales.length === 0) return;
   index = (i + canales.length) % canales.length;
-  retry = 0;
   
   if (hls) hls.destroy();
-  
   const url = canales[index].url;
   
   if (Hls.isSupported()) {
     hls = new Hls();
     hls.loadSource(url);
     hls.attachMedia(video);
-  } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+  } else {
     video.src = url;
   }
   
@@ -94,115 +157,71 @@ function cargarCanal(i) {
   mostrarBarra("Cargando...");
 }
 
-video.onerror = () => {
-  retry++;
-  if (retry <= 3) {
-    mostrarBarra("Reconectando...");
-    setTimeout(() => video.load(), 2000);
-  } else {
-    mostrarBarra("Canal no disponible");
-    setTimeout(() => cargarCanal(index + 1), 2000);
-  }
-};
+// --- LÓGICA DE TECLADO / CONTROL ---
 
-video.onplaying = () => mostrarBarra("En vivo");
+function manejarTeclado(e) {
+  const key = e.key;
+  activarSonido();
+
+  // 1. Números (0-9)
+  if (/^\d$/.test(key)) {
+    clearTimeout(inputTimer);
+    inputBuffer += key;
+    displayNum.innerText = inputBuffer;
+    displayNum.style.display = "block";
+
+    inputTimer = setTimeout(() => {
+      const numC = parseInt(inputBuffer) - 1;
+      if (numC >= 0 && numC < canales.length) cargarCanal(numC);
+      inputBuffer = "";
+      displayNum.style.display = "none";
+    }, 1500);
+  }
+
+  // 2. Navegación
+  if (key === "ArrowUp") { cargarCanal(index - 1); e.preventDefault(); }
+  if (key === "ArrowDown") { cargarCanal(index + 1); e.preventDefault(); }
+  if (key === "Enter") { toggleLista(); }
+  if (key === "Escape") { channelList.classList.remove("open"); }
+}
 
 function activarSonido() {
   if (!sonidoActivado) {
     video.muted = false;
     overlay.style.display = "none";
     sonidoActivado = true;
-    mostrarBarra("🔊 Sonido activado");
   }
 }
 
-function manejarControl(e) {
-  const key = e.key.toLowerCase();
-  const keyCode = e.keyCode; // Mantenemos keyCode sin toLowerCase()
+// --- CARGA DE DATOS ---
 
-  activarSonido();
-
-  // SIGUIENTE CANAL (Uso de === estricto)
-  if (key === "arrowup" || key === "pageup" || keyCode === 38 || keyCode === 33) {
-    cargarCanal(index + 1);
-    e.preventDefault();
-  }
-
-  // CANAL ANTERIOR
-  if (key === "arrowdown" || key === "pagedown" || keyCode === 40 || keyCode === 34) {
-    cargarCanal(index - 1);
-    e.preventDefault();
-  }
-}
-
-document.addEventListener("keydown", manejarControl, true);
-
-// 📡 CARGAR DESDE TV.JSON LOCAL
 async function cargarCanalesDesdeJSON() {
   try {
-    const urlRaw = "https://raw.githubusercontent.com/OrlinSamuelPerezArias/tvpro/main/tv.json";
+    const urlRaw = "tv.json";
     const res = await fetch(urlRaw);
-    
-    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
-
     const datosJSON = await res.json();
-    const canalesExtraidos = [];
+    const extraidos = [];
 
-    // Navegamos por la estructura: countries -> ambits -> channels
-    if (datosJSON.countries && Array.isArray(datosJSON.countries)) {
-      datosJSON.countries.forEach(pais => {
-        if (pais.ambits && Array.isArray(pais.ambits)) {
-          pais.ambits.forEach(ambito => {
-            if (ambito.channels && Array.isArray(ambito.channels)) {
-              
-              ambito.channels.forEach(canal => {
-                // Buscamos la primera opción que tenga una URL válida
-                const primeraOpcion = canal.options && canal.options.find(opt => opt.url);
-                
-                if (primeraOpcion) {
-                  canalesExtraidos.push({
-                    nombre: canal.name,
-                    url: primeraOpcion.url,
-                    logo: canal.logo,
-                    categoria: ambito.name, // "Generalistas", "Informativos", etc.
-                    pais: pais.name,
-                    alternativas: canal.options // Para el Plan B
-                  });
-                }
-              });
-
-            }
+    if (datosJSON.countries) {
+      datosJSON.countries.forEach(p => {
+        p.ambits.forEach(a => {
+          a.channels.forEach(c => {
+            const opt = c.options.find(o => o.url);
+            if (opt) extraidos.push({ nombre: c.name, url: opt.url, logo: c.logo });
           });
-        }
+        });
       });
     }
-
-    // Actualizamos la lista global
-    canales = [...canales, ...canalesExtraidos];
-    
-    console.log(`✅ ${canalesExtraidos.length} canales importados desde tv.json`);
-    
-    // Si tienes una función para mostrar la lista en pantalla, llámala aquí
-    // actualizarInterfaz(); 
-
-  } catch (e) {
-    console.error("❌ Error procesando el JSON:", e.message);
-  }
-}
-function fullscreen() {
-  let el = document.documentElement;
-  if (el.requestFullscreen) el.requestFullscreen();
+    canales = [...canales, ...extraidos];
+    generarLista();
+  } catch (e) { console.error("Error JSON", e); }
 }
 
 window.onload = async () => {
-  // Primero cargamos los canales del JSON
   await cargarCanalesDesdeJSON();
-  
-  // Luego iniciamos el primer canal
   cargarCanal(0);
-  console.log("🎬 TV PRO iniciado con", canales.length, "canales");
+  document.addEventListener("keydown", manejarTeclado);
 };
 </script>
-
 </body>
 </html>
