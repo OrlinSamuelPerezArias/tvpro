@@ -201,28 +201,48 @@ function manejarTeclado(e) {
   if (key === "escape") { channelList.classList.remove("open"); }
 }
 
-// --- FUNCIÓN PARA EL MOUSE ---
-function manejarMouse(e) {
+let lastY = null; // Para guardar la última posición del puntero
+const sensibilidad = 50; // Ajusta este número: más bajo es más sensible
+
+function manejarMovimientoMouse(e) {
   activarSonido();
-  // e.deltaY es positivo cuando bajas la rueda y negativo cuando la subes
-  if (e.deltaY > 0) {
-    cargarCanal(index + 1); // Baja la rueda -> Siguiente canal
-  } else {
-    cargarCanal(index - 1); // Sube la rueda -> Canal anterior
+
+  // Si la lista de canales está abierta, no queremos que cambie de canal al mover el mouse
+  if (channelList.classList.contains("open")) return;
+
+  if (lastY === null) {
+    lastY = e.clientY;
+    return;
+  }
+
+  const deltaY = e.clientY - lastY;
+
+  // Si el movimiento supera la sensibilidad definida
+  if (Math.abs(deltaY) > sensibilidad) {
+    if (deltaY > 0) {
+      // Movimiento hacia abajo
+      cargarCanal(index + 1);
+    } else {
+      // Movimiento hacia arriba
+      cargarCanal(index - 1);
+    }
+    
+    // Reiniciamos lastY para que no cambie 100 canales de un solo golpe
+    lastY = e.clientY; 
   }
 }
+
+// Para evitar que el canal cambie infinitamente, reseteamos cuando el mouse se detiene o sale
+document.addEventListener("mouseleave", () => { lastY = null; });
 
 window.onload = async () => {
   await cargarCanalesDesdeJSON();
   cargarCanal(0);
   
-  // Escuchar Teclado y Control Remoto
   document.addEventListener("keydown", manejarTeclado);
   
-  // Escuchar Rueda del Mouse
-  document.addEventListener("wheel", manejarMouse);
-
-  console.log("🎮 Controles híbridos activados: Mouse, Teclado y Control TV");
+  // ACTIVAR DETECCIÓN POR MOVIMIENTO
+  document.addEventListener("mousemove", manejarMovimientoMouse);
 };
 
 function activarSonido() {
