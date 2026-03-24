@@ -185,14 +185,14 @@ function manejarTeclado(e) {
   // 2. Navegación HACIA ARRIBA (Anterior)
   // Detecta: Flecha Arriba, PageUp (tecla y código 33)
   if (key === "arrowup" || key === "pageup" || code === 33) {
-    cargarCanal(index - 1);
+    cargarCanal(index + 1);
     e.preventDefault();
   }
 
   // 3. Navegación HACIA ABAJO (Siguiente)
   // Detecta: Flecha Abajo, PageDown (tecla y código 34)
   if (key === "arrowdown" || key === "pagedown" || code === 34) {
-    cargarCanal(index + 1);
+    cargarCanal(index - 1);
     e.preventDefault();
   }
 
@@ -221,10 +221,10 @@ function manejarMovimientoMouse(e) {
   if (Math.abs(deltaY) > sensibilidad) {
     if (deltaY > 0) {
       // Movimiento hacia abajo
-      cargarCanal(index + 1);
+      cargarCanal(index - 1);
     } else {
       // Movimiento hacia arriba
-      cargarCanal(index - 1);
+      cargarCanal(index + 1);
     }
     
     // Reiniciamos lastY para que no cambie 100 canales de un solo golpe
