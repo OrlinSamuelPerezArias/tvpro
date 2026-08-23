@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>TV PRO</title>
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
+<link rel="icon" type="image/x-icon" href="https://png.pngtree.com/element_pic/00/16/09/2057e0eecf792fb.jpg">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
@@ -28,7 +23,7 @@ body{
     margin:0;
     overflow:hidden;
     background:#000;
-    color:#fff;
+    color:white;
     font-family:"Segoe UI",Arial,sans-serif;
 }
 
@@ -36,111 +31,100 @@ body{
     cursor:none;
 }
 
-
-/* =========================================================
+/* =====================================================
    VIDEO
-========================================================= */
+===================================================== */
 
 #player{
-
     position:fixed;
-
     inset:0;
-
     width:100vw;
     height:100vh;
-
     object-fit:contain;
-
     background:#000;
-
 }
 
 
-/* =========================================================
+/* =====================================================
    PANTALLA INICIAL
-========================================================= */
+===================================================== */
 
 #startOverlay{
 
     position:fixed;
-
     inset:0;
 
     z-index:1000;
 
     display:flex;
-
     align-items:center;
     justify-content:center;
 
     background:
         radial-gradient(
             circle at center,
-            rgba(0,195,255,.12),
-            rgba(0,0,0,.96) 65%
+            rgba(0,195,255,.10),
+            rgba(0,0,0,.96) 70%
         );
-
 }
 
 .startCard{
 
-    width:min(460px,90vw);
+    width:min(400px,88vw);
 
-    padding:40px;
+    padding:32px;
 
     text-align:center;
 
-    border-radius:24px;
+    border-radius:20px;
 
-    background:rgba(10,15,20,.8);
+    background:rgba(10,15,20,.88);
 
-    border:1px solid rgba(0,195,255,.25);
+    border:1px solid rgba(0,195,255,.20);
 
     box-shadow:
-        0 30px 100px rgba(0,0,0,.8);
-
-    backdrop-filter:blur(20px);
+        0 25px 80px rgba(0,0,0,.8);
 
 }
 
 .startIcon{
-
-    font-size:60px;
-
-    margin-bottom:15px;
-
+    font-size:48px;
+    margin-bottom:10px;
 }
 
 .startTitle{
 
-    font-size:38px;
+    font-size:30px;
 
     font-weight:900;
 
-    letter-spacing:4px;
+    letter-spacing:3px;
 
 }
 
 .startSubtitle{
 
-    margin-top:8px;
+    margin-top:5px;
 
-    color:#82929c;
+    font-size:14px;
+
+    color:#8999a3;
 
 }
 
 .startHint{
 
-    margin-top:30px;
+    margin-top:22px;
 
-    padding:16px;
+    padding:12px;
 
-    border-radius:14px;
+    border-radius:10px;
 
-    background:rgba(0,195,255,.08);
+    background:rgba(0,195,255,.07);
 
-    color:#a9c9d7;
+    font-size:13px;
+
+    color:#aabac3;
 
 }
 
@@ -148,58 +132,58 @@ body{
 
     color:#00c3ff;
 
-    font-size:20px;
+    font-size:16px;
 
 }
 
 
-/* =========================================================
-   NUMERO DEL CANAL
-========================================================= */
+/* =====================================================
+   NUMERO MARCADO
+===================================================== */
 
 #inputDisplay{
 
     position:fixed;
 
-    top:8%;
+    top:7%;
 
-    right:6%;
+    right:5%;
 
     z-index:500;
 
     display:none;
 
-    min-width:100px;
+    min-width:65px;
 
-    padding:10px 18px;
+    padding:6px 12px;
 
     text-align:center;
 
-    font-size:70px;
+    font-size:42px;
 
-    font-weight:900;
+    line-height:1;
 
-    letter-spacing:4px;
+    font-weight:800;
+
+    letter-spacing:2px;
 
     color:white;
 
-    border-radius:14px;
+    border-radius:10px;
 
     background:rgba(0,0,0,.55);
 
-    border:1px solid rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.10);
 
     text-shadow:
-        0 0 20px rgba(0,195,255,.8);
-
-    backdrop-filter:blur(10px);
+        0 0 15px rgba(0,195,255,.7);
 
 }
 
 
-/* =========================================================
+/* =====================================================
    INFORMACIÓN DEL CANAL
-========================================================= */
+===================================================== */
 
 #infoBar{
 
@@ -212,7 +196,7 @@ body{
 
     width:100%;
 
-    padding:35px 50px 45px;
+    padding:25px 35px 30px;
 
     background:
         linear-gradient(
@@ -225,7 +209,7 @@ body{
     transform:translateY(100%);
 
     transition:
-        transform .35s ease;
+        transform .3s ease;
 
 }
 
@@ -235,15 +219,15 @@ body{
 
     align-items:center;
 
-    gap:18px;
+    gap:13px;
 
 }
 
 #canalNum{
 
-    min-width:70px;
+    min-width:52px;
 
-    font-size:50px;
+    font-size:34px;
 
     font-weight:900;
 
@@ -253,14 +237,14 @@ body{
 
 #canalLogo{
 
-    width:64px;
-    height:64px;
+    width:48px;
+    height:48px;
 
     object-fit:contain;
 
-    padding:6px;
+    padding:5px;
 
-    border-radius:12px;
+    border-radius:8px;
 
     background:rgba(255,255,255,.08);
 
@@ -268,190 +252,26 @@ body{
 
 #canalNombre{
 
-    font-size:25px;
+    font-size:18px;
 
-    font-weight:700;
+    font-weight:650;
 
 }
 
 #estado{
 
-    margin-top:4px;
+    margin-top:3px;
 
-    color:#91a0a8;
+    color:#8c999f;
 
-    font-size:14px;
-
-}
-
-
-/* =========================================================
-   MINI PREVIEW AL MANTENER 0
-========================================================= */
-
-#zeroPreview{
-
-    position:fixed;
-
-    left:50%;
-
-    top:50%;
-
-    z-index:700;
-
-    width:520px;
-
-    max-width:65vw;
-
-    aspect-ratio:16/9;
-
-    transform:
-        translate(-50%,-50%)
-        scale(.92);
-
-    display:none;
-
-    overflow:hidden;
-
-    border-radius:18px;
-
-    background:#000;
-
-    border:1px solid rgba(0,195,255,.45);
-
-    box-shadow:
-        0 30px 100px rgba(0,0,0,.85),
-        0 0 40px rgba(0,195,255,.12);
-
-}
-
-#zeroPreview.active{
-
-    display:block;
-
-    animation:
-        previewIn .2s ease forwards;
-
-}
-
-@keyframes previewIn{
-
-    from{
-
-        opacity:0;
-
-        transform:
-            translate(-50%,-50%)
-            scale(.85);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:
-            translate(-50%,-50%)
-            scale(1);
-
-    }
-
-}
-
-#previewVideo{
-
-    width:100%;
-    height:100%;
-
-    object-fit:contain;
-
-    background:#000;
-
-}
-
-#previewInfo{
-
-    position:absolute;
-
-    left:0;
-    right:0;
-    bottom:0;
-
-    padding:35px 20px 15px;
-
-    background:
-        linear-gradient(
-            to top,
-            rgba(0,0,0,.95),
-            transparent
-        );
-
-}
-
-#previewChannel{
-
-    font-size:20px;
-
-    font-weight:800;
-
-}
-
-#previewNumber{
-
-    color:#00c3ff;
-
-    font-size:13px;
-
-    font-weight:700;
+    font-size:12px;
 
 }
 
 
-/* =========================================================
-   CERO PROGRESS
-========================================================= */
-
-#zeroProgress{
-
-    position:fixed;
-
-    left:50%;
-
-    bottom:8%;
-
-    z-index:710;
-
-    width:280px;
-
-    height:5px;
-
-    transform:
-        translateX(-50%);
-
-    display:none;
-
-    overflow:hidden;
-
-    border-radius:10px;
-
-    background:rgba(255,255,255,.15);
-
-}
-
-#zeroProgressBar{
-
-    width:0%;
-
-    height:100%;
-
-    background:#00c3ff;
-
-}
-
-
-/* =========================================================
-   TOAST
-========================================================= */
+/* =====================================================
+   MENSAJE
+===================================================== */
 
 #toast{
 
@@ -459,24 +279,26 @@ body{
 
     left:50%;
 
-    bottom:45px;
+    bottom:30px;
 
     z-index:900;
 
-    padding:12px 20px;
+    padding:9px 16px;
 
-    border-radius:30px;
+    border-radius:20px;
 
     background:rgba(10,15,20,.9);
 
-    border:1px solid rgba(0,195,255,.25);
+    border:1px solid rgba(0,195,255,.20);
 
     transform:
         translate(-50%,20px);
 
     opacity:0;
 
-    transition:.25s;
+    transition:.2s;
+
+    font-size:13px;
 
 }
 
@@ -489,33 +311,15 @@ body{
 
 }
 
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media(max-width:700px){
-
-    #zeroPreview{
-
-        width:75vw;
-
-        max-width:none;
-
-    }
-
-}
-
 </style>
 
 </head>
-
 
 <body>
 
 
 <!-- =====================================================
-     VIDEO PRINCIPAL
+     VIDEO
 ===================================================== -->
 
 <video
@@ -549,10 +353,10 @@ body{
         <div class="startHint">
 
             <strong>
-                Presiona cualquier tecla
+                Presiona OK
             </strong>
 
-            <br><br>
+            <br>
 
             para comenzar
 
@@ -571,41 +375,7 @@ body{
 
 
 <!-- =====================================================
-     MINI PREVIEW DEL 0
-===================================================== -->
-
-<div id="zeroPreview">
-
-    <video
-        id="previewVideo"
-        muted
-        playsinline
-    ></video>
-
-    <div id="previewInfo">
-
-        <div id="previewNumber">
-            CANAL 01
-        </div>
-
-        <div id="previewChannel">
-            Canal actual
-        </div>
-
-    </div>
-
-</div>
-
-
-<div id="zeroProgress">
-
-    <div id="zeroProgressBar"></div>
-
-</div>
-
-
-<!-- =====================================================
-     INFO
+     INFORMACIÓN
 ===================================================== -->
 
 <div id="infoBar">
@@ -641,10 +411,10 @@ body{
 <script>
 
 
-/* =========================================================
-   TUS CANALES ORIGINALES
-   SIEMPRE VAN PRIMERO
-========================================================= */
+/* =====================================================
+   CANALES ORIGINALES
+   ESTOS SIEMPRE SERÁN LOS PRIMEROS
+===================================================== */
 
 let canales = [
 
@@ -699,23 +469,21 @@ let canales = [
 ];
 
 
-/* =========================================================
-   IPTV-ORG RD
-========================================================= */
+/* =====================================================
+   IPTV-ORG
+===================================================== */
 
 const IPTV_RD =
     "https://iptv-org.github.io/iptv/countries/do.m3u";
 
 
-/* =========================================================
+/* =====================================================
    VARIABLES
-========================================================= */
+===================================================== */
 
 let index = 0;
 
 let hls = null;
-
-let previewHls = null;
 
 let sonidoActivado = false;
 
@@ -723,18 +491,10 @@ let inputBuffer = "";
 
 let inputTimer = null;
 
-let ceroPresionado = false;
 
-let ceroTimer = null;
-
-let ceroAnimation = null;
-
-let canalesCargados = false;
-
-
-/* =========================================================
+/* =====================================================
    ELEMENTOS
-========================================================= */
+===================================================== */
 
 const video =
     document.getElementById("player");
@@ -748,34 +508,20 @@ const bar =
 const displayNum =
     document.getElementById("inputDisplay");
 
-const zeroPreview =
-    document.getElementById("zeroPreview");
-
-const previewVideo =
-    document.getElementById("previewVideo");
-
-const zeroProgress =
-    document.getElementById("zeroProgress");
-
-const zeroProgressBar =
-    document.getElementById("zeroProgressBar");
-
 const toast =
     document.getElementById("toast");
 
 
-/* =========================================================
+/* =====================================================
    TOAST
-========================================================= */
+===================================================== */
 
 function mostrarToast(texto){
 
     toast.innerText =
         texto;
 
-    toast.classList.add(
-        "show"
-    );
+    toast.classList.add("show");
 
     clearTimeout(
         toast.timer
@@ -790,42 +536,37 @@ function mostrarToast(texto){
                 );
 
             },
-            1800
+            1600
         );
 
 }
 
 
-/* =========================================================
-   SONIDO
-========================================================= */
+/* =====================================================
+   ACTIVAR SONIDO
+===================================================== */
 
 function activarSonido(){
 
     if(sonidoActivado)
         return;
 
-    sonidoActivado =
-        true;
+    sonidoActivado = true;
 
-    video.muted =
-        false;
+    video.muted = false;
 
-    video.volume =
-        1;
+    video.volume = 1;
 
-    overlay.style.display =
-        "none";
+    overlay.style.display = "none";
 
-    video.play()
-        .catch(() => {});
+    video.play().catch(() => {});
 
 }
 
 
-/* =========================================================
+/* =====================================================
    INFORMACIÓN
-========================================================= */
+===================================================== */
 
 function mostrarBarra(
     estado = "En vivo"
@@ -838,11 +579,19 @@ function mostrarBarra(
         return;
 
 
+    /*
+       El canal visualmente empieza en 0.
+       
+       Por eso:
+       índice 0 = canal 0
+       índice 1 = canal 1
+       etc.
+    */
+
     document.getElementById(
         "canalNum"
     ).innerText =
-        String(index + 1)
-        .padStart(2,"0");
+        String(index);
 
 
     document.getElementById(
@@ -880,21 +629,33 @@ function mostrarBarra(
                     "translateY(100%)";
 
             },
-            3500
+            3000
         );
 
 }
 
 
-/* =========================================================
-   REPRODUCIR CANAL
-========================================================= */
+/* =====================================================
+   CARGAR CANAL
+===================================================== */
 
 function cargarCanal(numero){
 
-    if(!canales.length)
+    if(
+        !canales.length
+    )
         return;
 
+
+    /*
+       CICLO DE CANALES
+
+       Si estamos en 0 y bajamos:
+       último canal.
+
+       Si estamos en el último y subimos:
+       canal 0.
+    */
 
     index =
         (
@@ -913,8 +674,11 @@ function cargarCanal(numero){
     }
 
 
+    const canal =
+        canales[index];
+
     const url =
-        canales[index].url;
+        canal.url;
 
 
     mostrarBarra(
@@ -942,6 +706,7 @@ function cargarCanal(numero){
             url
         );
 
+
         hls.attachMedia(
             video
         );
@@ -949,7 +714,7 @@ function cargarCanal(numero){
 
         hls.on(
             Hls.Events.MANIFEST_PARSED,
-            () => {
+            function(){
 
                 video.play()
                     .catch(() => {});
@@ -964,14 +729,12 @@ function cargarCanal(numero){
 
         hls.on(
             Hls.Events.ERROR,
-            (
+            function(
                 event,
                 data
-            ) => {
+            ){
 
-                if(
-                    data.fatal
-                ){
+                if(data.fatal){
 
                     mostrarBarra(
                         "Sin señal"
@@ -996,9 +759,9 @@ function cargarCanal(numero){
 }
 
 
-/* =========================================================
-   PARSEAR IPTV-ORG
-========================================================= */
+/* =====================================================
+   PARSEAR M3U
+===================================================== */
 
 function parseM3U(text){
 
@@ -1011,11 +774,13 @@ function parseM3U(text){
 
 
     for(
-        const lineRaw of lines
+        let i = 0;
+        i < lines.length;
+        i++
     ){
 
         const line =
-            lineRaw.trim();
+            lines[i].trim();
 
 
         if(
@@ -1024,13 +789,13 @@ function parseM3U(text){
             )
         ){
 
-            const nombre =
+            const nombreMatch =
                 line.match(
                     /,(.*)$/
                 );
 
 
-            const logo =
+            const logoMatch =
                 line.match(
                     /tvg-logo="([^"]*)"/
                 );
@@ -1039,19 +804,20 @@ function parseM3U(text){
             info = {
 
                 nombre:
-                    nombre
-                        ? nombre[1].trim()
+                    nombreMatch
+                        ? nombreMatch[1].trim()
                         : "Canal",
 
                 logo:
-                    logo
-                        ? logo[1]
+                    logoMatch
+                        ? logoMatch[1]
                         : ""
 
             };
 
+        }
 
-        }else if(
+        else if(
 
             info &&
             line &&
@@ -1085,9 +851,9 @@ function parseM3U(text){
 }
 
 
-/* =========================================================
-   CARGAR IPTV-ORG
-========================================================= */
+/* =====================================================
+   CARGAR CANALES IPTV-ORG
+===================================================== */
 
 async function cargarCanalesIPTV(){
 
@@ -1105,7 +871,7 @@ async function cargarCanalesIPTV(){
         if(!response.ok){
 
             throw new Error(
-                "Playlist no disponible"
+                "No se pudo descargar IPTV-org"
             );
 
         }
@@ -1122,18 +888,15 @@ async function cargarCanalesIPTV(){
 
 
         /*
-        ================================================
-        IMPORTANTE:
-
-        NO BORRAMOS LOS CANALES ORIGINALES.
-        ================================================
+        =================================================
+        NO ELIMINAMOS LOS CANALES ORIGINALES
+        =================================================
         */
 
-        const urls =
+        const urlsExistentes =
             new Set(
                 canales.map(
-                    canal =>
-                        canal.url
+                    c => c.url
                 )
             );
 
@@ -1145,9 +908,15 @@ async function cargarCanalesIPTV(){
             const canal of nuevos
         ){
 
+            /*
+            Sin límite de 260.
+            Agregamos todos los que
+            IPTV-org entregue.
+            */
+
             if(
                 canal.url &&
-                !urls.has(
+                !urlsExistentes.has(
                     canal.url
                 )
             ){
@@ -1156,7 +925,7 @@ async function cargarCanalesIPTV(){
                     canal
                 );
 
-                urls.add(
+                urlsExistentes.add(
                     canal.url
                 );
 
@@ -1167,24 +936,18 @@ async function cargarCanalesIPTV(){
         }
 
 
-        canalesCargados =
-            true;
-
-
         console.log(
             "Canales originales:",
             8
         );
 
-
         console.log(
-            "Canales IPTV-org agregados:",
+            "Canales IPTV-org:",
             agregados
         );
 
-
         console.log(
-            "Total:",
+            "TOTAL:",
             canales.length
         );
 
@@ -1192,19 +955,13 @@ async function cargarCanalesIPTV(){
     }catch(error){
 
         console.error(
-            "IPTV-org:",
+            "Error IPTV-org:",
             error
         );
 
 
-        /*
-        Si IPTV-org falla,
-        los canales originales
-        siguen funcionando.
-        */
-
         mostrarToast(
-            "Canales adicionales no disponibles"
+            "No se pudieron cargar canales adicionales"
         );
 
     }
@@ -1212,11 +969,25 @@ async function cargarCanalesIPTV(){
 }
 
 
-/* =========================================================
-   NUMERO DE CANAL
-========================================================= */
+/* =====================================================
+   NUMERACIÓN
 
-function procesarNumero(
+   MUY IMPORTANTE:
+
+   El 0 ahora NO tiene ninguna función especial.
+
+   Es simplemente un dígito.
+
+   Ejemplo:
+
+   0       = canal 0
+   1       = canal 1
+   10      = canal 10
+   20      = canal 20
+   105     = canal 105
+===================================================== */
+
+function marcarNumero(
     digito
 ){
 
@@ -1241,43 +1012,7 @@ function procesarNumero(
         setTimeout(
             () => {
 
-                const numero =
-                    parseInt(
-                        inputBuffer,
-                        10
-                    );
-
-
-                const posicion =
-                    numero - 1;
-
-
-                if(
-                    !isNaN(numero) &&
-                    posicion >= 0 &&
-                    posicion < canales.length
-                ){
-
-                    cargarCanal(
-                        posicion
-                    );
-
-                }else{
-
-                    mostrarToast(
-                        "Canal no disponible"
-                    );
-
-                }
-
-
-                inputBuffer =
-                    "";
-
-
-                displayNum.style.display =
-                    "none";
-
+                cambiarPorNumero();
 
             },
             1200
@@ -1286,280 +1021,74 @@ function procesarNumero(
 }
 
 
-/* =========================================================
-   MINI PREVIEW DEL 0
-========================================================= */
+/* =====================================================
+   CAMBIAR POR NUMERO
+===================================================== */
 
-function iniciarPreview(){
+function cambiarPorNumero(){
 
-    const canal =
-        canales[index];
-
-
-    if(!canal)
+    if(
+        inputBuffer === ""
+    )
         return;
 
 
-    zeroPreview.classList.add(
-        "active"
-    );
-
-
-    zeroProgress.style.display =
-        "block";
-
-
-    document.getElementById(
-        "previewNumber"
-    ).innerText =
-        "CANAL " +
-        String(index + 1)
-        .padStart(2,"0");
-
-
-    document.getElementById(
-        "previewChannel"
-    ).innerText =
-        canal.nombre;
+    const numero =
+        parseInt(
+            inputBuffer,
+            10
+        );
 
 
     /*
-    ================================================
-    REPRODUCIR PREVIEW
-    ================================================
+       IMPORTANTE:
+
+       El canal 0 corresponde
+       al índice 0.
+
+       Canal 10 corresponde
+       al índice 10.
     */
 
-    if(previewHls){
+    if(
+        !isNaN(numero) &&
+        numero >= 0 &&
+        numero < canales.length
+    ){
 
-        previewHls.destroy();
+        cargarCanal(
+            numero
+        );
 
-        previewHls =
-            null;
+    }
+
+    else{
+
+        mostrarToast(
+            "Canal " +
+            numero +
+            " no disponible"
+        );
 
     }
 
 
-    previewVideo.src =
+    inputBuffer =
         "";
 
 
-    if(
-        Hls.isSupported()
-    ){
-
-        previewHls =
-            new Hls({
-                enableWorker:true
-            });
-
-
-        previewHls.loadSource(
-            canal.url
-        );
-
-
-        previewHls.attachMedia(
-            previewVideo
-        );
-
-
-        previewHls.on(
-            Hls.Events.MANIFEST_PARSED,
-            () => {
-
-                previewVideo.play()
-                    .catch(() => {});
-
-            }
-        );
-
-    }else{
-
-        previewVideo.src =
-            canal.url;
-
-        previewVideo.play()
-            .catch(() => {});
-
-    }
-
-
-    /*
-    ================================================
-    BARRA 3 SEGUNDOS
-    ================================================
-    */
-
-    const inicio =
-        Date.now();
-
-
-    function animar(){
-
-        if(!ceroPresionado)
-            return;
-
-
-        const transcurrido =
-            Date.now() -
-            inicio;
-
-
-        const porcentaje =
-            Math.min(
-                transcurrido / 3000 * 100,
-                100
-            );
-
-
-        zeroProgressBar.style.width =
-            porcentaje + "%";
-
-
-        if(
-            porcentaje < 100
-        ){
-
-            ceroAnimation =
-                requestAnimationFrame(
-                    animar
-                );
-
-        }
-
-    }
-
-
-    animar();
-
-}
-
-
-/* =========================================================
-   CERRAR PREVIEW
-========================================================= */
-
-function cerrarPreview(){
-
-    zeroPreview.classList.remove(
-        "active"
-    );
-
-
-    zeroProgress.style.display =
+    displayNum.style.display =
         "none";
 
-
-    zeroProgressBar.style.width =
-        "0%";
-
-
-    if(previewHls){
-
-        previewHls.destroy();
-
-        previewHls =
-            null;
-
-    }
-
-
-    previewVideo.pause();
-
-    previewVideo.removeAttribute(
-        "src"
-    );
-
-    previewVideo.load();
-
-
-    if(ceroAnimation){
-
-        cancelAnimationFrame(
-            ceroAnimation
-        );
-
-        ceroAnimation =
-            null;
-
-    }
-
 }
 
 
-/* =========================================================
-   PRESIONAR 0
-========================================================= */
+/* =====================================================
+   TECLADO
 
-function presionarCero(){
-
-    if(ceroPresionado)
-        return;
-
-
-    ceroPresionado =
-        true;
-
-
-    iniciarPreview();
-
-
-    ceroTimer =
-        setTimeout(
-            () => {
-
-                if(
-                    ceroPresionado
-                ){
-
-                    /*
-                    Al llegar a 3 segundos
-                    simplemente mostramos
-                    mensaje de lista.
-
-                    No abrimos una guía enorme.
-                    */
-
-                    mostrarToast(
-                        "📺 Lista de canales disponible"
-                    );
-
-                }
-
-            },
-            3000
-        );
-
-}
-
-
-/* =========================================================
-   SOLTAR 0
-========================================================= */
-
-function soltarCero(){
-
-    ceroPresionado =
-        false;
-
-
-    clearTimeout(
-        ceroTimer
-    );
-
-
-    ceroTimer =
-        null;
-
-
-    cerrarPreview();
-
-}
-
-
-/* =========================================================
-   CONTROL REMOTO
-========================================================= */
+   UN SOLO LISTENER.
+   Esto evita que 1 termine convirtiéndose en 11.
+===================================================== */
 
 function manejarTeclado(e){
 
@@ -1576,60 +1105,56 @@ function manejarTeclado(e){
         e.keyCode;
 
 
-    /* =====================================================
-       0
-    ===================================================== */
+    /* ================================================
+       TODOS LOS NÚMEROS
+       
+       INCLUYE 0
+       ================================================ */
 
     if(
-        e.key === "0"
-    ){
-
-        presionarCero();
-
-        e.preventDefault();
-
-        return;
-
-    }
-
-
-    /* =====================================================
-       NUMEROS 1-9
-    ===================================================== */
-
-    if(
-        /^[1-9]$/.test(
+        /^[0-9]$/.test(
             e.key
         )
     ){
 
-        procesarNumero(
+        marcarNumero(
             e.key
         );
 
         e.preventDefault();
 
+        e.stopPropagation();
+
         return;
 
     }
 
 
-    /* =====================================================
-       ARRIBA
-       
-       Se soportan varias formas que pueden enviar
-       navegadores de Smart TV.
-    ===================================================== */
+    /* ================================================
+       CANAL ARRIBA
+       ================================================ */
 
     if(
+
         key === "arrowup" ||
         key === "up" ||
         key === "channelup" ||
         key === "ch+" ||
         key === "pageup" ||
+
         code === 38 ||
         code === 33
+
     ){
+
+        /*
+           Siguiente canal
+        */
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
 
         cargarCanal(
             index + 1
@@ -1637,24 +1162,38 @@ function manejarTeclado(e){
 
         e.preventDefault();
 
+        e.stopPropagation();
+
         return;
 
     }
 
 
-    /* =====================================================
-       ABAJO
-    ===================================================== */
+    /* ================================================
+       CANAL ABAJO
+       ================================================ */
 
     if(
+
         key === "arrowdown" ||
         key === "down" ||
         key === "channeldown" ||
         key === "ch-" ||
         key === "pagedown" ||
+
         code === 40 ||
         code === 34
+
     ){
+
+        /*
+           Canal anterior
+        */
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
 
         cargarCanal(
             index - 1
@@ -1662,58 +1201,37 @@ function manejarTeclado(e){
 
         e.preventDefault();
 
+        e.stopPropagation();
+
         return;
 
     }
 
 
-    /* =====================================================
-       ENTER
-    ===================================================== */
+    /* ================================================
+       ENTER / OK
+       ================================================ */
 
     if(
+
         key === "enter" ||
         key === "select" ||
         key === "ok" ||
+
         code === 13 ||
         code === 23
+
     ){
 
-        clearTimeout(
-            inputTimer
-        );
-
-
         if(
-            inputBuffer
+            inputBuffer !== ""
         ){
 
-            const numero =
-                parseInt(
-                    inputBuffer,
-                    10
-                );
+            cambiarPorNumero();
 
+        }
 
-            if(
-                numero >= 1 &&
-                numero <= canales.length
-            ){
-
-                cargarCanal(
-                    numero - 1
-                );
-
-            }
-
-
-            inputBuffer =
-                "";
-
-            displayNum.style.display =
-                "none";
-
-        }else{
+        else{
 
             mostrarBarra(
                 "● En vivo"
@@ -1724,29 +1242,39 @@ function manejarTeclado(e){
 
         e.preventDefault();
 
+        e.stopPropagation();
+
         return;
 
     }
 
 
-    /* =====================================================
+    /* ================================================
        ESC / BACK
-    ===================================================== */
+       ================================================ */
 
     if(
+
         key === "escape" ||
         key === "back" ||
         key === "browserback" ||
+
         code === 27
+
     ){
 
-        inputBuffer =
-            "";
+        inputBuffer = "";
 
         displayNum.style.display =
             "none";
 
+        clearTimeout(
+            inputTimer
+        );
+
         e.preventDefault();
+
+        e.stopPropagation();
 
         return;
 
@@ -1755,9 +1283,9 @@ function manejarTeclado(e){
 }
 
 
-/* =========================================================
-   ÚNICO LISTENER DE TECLADO
-========================================================= */
+/* =====================================================
+   ÚNICO EVENTO DE TECLADO
+===================================================== */
 
 document.addEventListener(
     "keydown",
@@ -1766,32 +1294,9 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   KEYUP
-========================================================= */
-
-document.addEventListener(
-    "keyup",
-    function(e){
-
-        if(
-            e.key === "0"
-        ){
-
-            soltarCero();
-
-            e.preventDefault();
-
-        }
-
-    },
-    true
-);
-
-
-/* =========================================================
-   CLICK PARA INICIAR
-========================================================= */
+/* =====================================================
+   CLICK / TOUCH
+===================================================== */
 
 document.addEventListener(
     "pointerdown",
@@ -1804,35 +1309,43 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    INICIO
-========================================================= */
+===================================================== */
 
 window.addEventListener(
     "load",
-    function(){
+    async function(){
 
         /*
-        PRIMERO REPRODUCIMOS
-        TU PRIMER CANAL.
+        PRIMERO:
+
+        Cargamos inmediatamente
+        tu primer canal.
+
+        Así nunca dependemos
+        de IPTV-org para arrancar.
         */
 
         cargarCanal(0);
 
 
         /*
-        DESPUÉS CARGAMOS IPTV-ORG.
+        DESPUÉS:
+
+        Descargamos todos los
+        canales dominicanos.
         */
 
-        cargarCanalesIPTV();
+        await cargarCanalesIPTV();
 
     }
 );
 
 
-/* =========================================================
-   CLICK EN OVERLAY
-========================================================= */
+/* =====================================================
+   CLICK EN INICIO
+===================================================== */
 
 overlay.addEventListener(
     "click",
@@ -1843,9 +1356,7 @@ overlay.addEventListener(
     }
 );
 
-
 </script>
 
 </body>
-
 </html>
