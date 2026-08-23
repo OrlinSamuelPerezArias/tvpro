@@ -5,51 +5,35 @@
 
 <meta charset="UTF-8">
 
+<title>TV PRO</title>
+
 <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>TV PRO</title>
-
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 
-/* =========================================================
-   RESET
-========================================================= */
-
 *{
     box-sizing:border-box;
-    margin:0;
-    padding:0;
     user-select:none;
 }
 
 html,
 body{
-
     width:100%;
     height:100%;
-
+    margin:0;
     overflow:hidden;
-
     background:#000;
-
-    color:#fff;
-
-    font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
+    font-family:"Segoe UI",Arial,sans-serif;
+    color:white;
 }
 
 body{
-
     cursor:none;
-
 }
 
 
@@ -61,12 +45,13 @@ body{
 
     position:fixed;
 
-    inset:0;
+    left:0;
+    top:0;
 
     width:100vw;
     height:100vh;
 
-    object-fit:cover;
+    object-fit:contain;
 
     background:#000;
 
@@ -74,7 +59,7 @@ body{
 
 
 /* =========================================================
-   OVERLAY INICIAL
+   PANTALLA INICIAL
 ========================================================= */
 
 #startOverlay{
@@ -83,57 +68,46 @@ body{
 
     inset:0;
 
-    z-index:1000;
+    z-index:999;
 
     display:flex;
 
     align-items:center;
-
     justify-content:center;
 
     background:
-
         radial-gradient(
             circle at center,
-            rgba(0,195,255,.15),
-            transparent 35%
-        ),
-
-        rgba(0,0,0,.93);
+            rgba(0,195,255,.12),
+            rgba(0,0,0,.96) 60%
+        );
 
 }
 
 .startCard{
 
-    width:360px;
+    width:min(500px,90vw);
 
-    max-width:85vw;
-
-    padding:42px 35px;
+    padding:45px;
 
     text-align:center;
 
-    border-radius:28px;
+    border:1px solid rgba(0,195,255,.25);
 
-    border:
-
-        1px solid
-        rgba(255,255,255,.12);
+    border-radius:24px;
 
     background:
-
-        rgba(10,15,25,.82);
-
-    backdrop-filter:
-        blur(25px);
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.08),
+            rgba(255,255,255,.025)
+        );
 
     box-shadow:
+        0 30px 100px rgba(0,0,0,.8),
+        inset 0 1px rgba(255,255,255,.08);
 
-        0 30px 100px
-        rgba(0,0,0,.7),
-
-        0 0 60px
-        rgba(0,195,255,.08);
+    backdrop-filter:blur(20px);
 
 }
 
@@ -141,637 +115,103 @@ body{
 
     font-size:65px;
 
-    margin-bottom:20px;
+    margin-bottom:15px;
 
 }
 
 .startTitle{
 
-    font-size:32px;
+    font-size:40px;
 
     font-weight:800;
 
-    letter-spacing:2px;
+    letter-spacing:4px;
 
 }
 
 .startSubtitle{
 
-    margin-top:10px;
+    margin-top:8px;
 
-    color:
-        rgba(255,255,255,.5);
+    color:#8ca3b5;
 
-    font-size:14px;
+    font-size:16px;
 
 }
 
 .startHint{
 
-    margin-top:28px;
+    margin-top:35px;
 
-    padding:12px;
+    padding:18px;
 
-    border-radius:12px;
+    border-radius:14px;
 
-    background:
-        rgba(255,255,255,.05);
+    background:rgba(0,195,255,.08);
 
-    font-size:12px;
+    border:1px solid rgba(0,195,255,.18);
 
-    color:
-        rgba(255,255,255,.65);
+    color:#b9dff0;
 
 }
 
-
-/* =========================================================
-   GUÍA DE TV
-========================================================= */
-
-#guide{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:500;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:45px;
-
-    background:
-
-        linear-gradient(
-            to bottom,
-            rgba(0,0,0,.62),
-            rgba(0,0,0,.78)
-        );
-
-    backdrop-filter:
-        blur(10px);
-
-    opacity:0;
-
-    visibility:hidden;
-
-    pointer-events:none;
-
-    transition:
-        opacity .25s ease,
-        visibility .25s ease;
-
-}
-
-#guide.open{
-
-    opacity:1;
-
-    visibility:visible;
-
-    pointer-events:auto;
-
-}
-
-
-/* =========================================================
-   PANEL PRINCIPAL
-========================================================= */
-
-.guidePanel{
-
-    width:min(
-        1050px,
-        92vw
-    );
-
-    height:min(
-        720px,
-        88vh
-    );
-
-    display:flex;
-
-    flex-direction:column;
-
-    overflow:hidden;
-
-    border-radius:28px;
-
-    background:
-
-        linear-gradient(
-            145deg,
-            rgba(9,16,27,.97),
-            rgba(5,10,17,.96)
-        );
-
-    border:
-
-        1px solid
-        rgba(255,255,255,.12);
-
-    box-shadow:
-
-        0 40px 120px
-        rgba(0,0,0,.75),
-
-        0 0 80px
-        rgba(0,195,255,.08);
-
-}
-
-
-/* =========================================================
-   HEADER GUÍA
-========================================================= */
-
-.guideHeader{
-
-    flex-shrink:0;
-
-    padding:24px 30px 20px;
-
-    border-bottom:
-        1px solid
-        rgba(255,255,255,.07);
-
-}
-
-.guideTop{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-}
-
-.guideBrand{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:13px;
-
-}
-
-.brandIcon{
-
-    width:44px;
-
-    height:44px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:13px;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            #00c3ff,
-            #0066ff
-        );
-
-    font-size:23px;
-
-    box-shadow:
-
-        0 8px 30px
-        rgba(0,195,255,.25);
-
-}
-
-.brandName{
-
-    font-size:25px;
-
-    font-weight:800;
-
-    letter-spacing:1px;
-
-}
-
-.brandLive{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:6px;
-
-    margin-top:3px;
-
-    font-size:10px;
-
-    color:
-        rgba(255,255,255,.45);
-
-}
-
-.liveDot{
-
-    width:6px;
-
-    height:6px;
-
-    border-radius:50%;
-
-    background:#ff304f;
-
-    box-shadow:
-        0 0 10px #ff304f;
-
-}
-
-
-/* =========================================================
-   CATEGORÍAS
-========================================================= */
-
-.categories{
-
-    display:flex;
-
-    gap:9px;
-
-    margin-top:22px;
-
-    overflow:hidden;
-
-}
-
-.category{
-
-    flex-shrink:0;
-
-    padding:
-        9px
-        15px;
-
-    border-radius:20px;
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
-    background:
-        rgba(255,255,255,.04);
-
-    color:
-        rgba(255,255,255,.55);
-
-    font-size:12px;
-
-    transition:.2s;
-
-}
-
-.category.active{
-
-    color:#fff;
-
-    background:
-        rgba(0,195,255,.15);
-
-    border-color:
-        rgba(0,195,255,.45);
-
-}
-
-
-/* =========================================================
-   LISTA
-========================================================= */
-
-.guideList{
-
-    flex:1;
-
-    overflow-y:auto;
-
-    padding:18px 22px;
-
-    scroll-behavior:smooth;
-
-}
-
-.guideList::-webkit-scrollbar{
-
-    width:5px;
-
-}
-
-.guideList::-webkit-scrollbar-thumb{
-
-    background:
-        rgba(0,195,255,.5);
-
-    border-radius:10px;
-
-}
-
-
-/* =========================================================
-   CANAL
-========================================================= */
-
-.guideChannel{
-
-    min-height:72px;
-
-    display:grid;
-
-    grid-template-columns:
-        65px
-        70px
-        1fr
-        150px;
-
-    align-items:center;
-
-    gap:15px;
-
-    padding:
-        9px
-        15px;
-
-    margin-bottom:7px;
-
-    border-radius:17px;
-
-    border:
-        1px solid
-        transparent;
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        border .18s ease;
-
-}
-
-
-/* FOCUS */
-
-.guideChannel.focused{
-
-    transform:
-        scale(1.015);
-
-    background:
-
-        linear-gradient(
-            90deg,
-            rgba(0,195,255,.2),
-            rgba(0,195,255,.04)
-        );
-
-    border-color:
-        rgba(0,195,255,.55);
-
-    box-shadow:
-
-        0 8px 30px
-        rgba(0,0,0,.25),
-
-        inset 3px 0 0
-        #00c3ff;
-
-}
-
-
-/* NUMERO */
-
-.channelNumber{
-
-    font-size:20px;
-
-    font-weight:800;
-
-    color:
-        rgba(255,255,255,.38);
-
-    text-align:center;
-
-}
-
-.focused .channelNumber{
+.startHint strong{
 
     color:#00c3ff;
 
-}
-
-
-/* LOGO */
-
-.channelLogo{
-
-    width:50px;
-
-    height:50px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:
-        rgba(255,255,255,.06);
-
-    overflow:hidden;
-
-}
-
-.channelLogo img{
-
-    width:100%;
-
-    height:100%;
-
-    padding:6px;
-
-    object-fit:contain;
-
-}
-
-
-/* NOMBRE */
-
-.channelText{
-
-    min-width:0;
-
-}
-
-.channelName{
-
-    font-size:16px;
-
-    font-weight:650;
-
-    white-space:nowrap;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
-}
-
-.channelMeta{
-
-    margin-top:4px;
-
-    font-size:11px;
-
-    color:
-        rgba(255,255,255,.38);
-
-}
-
-
-/* ESTADO */
-
-.channelStatus{
-
-    justify-self:end;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:7px;
-
-    padding:
-        7px
-        10px;
-
-    border-radius:20px;
-
-    background:
-        rgba(255,255,255,.04);
-
-    color:
-        rgba(255,255,255,.42);
-
-    font-size:10px;
-
-}
-
-.statusDot{
-
-    width:6px;
-
-    height:6px;
-
-    border-radius:50%;
-
-    background:#30d158;
-
-    box-shadow:
-        0 0 9px
-        rgba(48,209,88,.7);
+    font-size:22px;
 
 }
 
 
 /* =========================================================
-   FOOTER GUÍA
+   NUMERO DE CANAL
 ========================================================= */
 
-.guideFooter{
+#inputDisplay{
 
-    flex-shrink:0;
+    position:fixed;
 
-    display:flex;
+    top:8%;
 
-    align-items:center;
+    right:6%;
 
-    justify-content:space-between;
+    z-index:500;
 
-    padding:
-        15px 25px;
+    display:none;
 
-    border-top:
-        1px solid
-        rgba(255,255,255,.07);
+    min-width:120px;
 
-    background:
-        rgba(0,0,0,.18);
+    padding:10px 20px;
 
-}
+    text-align:center;
 
-.controlHints{
+    font-size:72px;
 
-    display:flex;
+    line-height:1;
 
-    gap:20px;
+    font-weight:900;
 
-    color:
-        rgba(255,255,255,.42);
-
-    font-size:11px;
-
-}
-
-.key{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    min-width:25px;
-
-    height:22px;
-
-    margin-right:5px;
-
-    padding:0 6px;
-
-    border-radius:6px;
-
-    background:
-        rgba(255,255,255,.1);
-
-    border:
-        1px solid
-        rgba(255,255,255,.1);
+    letter-spacing:4px;
 
     color:#fff;
 
-    font-size:10px;
+    border-radius:16px;
 
-}
+    background:rgba(0,0,0,.55);
 
-.guideCount{
+    border:1px solid rgba(255,255,255,.15);
 
-    color:
-        rgba(255,255,255,.35);
+    text-shadow:
+        0 0 25px rgba(0,195,255,.7);
 
-    font-size:11px;
+    backdrop-filter:blur(12px);
 
 }
 
 
 /* =========================================================
-   INFO DEL CANAL
+   BARRA INFORMACIÓN
 ========================================================= */
 
 #infoBar{
@@ -779,29 +219,26 @@ body{
     position:fixed;
 
     left:0;
-
     bottom:0;
+
+    z-index:300;
 
     width:100%;
 
-    z-index:200;
-
-    padding:
-        25px 45px 35px;
+    padding:35px 50px 45px;
 
     background:
-
         linear-gradient(
             to top,
-            rgba(0,0,0,.96),
-            rgba(0,0,0,.72),
+            rgba(0,0,0,.95),
+            rgba(0,0,0,.55),
             transparent
         );
 
-    transform:
-        translateY(100%);
+    transform:translateY(100%);
 
-    transition:.4s ease;
+    transition:
+        transform .35s ease;
 
 }
 
@@ -811,17 +248,17 @@ body{
 
     align-items:center;
 
-    gap:20px;
+    gap:18px;
 
 }
 
-.infoNumber{
+#canalNum{
 
-    min-width:70px;
+    min-width:65px;
 
-    font-size:52px;
+    font-size:48px;
 
-    font-weight:850;
+    font-weight:900;
 
     color:#00c3ff;
 
@@ -829,18 +266,16 @@ body{
 
 #canalLogo{
 
-    width:64px;
-
-    height:64px;
+    width:62px;
+    height:62px;
 
     object-fit:contain;
 
-    padding:7px;
+    padding:6px;
 
-    border-radius:13px;
+    border-radius:12px;
 
-    background:
-        rgba(255,255,255,.07);
+    background:rgba(255,255,255,.08);
 
 }
 
@@ -856,73 +291,314 @@ body{
 
     margin-top:4px;
 
-    color:
-        rgba(255,255,255,.5);
+    color:#9daeb9;
 
-    font-size:12px;
-
-}
-
-
-/* =========================================================
-   NUMERO GRANDE
-========================================================= */
-
-#inputDisplay{
-
-    position:fixed;
-
-    top:8%;
-
-    right:6%;
-
-    z-index:300;
-
-    display:none;
-
-    min-width:105px;
-
-    padding:
-        8px 17px;
-
-    text-align:center;
-
-    border-radius:17px;
-
-    background:
-        rgba(5,10,18,.75);
-
-    border:
-        1px solid
-        rgba(0,195,255,.35);
-
-    backdrop-filter:
-        blur(15px);
-
-    box-shadow:
-        0 15px 50px
-        rgba(0,0,0,.4);
-
-    font-size:54px;
-
-    font-weight:800;
-
-    color:#fff;
+    font-size:14px;
 
 }
 
 
 /* =========================================================
-   LOADING
+   GUIA DE CANALES
 ========================================================= */
 
-#loading{
+#guide{
 
     position:fixed;
 
     inset:0;
 
-    z-index:700;
+    z-index:800;
+
+    display:none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(3,9,14,.98),
+            rgba(3,9,14,.91)
+        );
+
+    backdrop-filter:blur(18px);
+
+}
+
+#guide.open{
+
+    display:flex;
+
+}
+
+
+/* =========================================================
+   PANEL
+========================================================= */
+
+.guidePanel{
+
+    width:min(850px,90vw);
+
+    height:100%;
+
+    padding:35px;
+
+    overflow:hidden;
+
+    border-right:1px solid rgba(0,195,255,.15);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.045),
+            rgba(255,255,255,.015)
+        );
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.guideHeader{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:25px;
+
+}
+
+.guideTitle{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.guideTitleIcon{
+
+    width:48px;
+    height:48px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border-radius:14px;
+
+    background:rgba(0,195,255,.1);
+
+    font-size:25px;
+
+}
+
+.guideTitle h1{
+
+    margin:0;
+
+    font-size:28px;
+
+}
+
+.guideTitle p{
+
+    margin:3px 0 0;
+
+    color:#71818c;
+
+    font-size:13px;
+
+}
+
+.guideCount{
+
+    padding:8px 14px;
+
+    border-radius:20px;
+
+    color:#00c3ff;
+
+    background:rgba(0,195,255,.08);
+
+    font-size:13px;
+
+}
+
+
+/* =========================================================
+   LISTA
+========================================================= */
+
+#listItems{
+
+    height:calc(100vh - 170px);
+
+    overflow-y:auto;
+
+    padding-right:8px;
+
+}
+
+#listItems::-webkit-scrollbar{
+
+    width:5px;
+
+}
+
+#listItems::-webkit-scrollbar-thumb{
+
+    background:#00c3ff;
+
+    border-radius:20px;
+
+}
+
+
+/* =========================================================
+   ITEM
+========================================================= */
+
+.channel-item{
+
+    position:relative;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    min-height:72px;
+
+    margin-bottom:7px;
+
+    padding:10px 15px;
+
+    border-radius:14px;
+
+    border:1px solid transparent;
+
+    background:rgba(255,255,255,.035);
+
+    transition:
+
+        transform .15s ease,
+
+        background .15s ease,
+
+        border .15s ease;
+
+}
+
+.channel-item.focused{
+
+    transform:translateX(8px);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0,195,255,.20),
+            rgba(0,195,255,.06)
+        );
+
+    border-color:rgba(0,195,255,.55);
+
+    box-shadow:
+        0 0 25px rgba(0,195,255,.08);
+
+}
+
+.channel-item.playing{
+
+    border-left:4px solid #00c3ff;
+
+}
+
+.channel-number{
+
+    width:42px;
+
+    text-align:center;
+
+    color:#657783;
+
+    font-weight:800;
+
+}
+
+.channel-item.focused .channel-number{
+
+    color:#00c3ff;
+
+}
+
+.channel-item img{
+
+    width:42px;
+    height:42px;
+
+    object-fit:contain;
+
+    border-radius:8px;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+.channel-info{
+
+    flex:1;
+
+    min-width:0;
+
+}
+
+.channel-name{
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+
+    font-weight:600;
+
+    font-size:16px;
+
+}
+
+.channel-status{
+
+    margin-top:3px;
+
+    color:#657783;
+
+    font-size:11px;
+
+}
+
+.channel-item.focused .channel-status{
+
+    color:#00c3ff;
+
+}
+
+
+/* =========================================================
+   PANEL DERECHO
+========================================================= */
+
+.guidePreview{
+
+    flex:1;
 
     display:flex;
 
@@ -930,50 +606,99 @@ body{
 
     justify-content:center;
 
-    background:
-        rgba(0,0,0,.35);
-
-    backdrop-filter:
-        blur(3px);
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:.2s;
+    padding:30px;
 
 }
 
-#loading.show{
+.previewBox{
 
-    opacity:1;
+    width:100%;
 
-}
+    max-width:350px;
 
-.loader{
+    text-align:center;
 
-    width:48px;
+    padding:35px;
 
-    height:48px;
+    border-radius:24px;
 
-    border-radius:50%;
+    background:rgba(255,255,255,.035);
 
-    border:
-        3px solid
-        rgba(255,255,255,.15);
-
-    border-top-color:#00c3ff;
-
-    animation:
-        spin .8s linear infinite;
+    border:1px solid rgba(255,255,255,.07);
 
 }
 
-@keyframes spin{
+.previewLogo{
 
-    to{
-        transform:rotate(360deg);
-    }
+    width:100px;
+    height:100px;
+
+    object-fit:contain;
+
+    margin-bottom:20px;
+
+}
+
+.previewNumber{
+
+    color:#00c3ff;
+
+    font-size:15px;
+
+    font-weight:700;
+
+}
+
+.previewName{
+
+    margin-top:7px;
+
+    font-size:25px;
+
+    font-weight:800;
+
+}
+
+.previewLive{
+
+    display:inline-flex;
+
+    margin-top:15px;
+
+    padding:7px 12px;
+
+    border-radius:20px;
+
+    background:rgba(0,255,140,.08);
+
+    color:#58e69b;
+
+    font-size:12px;
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.guideFooter{
+
+    position:absolute;
+
+    left:35px;
+
+    bottom:20px;
+
+    color:#61717c;
+
+    font-size:12px;
+
+}
+
+.guideFooter b{
+
+    color:#b8c7cf;
 
 }
 
@@ -988,42 +713,37 @@ body{
 
     left:50%;
 
-    bottom:35px;
+    bottom:40px;
 
-    z-index:900;
-
-    padding:
-        11px 20px;
-
-    border-radius:30px;
-
-    background:
-        rgba(5,10,18,.9);
-
-    border:
-        1px solid
-        rgba(255,255,255,.1);
-
-    backdrop-filter:
-        blur(15px);
+    z-index:1000;
 
     transform:
-        translate(-50%,80px);
+        translate(-50%,20px);
 
     opacity:0;
 
+    padding:12px 20px;
+
+    border-radius:30px;
+
+    background:rgba(10,15,20,.9);
+
+    border:1px solid rgba(0,195,255,.3);
+
+    color:#fff;
+
     transition:.3s;
 
-    font-size:12px;
+    pointer-events:none;
 
 }
 
 #toast.show{
 
+    opacity:1;
+
     transform:
         translate(-50%,0);
-
-    opacity:1;
 
 }
 
@@ -1032,11 +752,11 @@ body{
    RESPONSIVE
 ========================================================= */
 
-@media(max-width:700px){
+@media(max-width:800px){
 
-    #guide{
+    .guidePreview{
 
-        padding:15px;
+        display:none;
 
     }
 
@@ -1044,77 +764,11 @@ body{
 
         width:100%;
 
-        height:92vh;
-
-        border-radius:22px;
-
     }
 
-    .guideHeader{
-
-        padding:18px;
-
-    }
-
-    .guideList{
-
-        padding:12px;
-
-    }
-
-    .guideChannel{
-
-        grid-template-columns:
-            45px
-            55px
-            1fr;
-
-    }
-
-    .channelStatus{
+    .guideFooter{
 
         display:none;
-
-    }
-
-    .controlHints{
-
-        gap:8px;
-
-    }
-
-    .controlHints span:nth-child(3){
-
-        display:none;
-
-    }
-
-    #infoBar{
-
-        padding:
-            20px;
-
-    }
-
-    .infoNumber{
-
-        min-width:50px;
-
-        font-size:40px;
-
-    }
-
-    #canalLogo{
-
-        width:50px;
-
-        height:50px;
-
-    }
-
-    #canalNombre{
-
-        font-size:19px;
 
     }
 
@@ -1136,12 +790,12 @@ body{
     id="player"
     autoplay
     muted
-    playsinline>
-</video>
+    playsinline
+></video>
 
 
 <!-- =====================================================
-     PANTALLA INICIAL
+     INICIO
 ===================================================== -->
 
 <div id="startOverlay">
@@ -1161,7 +815,15 @@ body{
         </div>
 
         <div class="startHint">
-            Presiona OK para comenzar
+
+            <strong>
+                Presiona cualquier tecla
+            </strong>
+
+            <br><br>
+
+            para comenzar
+
         </div>
 
     </div>
@@ -1170,140 +832,105 @@ body{
 
 
 <!-- =====================================================
-     NUMERO DIGITADO
+     NUMERO
 ===================================================== -->
 
 <div id="inputDisplay"></div>
 
 
 <!-- =====================================================
-     LOADING
-===================================================== -->
-
-<div id="loading">
-
-    <div class="loader"></div>
-
-</div>
-
-
-<!-- =====================================================
-     GUÍA
+     GUIA
 ===================================================== -->
 
 <div id="guide">
 
     <div class="guidePanel">
 
-
-        <!-- HEADER -->
-
         <div class="guideHeader">
 
+            <div class="guideTitle">
 
-            <div class="guideTop">
-
-
-                <div class="guideBrand">
-
-
-                    <div class="brandIcon">
-                        📺
-                    </div>
-
-
-                    <div>
-
-                        <div class="brandName">
-                            TV PRO
-                        </div>
-
-                        <div class="brandLive">
-
-                            <span class="liveDot"></span>
-
-                            GUÍA DE TV
-
-                        </div>
-
-                    </div>
-
-
+                <div class="guideTitleIcon">
+                    📺
                 </div>
 
+                <div>
 
-                <div class="guideCount"
-                     id="guideCount">
+                    <h1>
+                        Guía de canales
+                    </h1>
 
-                    0 canales
+                    <p>
+                        TV PRO
+                    </p>
 
                 </div>
-
 
             </div>
-
-
-            <!-- CATEGORÍAS -->
 
             <div
-                class="categories"
-                id="categories">
+                id="guideCount"
+                class="guideCount"
+            >
+                0 canales
             </div>
 
-
         </div>
 
 
-        <!-- LISTA -->
+        <div id="listItems"></div>
 
-        <div
-            class="guideList"
-            id="guideList">
-        </div>
-
-
-        <!-- FOOTER -->
 
         <div class="guideFooter">
 
+            <b>↑ ↓</b>
+            Navegar
 
-            <div class="controlHints">
+            &nbsp;&nbsp;
 
-                <span>
-                    <b class="key">↑</b>
-                    <b class="key">↓</b>
-                    Navegar
-                </span>
+            <b>OK</b>
+            Seleccionar
 
+            &nbsp;&nbsp;
 
-                <span>
-                    <b class="key">OK</b>
-                    Ver
-                </span>
-
-
-                <span>
-                    <b class="key">←</b>
-                    <b class="key">→</b>
-                    Categorías
-                </span>
-
-
-                <span>
-                    <b class="key">EXIT</b>
-                    Cerrar
-                </span>
-
-            </div>
-
-
-            <div>
-                ● EN VIVO
-            </div>
-
+            <b>0</b>
+            Cerrar
 
         </div>
 
+    </div>
+
+
+    <div class="guidePreview">
+
+        <div class="previewBox">
+
+            <img
+                id="previewLogo"
+                class="previewLogo"
+                src=""
+                alt=""
+            >
+
+            <div
+                id="previewNumber"
+                class="previewNumber"
+            >
+                CANAL
+            </div>
+
+            <div
+                id="previewName"
+                class="previewName"
+            >
+                Selecciona un canal
+            </div>
+
+            <div class="previewLive">
+                ● EN VIVO
+            </div>
+
+        </div>
 
     </div>
 
@@ -1316,18 +943,9 @@ body{
 
 <div id="infoBar">
 
-
     <div id="infoContent">
 
-
-        <div
-            class="infoNumber"
-            id="canalNum">
-
-            1
-
-        </div>
-
+        <div id="canalNum"></div>
 
         <img
             id="canalLogo"
@@ -1335,12 +953,9 @@ body{
             alt=""
         >
 
-
         <div>
 
-            <div id="canalNombre">
-                TV PRO
-            </div>
+            <div id="canalNombre"></div>
 
             <div id="estado">
                 En vivo
@@ -1348,9 +963,7 @@ body{
 
         </div>
 
-
     </div>
-
 
 </div>
 
@@ -1366,168 +979,69 @@ body{
 
 
 /* =========================================================
-   TUS CANALES ORIGINALES
-========================================================= */
-
-const canalesDominicanosPropios = [
-
-    {
-        nombre:"La Voz de María",
-
-        url:
-        "https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8",
-
-        logo:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&s",
-
-        pais:"DO",
-
-        categoria:"Religioso",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"Jarabacoa TV",
-
-        url:
-        "https://streaming.jarabacoatv.com/Jarabacoa_tv/playlist.m3u8",
-
-        logo:
-        "https://cablevisionjarabacoa.com/wp-content/uploads/2023/05/JCA_Artboard-1-copy-3.png",
-
-        pais:"DO",
-
-        categoria:"General",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"La Voz de Jesús",
-
-        url:
-        "https://live20.bozztv.com/giatvplayout7/giatv-208429/playlist.m3u8",
-
-        logo:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjKQpOjimwanvyUmwkYeDrdACXWNABgZHghQ&s",
-
-        pais:"DO",
-
-        categoria:"Religioso",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"Telever",
-
-        url:
-        "https://soportedvb.click:3413/live/televerlive.m3u8",
-
-        logo:
-        "https://telever.com.do/wp-content/uploads/2025/07/LOGO-FINAL.svg",
-
-        pais:"DO",
-
-        categoria:"General",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"Teleuniverso",
-
-        url:
-        "https://videoserver.tmcreativos.com:19360/kptjeckkaa/kptjeckkaa.m3u8",
-
-        logo:
-        "https://stscdn.teleuniversotv.com/wp-content/uploads/2020/11/Teleuniverso.webp",
-
-        pais:"DO",
-
-        categoria:"General",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"Canal 4 RD",
-
-        url:
-        "https://sh1.domint.net:19360/rtvd/rtvd/playlist.m3u8",
-
-        logo:
-        "https://certvdominicana.com/wp-content/uploads/2021/04/Logo-Canal-4RD.png",
-
-        pais:"DO",
-
-        categoria:"Cultura",
-
-        propio:true
-    }
-
-];
-
-
-/* =========================================================
-   OTROS CANALES QUE TENÍAS
-========================================================= */
-
-const otrosCanalesPropios = [
-
-    {
-        nombre:"6 Wise TV",
-
-        url:
-        "https://live.enhdtv.com:8081/8150/index.m3u8",
-
-        logo:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9JTxrz_0LCVISHKDdzNmZfi9tVwQs174J4Q&s",
-
-        pais:"US",
-
-        categoria:"General",
-
-        propio:true
-    },
-
-
-    {
-        nombre:"Univision Noticias",
-
-        url:
-        "https://amg26269-dogtv-amg26269c2-stirr-us-8504.playouts.now.amagi.tv/playlist.m3u8",
-
-        logo:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkoMy8wfofxfOljm8fKQ9mxO2nIkdZ10U37g&s",
-
-        pais:"US",
-
-        categoria:"Noticias",
-
-        propio:true
-    }
-
-];
-
-
-/* =========================================================
-   LISTA PRINCIPAL
+   CANALES PRINCIPALES
+   ESTOS SIEMPRE VAN PRIMERO
 ========================================================= */
 
 let canales = [
 
-    ...canalesDominicanosPropios,
+    {
+        nombre:"La Voz de María",
+        url:"https://live.lavozdemaria.com:3436/live/lavozdemarialive.m3u8",
+        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&s"
+    },
 
-    ...otrosCanalesPropios
+    {
+        nombre:"Jarabacoa TV",
+        url:"https://streaming.jarabacoatv.com/Jarabacoa_tv/playlist.m3u8",
+        logo:"https://cablevisionjarabacoa.com/wp-content/uploads/2023/05/JCA_Artboard-1-copy-3.png"
+    },
+
+    {
+        nombre:"La Voz de Jesús",
+        url:"https://live20.bozztv.com/giatvplayout7/giatv-208429/playlist.m3u8",
+        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjKQpOjimwanvyUmwkYeDrdACXWNABgZHghQ&s"
+    },
+
+    {
+        nombre:"Telever",
+        url:"https://soportedvb.click:3413/live/televerlive.m3u8",
+        logo:"https://telever.com.do/wp-content/uploads/2025/07/LOGO-FINAL.svg"
+    },
+
+    {
+        nombre:"Teleuniverso",
+        url:"https://videoserver.tmcreativos.com:19360/kptjeckkaa/kptjeckkaa.m3u8",
+        logo:"https://stscdn.teleuniversotv.com/wp-content/uploads/2020/11/Teleuniverso.webp"
+    },
+
+    {
+        nombre:"6 Wise TV",
+        url:"https://live.enhdtv.com:8081/8150/index.m3u8",
+        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9JTxrz_0LCVISHKDdzNmZfi9tVwQs174J4Q&s"
+    },
+
+    {
+        nombre:"Univision Noticias",
+        url:"https://amg26269-dogtv-amg26269c2-stirr-us-8504.playouts.now.amagi.tv/playlist.m3u8",
+        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkoMy8wfofxfOljm8fKQ9mxO2nIkdZ10U37g&s"
+    },
+
+    {
+        nombre:"Canal 4 RD",
+        url:"https://sh1.domint.net:19360/rtvd/rtvd/playlist.m3u8",
+        logo:"https://certvdominicana.com/wp-content/uploads/2021/04/Logo-Canal-4RD.png"
+    }
 
 ];
+
+
+/* =========================================================
+   CONFIGURACIÓN IPTV-ORG
+========================================================= */
+
+const IPTV_DOMINICANA =
+    "https://iptv-org.github.io/iptv/countries/do.m3u";
 
 
 /* =========================================================
@@ -1536,11 +1050,7 @@ let canales = [
 
 let index = 0;
 
-let guideIndex = 0;
-
 let hls = null;
-
-let guideOpen = false;
 
 let sonidoActivado = false;
 
@@ -1548,823 +1058,152 @@ let inputBuffer = "";
 
 let inputTimer = null;
 
-let toastTimer = null;
+let guideOpen = false;
+
+let guideIndex = 0;
+
+let canalesIPTVCargados = false;
+
+let mouseLastY = null;
+
+let mouseTimer = null;
 
 
 /* =========================================================
-   DOM
+   ELEMENTOS
 ========================================================= */
 
 const video =
-    document.getElementById(
-        "player"
-    );
-
+    document.getElementById("player");
 
 const overlay =
-    document.getElementById(
-        "startOverlay"
-    );
+    document.getElementById("startOverlay");
 
+const bar =
+    document.getElementById("infoBar");
+
+const displayNum =
+    document.getElementById("inputDisplay");
 
 const guide =
-    document.getElementById(
-        "guide"
-    );
+    document.getElementById("guide");
 
-
-const guideList =
-    document.getElementById(
-        "guideList"
-    );
-
-
-const categories =
-    document.getElementById(
-        "categories"
-    );
-
-
-const infoBar =
-    document.getElementById(
-        "infoBar"
-    );
-
-
-const inputDisplay =
-    document.getElementById(
-        "inputDisplay"
-    );
-
-
-const loading =
-    document.getElementById(
-        "loading"
-    );
-
+const listItems =
+    document.getElementById("listItems");
 
 const toast =
-    document.getElementById(
-        "toast"
-    );
-
-
-/* =========================================================
-   NOMBRES DE PAÍSES
-========================================================= */
-
-const paises = {
-
-    DO:"🇩🇴 República Dominicana",
-
-    US:"🇺🇸 Estados Unidos",
-
-    ES:"🇪🇸 España",
-
-    MX:"🇲🇽 México",
-
-    CO:"🇨🇴 Colombia",
-
-    AR:"🇦🇷 Argentina",
-
-    CL:"🇨🇱 Chile",
-
-    PE:"🇵🇪 Perú",
-
-    VE:"🇻🇪 Venezuela",
-
-    BR:"🇧🇷 Brasil",
-
-    CA:"🇨🇦 Canadá",
-
-    FR:"🇫🇷 Francia",
-
-    DE:"🇩🇪 Alemania",
-
-    IT:"🇮🇹 Italia",
-
-    GB:"🇬🇧 Reino Unido",
-
-    PR:"🇵🇷 Puerto Rico",
-
-    PA:"🇵🇦 Panamá",
-
-    CR:"🇨🇷 Costa Rica",
-
-    EC:"🇪🇨 Ecuador",
-
-    HN:"🇭🇳 Honduras",
-
-    GT:"🇬🇹 Guatemala",
-
-    SV:"🇸🇻 El Salvador",
-
-    NI:"🇳🇮 Nicaragua",
-
-    BO:"🇧🇴 Bolivia",
-
-    PY:"🇵🇾 Paraguay",
-
-    UY:"🇺🇾 Uruguay"
-
-};
-
-
-/* =========================================================
-   CATEGORÍA ACTUAL
-========================================================= */
-
-let categoriaActual = "TODOS";
-
-
-/* =========================================================
-   OBTENER CATEGORÍAS
-========================================================= */
-
-function obtenerCategorias(){
-
-    const categoriasUnicas = [
-
-        "TODOS",
-
-        ...new Set(
-
-            canales
-
-                .map(
-                    canal =>
-                        canal.categoria
-                )
-
-                .filter(Boolean)
-
-        )
-
-    ];
-
-    return categoriasUnicas;
-
-}
-
-
-/* =========================================================
-   CREAR CATEGORÍAS
-========================================================= */
-
-function generarCategorias(){
-
-    categories.innerHTML = "";
-
-
-    const lista =
-        obtenerCategorias();
-
-
-    lista.forEach(
-        (categoria, i) => {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "category";
-
-
-            if(
-                categoria ===
-                categoriaActual
-            ){
-
-                div.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            div.innerText =
-                categoria === "TODOS"
-
-                ? "📺 Todos"
-
-                : categoria;
-
-
-            div.dataset.category =
-                categoria;
-
-
-            categories.appendChild(
-                div
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   FILTRAR CANALES
-========================================================= */
-
-function obtenerCanalesFiltrados(){
-
-    if(
-        categoriaActual ===
-        "TODOS"
-    ){
-
-        return canales;
-
-    }
-
-
-    return canales.filter(
-        canal =>
-            canal.categoria ===
-            categoriaActual
-    );
-
-}
-
-
-/* =========================================================
-   GENERAR GUÍA
-========================================================= */
-
-function generarGuia(){
-
-    generarCategorias();
-
-
-    const lista =
-        obtenerCanalesFiltrados();
-
-
-    guideList.innerHTML = "";
-
-
-    lista.forEach(
-        (canal, posicion) => {
-
-            const numeroReal =
-                canales.indexOf(
-                    canal
-                );
-
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.className =
-                "guideChannel";
-
-
-            div.dataset.position =
-                posicion;
-
-
-            div.dataset.realIndex =
-                numeroReal;
-
-
-            div.innerHTML = `
-
-                <div class="channelNumber">
-
-                    ${numeroReal + 1}
-
-                </div>
-
-
-                <div class="channelLogo">
-
-                    ${
-                        canal.logo
-
-                        ?
-
-                        `<img
-                            src="${canal.logo}"
-                            onerror="
-                                this.style.display='none'
-                            "
-                        >`
-
-                        :
-
-                        "📺"
-                    }
-
-                </div>
-
-
-                <div class="channelText">
-
-                    <div class="channelName">
-
-                        ${escapeHTML(
-                            canal.nombre
-                        )}
-
-                    </div>
-
-
-                    <div class="channelMeta">
-
-                        ${
-                            paises[
-                                canal.pais
-                            ] ||
-                            canal.pais ||
-                            "Televisión"
-                        }
-
-                        &nbsp; • &nbsp;
-
-                        ${
-                            canal.categoria ||
-                            "General"
-                        }
-
-                    </div>
-
-                </div>
-
-
-                <div class="channelStatus">
-
-                    <span class="statusDot"></span>
-
-                    EN VIVO
-
-                </div>
-
-            `;
-
-
-            div.addEventListener(
-                "click",
-                () => {
-
-                    guideIndex =
-                        posicion;
-
-                    reproducirSeleccion();
-
-                }
-            );
-
-
-            guideList.appendChild(
-                div
-            );
-
-        }
-    );
-
-
-    const actual =
-        lista.findIndex(
-            canal =>
-                canales.indexOf(
-                    canal
-                ) === index
-        );
-
-
-    guideIndex =
-        actual >= 0
-        ? actual
-        : 0;
-
-
-    actualizarFoco();
-
-
-    document.getElementById(
-        "guideCount"
-    ).innerText =
-
-        `${lista.length} canales`;
-
-}
-
-
-/* =========================================================
-   FOCO
-========================================================= */
-
-function actualizarFoco(){
-
-    const items =
-        guideList.querySelectorAll(
-            ".guideChannel"
-        );
-
-
-    items.forEach(
-        item =>
-            item.classList.remove(
-                "focused"
-            )
-    );
-
-
-    if(
-        !items.length
-    )
-        return;
-
-
-    if(
-        guideIndex < 0
-    ){
-
-        guideIndex =
-            items.length - 1;
-
-    }
-
-
-    if(
-        guideIndex >=
-        items.length
-    ){
-
-        guideIndex =
-            0;
-
-    }
-
-
-    const item =
-        items[guideIndex];
-
-
-    item.classList.add(
-        "focused"
-    );
-
-
-    item.scrollIntoView({
-
-        block:"center",
-
-        behavior:"smooth"
-
-    });
-
-}
-
-
-/* =========================================================
-   MOVER FOCO
-========================================================= */
-
-function moverFoco(
-    direccion
-){
-
-    const lista =
-        obtenerCanalesFiltrados();
-
-
-    if(
-        !lista.length
-    )
-        return;
-
-
-    guideIndex +=
-        direccion;
-
-
-    if(
-        guideIndex < 0
-    ){
-
-        guideIndex =
-            lista.length - 1;
-
-    }
-
-
-    if(
-        guideIndex >=
-        lista.length
-    ){
-
-        guideIndex =
-            0;
-
-    }
-
-
-    actualizarFoco();
-
-}
-
-
-/* =========================================================
-   CAMBIAR CATEGORÍA
-========================================================= */
-
-function cambiarCategoria(
-    direccion
-){
-
-    const lista =
-        obtenerCategorias();
-
-
-    let posicion =
-        lista.indexOf(
-            categoriaActual
-        );
-
-
-    posicion +=
-        direccion;
-
-
-    if(
-        posicion < 0
-    ){
-
-        posicion =
-            lista.length - 1;
-
-    }
-
-
-    if(
-        posicion >=
-        lista.length
-    ){
-
-        posicion =
-            0;
-
-    }
-
-
-    categoriaActual =
-        lista[posicion];
-
-
-    generarGuia();
-
-}
-
-
-/* =========================================================
-   REPRODUCIR SELECCIÓN
-========================================================= */
-
-function reproducirSeleccion(){
-
-    const lista =
-        obtenerCanalesFiltrados();
-
-
-    if(
-        !lista.length
-    )
-        return;
-
-
-    const canal =
-        lista[guideIndex];
-
-
-    const numero =
-        canales.indexOf(
-            canal
-        );
-
-
-    cerrarGuia();
-
-
-    cargarCanal(
-        numero
-    );
-
-}
-
-
-/* =========================================================
-   ABRIR GUÍA
-========================================================= */
-
-function abrirGuia(){
-
-    guideOpen =
-        true;
-
-
-    guide.classList.add(
-        "open"
-    );
-
-
-    generarGuia();
-
-}
-
-
-/* =========================================================
-   CERRAR GUÍA
-========================================================= */
-
-function cerrarGuia(){
-
-    guideOpen =
-        false;
-
-
-    guide.classList.remove(
-        "open"
-    );
-
-}
+    document.getElementById("toast");
 
 
 /* =========================================================
    TOAST
 ========================================================= */
 
-function mostrarToast(
-    texto
-){
+function mostrarToast(texto){
 
-    toast.innerText =
-        texto;
+    toast.innerText = texto;
 
+    toast.classList.add("show");
 
-    toast.classList.add(
-        "show"
-    );
+    clearTimeout(toast.timer);
 
+    toast.timer = setTimeout(() => {
 
-    clearTimeout(
-        toastTimer
-    );
+        toast.classList.remove("show");
 
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.remove(
-                    "show"
-                );
-
-            },
-            2200
-        );
+    },1800);
 
 }
 
 
 /* =========================================================
-   LOADING
+   SONIDO
 ========================================================= */
 
-function mostrarLoading(
-    mostrar
-){
+function activarSonido(){
 
-    loading.classList.toggle(
-        "show",
-        mostrar
-    );
+    if(sonidoActivado)
+        return;
+
+    sonidoActivado = true;
+
+    video.muted = false;
+
+    video.volume = 1;
+
+    overlay.style.display = "none";
+
+    video.play().catch(() => {});
 
 }
 
 
 /* =========================================================
-   INFO CANAL
+   MOSTRAR INFO
 ========================================================= */
 
-function mostrarInfo(
-    estado="En vivo"
+function mostrarBarra(
+    texto = "En vivo"
 ){
+
+    if(!canales[index])
+        return;
 
     const canal =
         canales[index];
 
-
-    if(
-        !canal
-    )
-        return;
-
-
     document.getElementById(
         "canalNum"
     ).innerText =
-        index + 1;
-
+        String(index + 1).padStart(2,"0");
 
     document.getElementById(
         "canalNombre"
     ).innerText =
         canal.nombre;
 
-
     document.getElementById(
         "canalLogo"
     ).src =
         canal.logo || "";
 
-
     document.getElementById(
         "estado"
     ).innerText =
-        estado;
+        texto;
 
-
-    infoBar.style.transform =
+    bar.style.transform =
         "translateY(0)";
 
+    clearTimeout(bar.timer);
 
-    clearTimeout(
-        infoBar.timer
-    );
+    bar.timer = setTimeout(() => {
 
+        bar.style.transform =
+            "translateY(100%)";
 
-    infoBar.timer =
-        setTimeout(
-            () => {
-
-                infoBar.style.transform =
-                    "translateY(100%)";
-
-            },
-            4000
-        );
+    },4000);
 
 }
 
 
 /* =========================================================
-   CARGAR CANAL
+   REPRODUCIR CANAL
 ========================================================= */
 
-function cargarCanal(
-    numero
-){
+function cargarCanal(i){
 
-    if(
-        !canales.length
-    )
+    if(!canales.length)
         return;
-
 
     index =
-        (
-            numero +
-            canales.length
-        )
-        %
-        canales.length;
+        (i + canales.length)
+        % canales.length;
 
 
-    const canal =
-        canales[index];
+    if(hls){
 
-
-    if(
-        !canal
-    )
-        return;
-
-
-    mostrarLoading(
-        true
-    );
-
-
-    if(
-        hls
-    ){
-
-        try{
-
-            hls.destroy();
-
-        }
-
-        catch(e){}
+        hls.destroy();
 
         hls = null;
 
@@ -2372,7 +1211,12 @@ function cargarCanal(
 
 
     const url =
-        canal.url;
+        canales[index].url;
+
+
+    mostrarBarra(
+        "Cargando..."
+    );
 
 
     if(
@@ -2386,39 +1230,24 @@ function cargarCanal(
 
                 lowLatencyMode:true,
 
-                backBufferLength:30,
-
-                maxBufferLength:30
+                backBufferLength:30
 
             });
 
 
-        hls.loadSource(
-            url
-        );
+        hls.loadSource(url);
 
-
-        hls.attachMedia(
-            video
-        );
+        hls.attachMedia(video);
 
 
         hls.on(
             Hls.Events.MANIFEST_PARSED,
-            () => {
+            function(){
 
                 video.play()
-                    .catch(
-                        () => {}
-                    );
+                    .catch(() => {});
 
-
-                mostrarLoading(
-                    false
-                );
-
-
-                mostrarInfo(
+                mostrarBarra(
                     "● En vivo"
                 );
 
@@ -2428,32 +1257,17 @@ function cargarCanal(
 
         hls.on(
             Hls.Events.ERROR,
-            (
+            function(
                 event,
                 data
-            ) => {
-
-                console.warn(
-                    data
-                );
-
+            ){
 
                 if(
                     data.fatal
                 ){
 
-                    mostrarLoading(
-                        false
-                    );
-
-
-                    mostrarInfo(
-                        "Canal no disponible"
-                    );
-
-
-                    mostrarToast(
-                        "⚠️ No se pudo reproducir este canal"
+                    mostrarBarra(
+                        "Error de señal"
                     );
 
                 }
@@ -2461,53 +1275,242 @@ function cargarCanal(
             }
         );
 
-    }
 
-    else if(
-        video.canPlayType(
-            "application/vnd.apple.mpegurl"
-        )
-    ){
+    }else{
 
         video.src =
             url;
 
-
-        video.addEventListener(
-            "loadedmetadata",
-            () => {
-
-                video.play()
-                    .catch(
-                        () => {}
-                    );
-
-
-                mostrarLoading(
-                    false
-                );
-
-
-                mostrarInfo(
-                    "● En vivo"
-                );
-
-            },
-            {
-                once:true
-            }
-        );
+        video.play()
+            .catch(() => {});
 
     }
 
-    else{
 
-        mostrarLoading(
-            false
-        );
+    if(guideOpen){
+
+        guideIndex =
+            index;
+
+        actualizarGuia();
+
+    }
+
+}
+
+
+/* =========================================================
+   PARSEAR M3U IPTV-ORG
+========================================================= */
+
+function parseM3U(text){
+
+    const lineas =
+        text.split(/\r?\n/);
+
+    const resultado = [];
+
+    let info = null;
+
+
+    for(
+        let i = 0;
+        i < lineas.length;
+        i++
+    ){
+
+        const linea =
+            lineas[i].trim();
+
+
+        if(
+            linea.startsWith(
+                "#EXTINF"
+            )
+        ){
+
+            const nombreMatch =
+                linea.match(
+                    /,(.*)$/
+                );
+
+
+            const logoMatch =
+                linea.match(
+                    /tvg-logo="([^"]*)"/
+                );
+
+
+            const grupoMatch =
+                linea.match(
+                    /group-title="([^"]*)"/
+                );
+
+
+            info = {
+
+                nombre:
+                    nombreMatch
+                        ? nombreMatch[1].trim()
+                        : "Canal",
+
+                logo:
+                    logoMatch
+                        ? logoMatch[1]
+                        : "",
+
+                grupo:
+                    grupoMatch
+                        ? grupoMatch[1]
+                        : "República Dominicana"
+
+            };
+
+        }else if(
+
+            info &&
+            linea &&
+            !linea.startsWith("#")
+
+        ){
+
+            resultado.push({
+
+                nombre:
+                    info.nombre,
+
+                url:
+                    linea,
+
+                logo:
+                    info.logo,
+
+                grupo:
+                    info.grupo
+
+            });
+
+            info = null;
+
+        }
+
+    }
+
+
+    return resultado;
+
+}
+
+
+/* =========================================================
+   CARGAR CANALES DOMINICANOS
+========================================================= */
+
+async function cargarCanalesDominicanos(){
+
+    if(canalesIPTVCargados)
+        return;
+
+
+    try{
 
         mostrarToast(
-            "⚠️ HLS no soportado"
+            "🇩🇴 Cargando canales dominicanos..."
+        );
+
+
+        const respuesta =
+            await fetch(
+                IPTV_DOMINICANA,
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!respuesta.ok){
+
+            throw new Error(
+                "No se pudo descargar la playlist"
+            );
+
+        }
+
+
+        const texto =
+            await respuesta.text();
+
+
+        const nuevos =
+            parseM3U(texto);
+
+
+        /*
+        ================================================
+        EVITAR DUPLICADOS
+        ================================================
+        */
+
+        const urlsExistentes =
+            new Set(
+                canales.map(
+                    c => c.url
+                )
+            );
+
+
+        for(
+            const canal of nuevos
+        ){
+
+            if(
+                !urlsExistentes.has(
+                    canal.url
+                )
+            ){
+
+                canales.push(
+                    canal
+                );
+
+                urlsExistentes.add(
+                    canal.url
+                );
+
+            }
+
+        }
+
+
+        canalesIPTVCargados =
+            true;
+
+
+        generarLista();
+
+        actualizarGuia();
+
+
+        mostrarToast(
+            "🇩🇴 " +
+            nuevos.length +
+            " canales agregados"
+        );
+
+
+    }catch(error){
+
+        console.error(
+            "Error IPTV-org:",
+            error
+        );
+
+
+        generarLista();
+
+
+        mostrarToast(
+            "No se pudieron cargar los canales adicionales"
         );
 
     }
@@ -2516,27 +1519,331 @@ function cargarCanal(
 
 
 /* =========================================================
-   SONIDO
+   GENERAR LISTA
 ========================================================= */
 
-function activarSonido(){
+function generarLista(){
+
+    listItems.innerHTML = "";
+
+
+    canales.forEach(
+        (canal,i) => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className =
+                "channel-item";
+
+
+            div.dataset.index =
+                i;
+
+
+            const numero =
+                String(i + 1)
+                .padStart(2,"0");
+
+
+            div.innerHTML = `
+
+                <div class="channel-number">
+                    ${numero}
+                </div>
+
+                <img
+                    src="${escapeHTML(canal.logo || "")}"
+                    alt=""
+                    onerror="this.style.visibility='hidden'"
+                >
+
+                <div class="channel-info">
+
+                    <div class="channel-name">
+                        ${escapeHTML(canal.nombre)}
+                    </div>
+
+                    <div class="channel-status">
+                        ● EN VIVO
+                    </div>
+
+                </div>
+
+            `;
+
+
+            div.addEventListener(
+                "click",
+                () => {
+
+                    guideIndex = i;
+
+                    reproducirSeleccion();
+
+                }
+            );
+
+
+            listItems.appendChild(
+                div
+            );
+
+        }
+    );
+
+
+    actualizarGuia();
+
+}
+
+
+/* =========================================================
+   SEGURIDAD HTML
+========================================================= */
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   ABRIR GUÍA
+========================================================= */
+
+function abrirGuia(){
+
+    if(!canales.length)
+        return;
+
+
+    guideOpen =
+        true;
+
+
+    guideIndex =
+        index;
+
+
+    guide.classList.add(
+        "open"
+    );
+
+
+    actualizarGuia();
+
+
+    setTimeout(
+        () => {
+
+            const item =
+                document.querySelector(
+                    `.channel-item[data-index="${guideIndex}"]`
+                );
+
+
+            if(item){
+
+                item.scrollIntoView({
+                    block:"center"
+                });
+
+            }
+
+        },
+        50
+    );
+
+}
+
+
+/* =========================================================
+   CERRAR GUÍA
+========================================================= */
+
+function cerrarGuia(){
+
+    guideOpen =
+        false;
+
+    guide.classList.remove(
+        "open"
+    );
+
+}
+
+
+/* =========================================================
+   ACTUALIZAR GUÍA
+========================================================= */
+
+function actualizarGuia(){
+
+    if(!canales.length)
+        return;
+
+
+    document.getElementById(
+        "guideCount"
+    ).innerText =
+        canales.length +
+        " canales";
+
+
+    const items =
+        document.querySelectorAll(
+            ".channel-item"
+        );
+
+
+    items.forEach(
+        (item,i) => {
+
+            item.classList.toggle(
+                "focused",
+                i === guideIndex
+            );
+
+            item.classList.toggle(
+                "playing",
+                i === index
+            );
+
+        }
+    );
+
+
+    const canal =
+        canales[guideIndex];
+
+
+    if(!canal)
+        return;
+
+
+    document.getElementById(
+        "previewLogo"
+    ).src =
+        canal.logo || "";
+
+
+    document.getElementById(
+        "previewNumber"
+    ).innerText =
+        "CANAL " +
+        String(guideIndex + 1)
+        .padStart(2,"0");
+
+
+    document.getElementById(
+        "previewName"
+    ).innerText =
+        canal.nombre;
+
+
+    const seleccionado =
+        document.querySelector(
+            `.channel-item[data-index="${guideIndex}"]`
+        );
+
 
     if(
-        !sonidoActivado
+        seleccionado &&
+        guideOpen
     ){
 
-        video.muted =
-            false;
-
-
-        overlay.style.display =
-            "none";
-
-
-        sonidoActivado =
-            true;
+        seleccionado.scrollIntoView({
+            block:"center",
+            behavior:"smooth"
+        });
 
     }
+
+}
+
+
+/* =========================================================
+   MOVER FOCO
+========================================================= */
+
+function moverFoco(direccion){
+
+    if(!canales.length)
+        return;
+
+
+    guideIndex +=
+        direccion;
+
+
+    if(
+        guideIndex < 0
+    ){
+
+        guideIndex =
+            canales.length - 1;
+
+    }
+
+
+    if(
+        guideIndex >= canales.length
+    ){
+
+        guideIndex = 0;
+
+    }
+
+
+    actualizarGuia();
+
+}
+
+
+/* =========================================================
+   SELECCIONAR
+========================================================= */
+
+function reproducirSeleccion(){
+
+    if(!canales[guideIndex])
+        return;
+
+
+    const seleccionado =
+        guideIndex;
+
+
+    cerrarGuia();
+
+    cargarCanal(
+        seleccionado
+    );
 
 }
 
@@ -2545,26 +1852,63 @@ function activarSonido(){
    NUMEROS
 ========================================================= */
 
-function procesarNumero(
-    digito
-){
+function procesarNumero(digito){
 
     clearTimeout(
         inputTimer
     );
 
 
+    /*
+    ================================================
+    0 = ABRIR GUÍA
+    ================================================
+    */
+
+    if(
+        digito === "0"
+    ){
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
+
+        abrirGuia();
+
+        return;
+
+    }
+
+
+    /*
+    ================================================
+    EVITAR DUPLICADOS
+    ================================================
+    */
+
     inputBuffer +=
         digito;
 
 
-    inputDisplay.innerText =
+    /*
+    ================================================
+    MOSTRAR NÚMERO
+    ================================================
+    */
+
+    displayNum.innerText =
         inputBuffer;
 
-
-    inputDisplay.style.display =
+    displayNum.style.display =
         "block";
 
+
+    /*
+    ================================================
+    ESPERAR OTRO DÍGITO
+    ================================================
+    */
 
     inputTimer =
         setTimeout(
@@ -2572,108 +1916,89 @@ function procesarNumero(
 
                 const numero =
                     parseInt(
-                        inputBuffer
+                        inputBuffer,
+                        10
                     );
+
+
+                const posicion =
+                    numero - 1;
 
 
                 if(
-                    numero >= 1 &&
-                    numero <=
-                    canales.length
+                    !isNaN(numero) &&
+                    posicion >= 0 &&
+                    posicion < canales.length
                 ){
 
                     cargarCanal(
-                        numero - 1
+                        posicion
                     );
 
-                }
-
-                else{
+                }else{
 
                     mostrarToast(
-                        "Canal no encontrado"
+                        "Canal no disponible"
                     );
 
                 }
 
 
-                inputBuffer =
-                    "";
+                inputBuffer = "";
 
-
-                inputDisplay.style.display =
+                displayNum.style.display =
                     "none";
 
             },
-            1300
+            1200
         );
 
 }
 
 
 /* =========================================================
-   TECLADO / CONTROL REMOTO
+   CONTROL DE TECLADO
+   UN SOLO KEYDOWN
 ========================================================= */
 
-let ceroPresionado = false;
-let ceroTimer = null;
-let ceroInicio = 0;
-function iniciarCero(){
-
-    if(ceroPresionado)
-        return;
-
-    ceroPresionado = true;
-
-    ceroInicio = Date.now();
-
-    ceroTimer = setTimeout(() => {
-
-        if(ceroPresionado){
-
-            abrirGuia();
-
-            mostrarToast(
-                "📺 Guía de canales"
-            );
-
-        }
-
-    }, 3000);
-
-}
-
-
-function soltarCero(){
-
-    ceroPresionado = false;
-
-    clearTimeout(
-        ceroTimer
-    );
-
-}
-function manejarTeclado(
-    e
-){
+function manejarTeclado(e){
 
     activarSonido();
 
 
     const key =
-        e.key.toLowerCase();
+        String(
+            e.key || ""
+        ).toLowerCase();
 
 
-    const code =
-        e.keyCode;
-
-
-    /* =============================================
-       NUMEROS
-    ============================================= */
+    /*
+    ================================================
+    0 = LISTA
+    ================================================
+    */
 
     if(
-        /^\d$/.test(
+        e.key === "0"
+    ){
+
+        procesarNumero("0");
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+
+    /*
+    ================================================
+    1-9
+    ================================================
+    */
+
+    if(
+        /^[1-9]$/.test(
             e.key
         )
     ){
@@ -2682,48 +2007,37 @@ function manejarTeclado(
             e.key
         );
 
+        e.preventDefault();
+
         return;
 
     }
 
 
-    /* =============================================
-       GUÍA
-    ============================================= */
-
-   /* =====================================================
-   CERO - MANTENER 3 SEGUNDOS
-===================================================== */
-
-if(e.key === "0"){
-
-    iniciarCero();
-
-    e.preventDefault();
-
-    return;
-
-}
-
-
-    /* =============================================
-       ESC / BACK
-    ============================================= */
+    /*
+    ================================================
+    OK / ENTER
+    ================================================
+    */
 
     if(
-        key === "escape" ||
-        key === "backspace" ||
-        key === "browserback"
+        key === "enter" ||
+        key === "select" ||
+        key === "ok" ||
+        e.keyCode === 13 ||
+        e.keyCode === 23 ||
+        e.keyCode === 66
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
-            cerrarGuia();
+            reproducirSeleccion();
+
+        }else{
+
+            abrirGuia();
 
         }
-
 
         e.preventDefault();
 
@@ -2732,28 +2046,22 @@ if(e.key === "0"){
     }
 
 
-    /* =============================================
-       ARRIBA
-    ============================================= */
+    /*
+    ================================================
+    ARRIBA
+    ================================================
+    */
 
     if(
         key === "arrowup" ||
-        key === "channelup" ||
-        key === "pageup" ||
-        code === 33
+        e.keyCode === 38
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
-            moverFoco(
-                -1
-            );
+            moverFoco(-1);
 
-        }
-
-        else{
+        }else{
 
             cargarCanal(
                 index + 1
@@ -2761,7 +2069,6 @@ if(e.key === "0"){
 
         }
 
-
         e.preventDefault();
 
         return;
@@ -2769,28 +2076,22 @@ if(e.key === "0"){
     }
 
 
-    /* =============================================
-       ABAJO
-    ============================================= */
+    /*
+    ================================================
+    ABAJO
+    ================================================
+    */
 
     if(
         key === "arrowdown" ||
-        key === "channeldown" ||
-        key === "pagedown" ||
-        code === 34
+        e.keyCode === 40
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
-            moverFoco(
-                1
-            );
+            moverFoco(1);
 
-        }
-
-        else{
+        }else{
 
             cargarCanal(
                 index - 1
@@ -2798,7 +2099,6 @@ if(e.key === "0"){
 
         }
 
-
         e.preventDefault();
 
         return;
@@ -2806,21 +2106,20 @@ if(e.key === "0"){
     }
 
 
-    /* =============================================
-       IZQUIERDA
-    ============================================= */
+    /*
+    ================================================
+    IZQUIERDA
+    ================================================
+    */
 
     if(
-        key === "arrowleft"
+        key === "arrowleft" ||
+        e.keyCode === 37
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
-            cambiarCategoria(
-                -1
-            );
+            moverFoco(-1);
 
         }
 
@@ -2831,21 +2130,20 @@ if(e.key === "0"){
     }
 
 
-    /* =============================================
-       DERECHA
-    ============================================= */
+    /*
+    ================================================
+    DERECHA
+    ================================================
+    */
 
     if(
-        key === "arrowright"
+        key === "arrowright" ||
+        e.keyCode === 39
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
-            cambiarCategoria(
-                1
-            );
+            moverFoco(1);
 
         }
 
@@ -2856,454 +2154,134 @@ if(e.key === "0"){
     }
 
 
-    /* =============================================
-       MUTE
-    ============================================= */
+    /*
+    ================================================
+    ESC / BACK
+    ================================================
+    */
 
     if(
-        key === "m"
+        key === "escape" ||
+        key === "back" ||
+        key === "browserback" ||
+        e.keyCode === 27
     ){
 
-        video.muted =
-            !video.muted;
+        if(guideOpen){
 
+            cerrarGuia();
 
-        mostrarToast(
+        }
 
-            video.muted
+        e.preventDefault();
 
-            ? "🔇 Silenciado"
-
-            : "🔊 Sonido activado"
-
-        );
-
-    }
-
-
-    /* =============================================
-       INFO
-    ============================================= */
-
-    if(
-        key === "i" ||
-        key === "info"
-    ){
-
-        mostrarInfo(
-            "● En vivo"
-        );
+        return;
 
     }
 
 }
+
+
+/* =========================================================
+   UN SOLO LISTENER
+========================================================= */
 
 document.addEventListener(
-    "keyup",
-    function(e){
-
-        if(e.key === "0"){
-
-            soltarCero();
-
-            e.preventDefault();
-
-        }
-
-    },
+    "keydown",
+    manejarTeclado,
     true
 );
-/* =========================================================
-   ESCAPAR HTML
-========================================================= */
-
-function escapeHTML(
-    texto
-){
-
-    return String(
-        texto
-    )
-
-    .replaceAll(
-        "&",
-        "&amp;"
-    )
-
-    .replaceAll(
-        "<",
-        "&lt;"
-    )
-
-    .replaceAll(
-        ">",
-        "&gt;"
-    )
-
-    .replaceAll(
-        '"',
-        "&quot;"
-    )
-
-    .replaceAll(
-        "'",
-        "&#039;"
-    );
-
-}
 
 
 /* =========================================================
-   IPTV-ORG
+   MOUSE
 ========================================================= */
 
-async function cargarIPTVOrg(){
+document.addEventListener(
+    "mousemove",
+    function(e){
 
-    try{
+        if(guideOpen)
+            return;
 
-        const [
-
-            channelsResponse,
-
-            streamsResponse,
-
-            logosResponse
-
-        ] =
-            await Promise.all([
-
-                fetch(
-                    "https://iptv-org.github.io/api/channels.json"
-                ),
-
-                fetch(
-                    "https://iptv-org.github.io/api/streams.json"
-                ),
-
-                fetch(
-                    "https://iptv-org.github.io/api/logos.json"
-                )
-
-            ]);
-
-
-        const channelData =
-            await channelsResponse.json();
-
-
-        const streamData =
-            await streamsResponse.json();
-
-
-        const logoData =
-            await logosResponse.json();
-
-
-        const channelMap =
-            new Map();
-
-
-        channelData.forEach(
-            canal => {
-
-                channelMap.set(
-                    canal.id,
-                    canal
-                );
-
-            }
-        );
-
-
-        const logoMap =
-            new Map();
-
-
-        logoData.forEach(
-            logo => {
-
-                if(
-                    logo.channel &&
-                    logo.url &&
-                    !logoMap.has(
-                        logo.channel
-                    )
-                ){
-
-                    logoMap.set(
-                        logo.channel,
-                        logo.url
-                    );
-
-                }
-
-            }
-        );
-
-
-        const encontrados = [];
-
-
-        streamData.forEach(
-            stream => {
-
-                if(
-                    !stream.channel ||
-                    !stream.url
-                )
-                    return;
-
-
-                const canal =
-                    channelMap.get(
-                        stream.channel
-                    );
-
-
-                if(
-                    !canal
-                )
-                    return;
-
-
-                const url =
-                    stream.url.toLowerCase();
-
-
-                if(
-                    !url.includes(
-                        ".m3u8"
-                    ) &&
-                    !url.includes(
-                        "m3u8?"
-                    )
-                )
-                    return;
-
-
-                encontrados.push({
-
-                    nombre:
-                        canal.name,
-
-                    url:
-                        stream.url,
-
-                    logo:
-                        logoMap.get(
-                            canal.id
-                        ) ||
-                        canal.logo ||
-                        "",
-
-                    pais:
-                        canal.country ||
-                        "XX",
-
-                    categoria:
-                        canal.categories &&
-                        canal.categories.length
-
-                        ?
-
-                        canal.categories[0]
-
-                        :
-
-                        "General",
-
-                    propio:false
-
-                });
-
-            }
-        );
-
-
-        /*
-         * QUITAR DUPLICADOS
-         */
-
-        const urls =
-            new Set();
-
-
-        const unicos =
-            encontrados.filter(
-                canal => {
-
-                    if(
-                        urls.has(
-                            canal.url
-                        )
-                    ){
-
-                        return false;
-
-                    }
-
-
-                    urls.add(
-                        canal.url
-                    );
-
-
-                    return true;
-
-                }
-            );
-
-
-        /*
-         * NO REPETIR TUS CANALES
-         */
-
-        const propias =
-            new Set(
-
-                [
-
-                    ...canalesDominicanosPropios,
-
-                    ...otrosCanalesPropios
-
-                ]
-
-                .map(
-                    canal =>
-                        canal.url
-                )
-
-            );
-
-
-        const nuevos =
-            unicos.filter(
-                canal =>
-                    !propias.has(
-                        canal.url
-                    )
-            );
-
-
-        /*
-         * RD
-         */
-
-        const rd =
-            nuevos
-                .filter(
-                    canal =>
-                        canal.pais === "DO"
-                )
-                .sort(
-                    (a,b) =>
-                        a.nombre.localeCompare(
-                            b.nombre
-                        )
-                );
-
-
-        /*
-         * INTERNACIONALES
-         */
-
-        const internacionales =
-            nuevos
-                .filter(
-                    canal =>
-                        canal.pais !== "DO"
-                )
-                .sort(
-                    (a,b) => {
-
-                        const pais =
-                            (a.pais || "")
-                            .localeCompare(
-                                b.pais || ""
-                            );
-
-
-                        if(
-                            pais !== 0
-                        )
-                            return pais;
-
-
-                        return a.nombre.localeCompare(
-                            b.nombre
-                        );
-
-                    }
-                );
-
-
-        /*
-         * ORDEN FINAL
-         *
-         * IMPORTANTE:
-         *
-         * No tocamos los primeros
-         * canales.
-         */
-
-        canales = [
-
-            ...canalesDominicanosPropios,
-
-            ...rd,
-
-            ...otrosCanalesPropios,
-
-            ...internacionales
-
-        ];
-
-
-        /*
-         * Actualizar contador
-         */
 
         if(
-            guideOpen
+            mouseLastY === null
         ){
 
-            generarGuia();
+            mouseLastY =
+                e.clientY;
+
+            return;
 
         }
 
 
-        mostrarToast(
-
-            `📺 ${canales.length} canales disponibles`
-
-        );
+        const diferencia =
+            e.clientY -
+            mouseLastY;
 
 
-        console.log(
-            "TV PRO cargado:",
-            canales.length,
-            "canales"
-        );
+        if(
+            Math.abs(diferencia) > 70
+        ){
 
+            if(
+                diferencia > 0
+            ){
+
+                cargarCanal(
+                    index - 1
+                );
+
+            }else{
+
+                cargarCanal(
+                    index + 1
+                );
+
+            }
+
+
+            mouseLastY =
+                e.clientY;
+
+        }
 
     }
-
-    catch(error){
-
-        console.error(
-            "IPTV-org:",
-            error
-        );
+);
 
 
-        mostrarToast(
-            "⚠️ IPTV-org no disponible"
-        );
+/* =========================================================
+   MOUSE SALE
+========================================================= */
+
+document.addEventListener(
+    "mouseleave",
+    () => {
+
+        mouseLastY =
+            null;
 
     }
+);
 
-}
+
+/* =========================================================
+   CLICK / TOUCH PARA INICIAR
+========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    function(){
+
+        activarSonido();
+
+    },
+    {
+        capture:true
+    }
+);
 
 
 /* =========================================================
@@ -3312,65 +2290,53 @@ async function cargarIPTVOrg(){
 
 window.addEventListener(
     "load",
-    () => {
+    async function(){
 
         /*
-         * PRIMERO:
-         *
-         * Tus canales.
-         */
+        ================================================
+        PRIMERO:
+        GENERAMOS LOS CANALES ORIGINALES
+        ================================================
+        */
 
-        generarGuia();
-
-
-        /*
-         * REPRODUCIR EL PRIMERO
-         *
-         * La Voz de María
-         */
-
-        index = 0;
-
-        cargarCanal(
-            0
-        );
+        generarLista();
 
 
         /*
-         * DESPUÉS:
-         *
-         * IPTV-org se carga
-         * en segundo plano.
-         */
+        ================================================
+        SIEMPRE INICIAMOS EN EL PRIMER CANAL
+        ================================================
+        */
 
-        cargarIPTVOrg();
+        cargarCanal(0);
+
+
+        /*
+        ================================================
+        DESPUÉS:
+        CARGAMOS IPTV-ORG
+        ================================================
+        */
+
+        cargarCanalesDominicanos();
 
     }
 );
 
 
 /* =========================================================
-   CLICK INICIAL
+   INICIAR AL HACER CLICK
 ========================================================= */
 
 overlay.addEventListener(
     "click",
-    () => {
+    function(){
 
         activarSonido();
 
     }
 );
 
-
-/* =========================================================
-   TECLADO
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    manejarTeclado
-);
 
 </script>
 
