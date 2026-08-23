@@ -2615,314 +2615,296 @@ function procesarNumero(
    TECLADO / CONTROL REMOTO
 ========================================================= */
 
-function manejarTeclado(e){
+let ceroPresionado = false;
+let ceroTimer = null;
+let ceroInicio = 0;
+function iniciarCero(){
 
-    console.log(
-        "TECLA:",
-        e.key,
-        "CODE:",
-        e.keyCode
+    if(ceroPresionado)
+        return;
+
+    ceroPresionado = true;
+
+    ceroInicio = Date.now();
+
+    ceroTimer = setTimeout(() => {
+
+        if(ceroPresionado){
+
+            abrirGuia();
+
+            mostrarToast(
+                "📺 Guía de canales"
+            );
+
+        }
+
+    }, 3000);
+
+}
+
+
+function soltarCero(){
+
+    ceroPresionado = false;
+
+    clearTimeout(
+        ceroTimer
     );
+
+}
+function manejarTeclado(
+    e
+){
 
     activarSonido();
 
-    const key = String(e.key || "").toLowerCase();
-    const code = e.keyCode;
 
-    /* =====================================================
+    const key =
+        e.key.toLowerCase();
+
+
+    const code =
+        e.keyCode;
+
+
+    /* =============================================
        NUMEROS
-    ===================================================== */
-
-    if(/^\d$/.test(e.key)){
-
-        procesarNumero(e.key);
-
-        e.preventDefault();
-
-        return;
-    }
-
-
-    /* =====================================================
-       OK / ENTER
-       
-       En diferentes TV puede llegar como:
-       Enter
-       NumpadEnter
-       Select
-       OK
-       o algunos keyCode
-    ===================================================== */
-
-    const esOK =
-        key === "enter" ||
-        key === "numpadenter" ||
-        key === "select" ||
-        key === "ok" ||
-        code === 13 ||
-        code === 23 ||
-        code === 66;
-
-
-    if(esOK){
-
-        console.log("OK DETECTADO");
-
-        if(guideOpen){
-
-            // Si la guía está abierta,
-            // OK reproduce el canal seleccionado.
-
-            reproducirSeleccion();
-
-        }else{
-
-            // Si estamos viendo TV,
-            // OK abre la lista.
-
-            abrirGuia();
-
-        }
-
-        e.preventDefault();
-
-        return;
-    }
-
-
-    /* =====================================================
-       ARRIBA
-    ===================================================== */
+    ============================================= */
 
     if(
-        key === "arrowup" ||
-        key === "up" ||
-        code === 38
+        /^\d$/.test(
+            e.key
+        )
     ){
 
-        if(guideOpen){
-
-            moverFoco(-1);
-
-        }else{
-
-            cargarCanal(index + 1);
-
-        }
-
-        e.preventDefault();
+        procesarNumero(
+            e.key
+        );
 
         return;
+
     }
 
 
-    /* =====================================================
-       ABAJO
-    ===================================================== */
+    /* =============================================
+       GUÍA
+    ============================================= */
 
-    if(
-        key === "arrowdown" ||
-        key === "down" ||
-        code === 40
-    ){
+   /* =====================================================
+   CERO - MANTENER 3 SEGUNDOS
+===================================================== */
 
-        if(guideOpen){
+if(e.key === "0"){
 
-            moverFoco(1);
+    iniciarCero();
 
-        }else{
+    e.preventDefault();
 
-            cargarCanal(index - 1);
+    return;
 
-        }
-
-        e.preventDefault();
-
-        return;
-    }
+}
 
 
-    /* =====================================================
-       IZQUIERDA
-    ===================================================== */
-
-    if(
-        key === "arrowleft" ||
-        key === "left" ||
-        code === 37
-    ){
-
-        if(guideOpen){
-
-            cambiarCategoria(-1);
-
-        }
-
-        e.preventDefault();
-
-        return;
-    }
-
-
-    /* =====================================================
-       DERECHA
-    ===================================================== */
-
-    if(
-        key === "arrowright" ||
-        key === "right" ||
-        code === 39
-    ){
-
-        if(guideOpen){
-
-            cambiarCategoria(1);
-
-        }
-
-        e.preventDefault();
-
-        return;
-    }
-
-
-    /* =====================================================
-       BACK / ESCAPE
-    ===================================================== */
+    /* =============================================
+       ESC / BACK
+    ============================================= */
 
     if(
         key === "escape" ||
-        key === "back" ||
-        key === "browserback" ||
-        code === 27 ||
-        code === 8
+        key === "backspace" ||
+        key === "browserback"
     ){
 
-        if(guideOpen){
+        if(
+            guideOpen
+        ){
 
             cerrarGuia();
+
+        }
+
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+
+    /* =============================================
+       ARRIBA
+    ============================================= */
+
+    if(
+        key === "arrowup" ||
+        key === "channelup" ||
+        key === "pageup" ||
+        code === 33
+    ){
+
+        if(
+            guideOpen
+        ){
+
+            moverFoco(
+                -1
+            );
+
+        }
+
+        else{
+
+            cargarCanal(
+                index + 1
+            );
+
+        }
+
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+
+    /* =============================================
+       ABAJO
+    ============================================= */
+
+    if(
+        key === "arrowdown" ||
+        key === "channeldown" ||
+        key === "pagedown" ||
+        code === 34
+    ){
+
+        if(
+            guideOpen
+        ){
+
+            moverFoco(
+                1
+            );
+
+        }
+
+        else{
+
+            cargarCanal(
+                index - 1
+            );
+
+        }
+
+
+        e.preventDefault();
+
+        return;
+
+    }
+
+
+    /* =============================================
+       IZQUIERDA
+    ============================================= */
+
+    if(
+        key === "arrowleft"
+    ){
+
+        if(
+            guideOpen
+        ){
+
+            cambiarCategoria(
+                -1
+            );
 
         }
 
         e.preventDefault();
 
         return;
+
     }
 
 
-    /* =====================================================
-       GUIDE / EPG
-       
-       Algunos televisores envían:
-       Guide
-       EPG
-       TVGuide
-    ===================================================== */
+    /* =============================================
+       DERECHA
+    ============================================= */
 
     if(
-        key === "guide" ||
-        key === "epg" ||
-        key === "tvguide"
+        key === "arrowright"
     ){
 
-        if(!guideOpen){
+        if(
+            guideOpen
+        ){
 
-            abrirGuia();
-
-        }else{
-
-            cerrarGuia();
+            cambiarCategoria(
+                1
+            );
 
         }
 
         e.preventDefault();
 
         return;
+
     }
 
 
-    /* =====================================================
-       INFO
-    ===================================================== */
-
-    if(
-        key === "info"
-    ){
-
-        mostrarInfo("● En vivo");
-
-        e.preventDefault();
-
-        return;
-    }
-
-
-    /* =====================================================
+    /* =============================================
        MUTE
-    ===================================================== */
+    ============================================= */
 
     if(
-        key === "m" ||
-        key === "audiomute"
+        key === "m"
     ){
 
         video.muted =
             !video.muted;
 
+
         mostrarToast(
+
             video.muted
-                ? "🔇 Silenciado"
-                : "🔊 Sonido activado"
+
+            ? "🔇 Silenciado"
+
+            : "🔊 Sonido activado"
+
         );
 
-        e.preventDefault();
+    }
 
-        return;
+
+    /* =============================================
+       INFO
+    ============================================= */
+
+    if(
+        key === "i" ||
+        key === "info"
+    ){
+
+        mostrarInfo(
+            "● En vivo"
+        );
+
     }
 
 }
+
 document.addEventListener(
-    "keydown",
-    manejarTeclado,
-    true
-);
-
-
-/*
-=========================================================
-CAPTURAR ENTER / OK DIRECTAMENTE
-=========================================================
-*/
-
-window.addEventListener(
-    "keydown",
+    "keyup",
     function(e){
 
-        const code = e.keyCode;
+        if(e.key === "0"){
 
-        if(
-            code === 13 ||
-            code === 23 ||
-            code === 66
-        ){
-
-            console.log(
-                "BOTON OK:",
-                e.key,
-                code
-            );
-
-            activarSonido();
-
-            if(guideOpen){
-
-                reproducirSeleccion();
-
-            }else{
-
-                abrirGuia();
-
-            }
+            soltarCero();
 
             e.preventDefault();
 
@@ -2931,16 +2913,6 @@ window.addEventListener(
     },
     true
 );
-document.addEventListener("keydown", function(e){
-
-    alert(
-        "Tecla: " +
-        e.key +
-        "\nCódigo: " +
-        e.keyCode
-    );
-
-});
 /* =========================================================
    ESCAPAR HTML
 ========================================================= */
