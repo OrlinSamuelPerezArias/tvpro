@@ -1161,7 +1161,7 @@ body{
         </div>
 
         <div class="startHint">
-            Presiona cualquier botón para comenzar
+            Presiona OK para comenzar
         </div>
 
     </div>
@@ -2615,264 +2615,332 @@ function procesarNumero(
    TECLADO / CONTROL REMOTO
 ========================================================= */
 
-function manejarTeclado(
-    e
-){
+function manejarTeclado(e){
+
+    console.log(
+        "TECLA:",
+        e.key,
+        "CODE:",
+        e.keyCode
+    );
 
     activarSonido();
 
+    const key = String(e.key || "").toLowerCase();
+    const code = e.keyCode;
 
-    const key =
-        e.key.toLowerCase();
-
-
-    const code =
-        e.keyCode;
-
-
-    /* =============================================
+    /* =====================================================
        NUMEROS
-    ============================================= */
+    ===================================================== */
 
-    if(
-        /^\d$/.test(
-            e.key
-        )
-    ){
+    if(/^\d$/.test(e.key)){
 
-        procesarNumero(
-            e.key
-        );
+        procesarNumero(e.key);
+
+        e.preventDefault();
 
         return;
-
     }
 
 
-    /* =============================================
-       GUÍA
-    ============================================= */
+    /* =====================================================
+       OK / ENTER
+       
+       En diferentes TV puede llegar como:
+       Enter
+       NumpadEnter
+       Select
+       OK
+       o algunos keyCode
+    ===================================================== */
 
-    if(
+    const esOK =
         key === "enter" ||
-        key === "ok"
-    ){
+        key === "numpadenter" ||
+        key === "select" ||
+        key === "ok" ||
+        code === 13 ||
+        code === 23 ||
+        code === 66;
 
-        if(
-            guideOpen
-        ){
+
+    if(esOK){
+
+        console.log("OK DETECTADO");
+
+        if(guideOpen){
+
+            // Si la guía está abierta,
+            // OK reproduce el canal seleccionado.
 
             reproducirSeleccion();
 
-        }
+        }else{
 
-        else{
+            // Si estamos viendo TV,
+            // OK abre la lista.
 
             abrirGuia();
 
         }
 
+        e.preventDefault();
+
+        return;
+    }
+
+
+    /* =====================================================
+       ARRIBA
+    ===================================================== */
+
+    if(
+        key === "arrowup" ||
+        key === "up" ||
+        code === 38
+    ){
+
+        if(guideOpen){
+
+            moverFoco(-1);
+
+        }else{
+
+            cargarCanal(index + 1);
+
+        }
 
         e.preventDefault();
 
         return;
-
     }
 
 
-    /* =============================================
-       ESC / BACK
-    ============================================= */
+    /* =====================================================
+       ABAJO
+    ===================================================== */
+
+    if(
+        key === "arrowdown" ||
+        key === "down" ||
+        code === 40
+    ){
+
+        if(guideOpen){
+
+            moverFoco(1);
+
+        }else{
+
+            cargarCanal(index - 1);
+
+        }
+
+        e.preventDefault();
+
+        return;
+    }
+
+
+    /* =====================================================
+       IZQUIERDA
+    ===================================================== */
+
+    if(
+        key === "arrowleft" ||
+        key === "left" ||
+        code === 37
+    ){
+
+        if(guideOpen){
+
+            cambiarCategoria(-1);
+
+        }
+
+        e.preventDefault();
+
+        return;
+    }
+
+
+    /* =====================================================
+       DERECHA
+    ===================================================== */
+
+    if(
+        key === "arrowright" ||
+        key === "right" ||
+        code === 39
+    ){
+
+        if(guideOpen){
+
+            cambiarCategoria(1);
+
+        }
+
+        e.preventDefault();
+
+        return;
+    }
+
+
+    /* =====================================================
+       BACK / ESCAPE
+    ===================================================== */
 
     if(
         key === "escape" ||
-        key === "backspace" ||
-        key === "browserback"
+        key === "back" ||
+        key === "browserback" ||
+        code === 27 ||
+        code === 8
     ){
 
-        if(
-            guideOpen
-        ){
+        if(guideOpen){
 
             cerrarGuia();
 
         }
 
-
         e.preventDefault();
 
         return;
-
     }
 
 
-    /* =============================================
-       ARRIBA
-    ============================================= */
+    /* =====================================================
+       GUIDE / EPG
+       
+       Algunos televisores envían:
+       Guide
+       EPG
+       TVGuide
+    ===================================================== */
 
     if(
-        key === "arrowup" ||
-        key === "channelup" ||
-        key === "pageup" ||
-        code === 33
+        key === "guide" ||
+        key === "epg" ||
+        key === "tvguide"
     ){
 
-        if(
-            guideOpen
-        ){
+        if(!guideOpen){
 
-            moverFoco(
-                -1
-            );
+            abrirGuia();
 
-        }
+        }else{
 
-        else{
-
-            cargarCanal(
-                index + 1
-            );
+            cerrarGuia();
 
         }
-
 
         e.preventDefault();
 
         return;
-
     }
 
 
-    /* =============================================
-       ABAJO
-    ============================================= */
+    /* =====================================================
+       INFO
+    ===================================================== */
 
     if(
-        key === "arrowdown" ||
-        key === "channeldown" ||
-        key === "pagedown" ||
-        code === 34
+        key === "info"
     ){
 
-        if(
-            guideOpen
-        ){
-
-            moverFoco(
-                1
-            );
-
-        }
-
-        else{
-
-            cargarCanal(
-                index - 1
-            );
-
-        }
-
+        mostrarInfo("● En vivo");
 
         e.preventDefault();
 
         return;
-
     }
 
 
-    /* =============================================
-       IZQUIERDA
-    ============================================= */
-
-    if(
-        key === "arrowleft"
-    ){
-
-        if(
-            guideOpen
-        ){
-
-            cambiarCategoria(
-                -1
-            );
-
-        }
-
-        e.preventDefault();
-
-        return;
-
-    }
-
-
-    /* =============================================
-       DERECHA
-    ============================================= */
-
-    if(
-        key === "arrowright"
-    ){
-
-        if(
-            guideOpen
-        ){
-
-            cambiarCategoria(
-                1
-            );
-
-        }
-
-        e.preventDefault();
-
-        return;
-
-    }
-
-
-    /* =============================================
+    /* =====================================================
        MUTE
-    ============================================= */
+    ===================================================== */
 
     if(
-        key === "m"
+        key === "m" ||
+        key === "audiomute"
     ){
 
         video.muted =
             !video.muted;
 
-
         mostrarToast(
-
             video.muted
-
-            ? "🔇 Silenciado"
-
-            : "🔊 Sonido activado"
-
+                ? "🔇 Silenciado"
+                : "🔊 Sonido activado"
         );
 
-    }
+        e.preventDefault();
 
-
-    /* =============================================
-       INFO
-    ============================================= */
-
-    if(
-        key === "i" ||
-        key === "info"
-    ){
-
-        mostrarInfo(
-            "● En vivo"
-        );
-
+        return;
     }
 
 }
+document.addEventListener(
+    "keydown",
+    manejarTeclado,
+    true
+);
 
 
+/*
+=========================================================
+CAPTURAR ENTER / OK DIRECTAMENTE
+=========================================================
+*/
+
+window.addEventListener(
+    "keydown",
+    function(e){
+
+        const code = e.keyCode;
+
+        if(
+            code === 13 ||
+            code === 23 ||
+            code === 66
+        ){
+
+            console.log(
+                "BOTON OK:",
+                e.key,
+                code
+            );
+
+            activarSonido();
+
+            if(guideOpen){
+
+                reproducirSeleccion();
+
+            }else{
+
+                abrirGuia();
+
+            }
+
+            e.preventDefault();
+
+        }
+
+    },
+    true
+);
+document.addEventListener("keydown", function(e){
+
+    alert(
+        "Tecla: " +
+        e.key +
+        "\nCódigo: " +
+        e.keyCode
+    );
+
+});
 /* =========================================================
    ESCAPAR HTML
 ========================================================= */
