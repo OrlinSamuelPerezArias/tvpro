@@ -936,7 +936,9 @@ async function comprobarReproduccion(url){
 
 const FUENTES_CANALES = [
     {nombre:"Free-TV", url:"https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"},
-    {nombre:"Internacional", url:"https://iptv-org.github.io/iptv/index.m3u"}
+    {nombre:"Internacional", url:"https://iptv-org.github.io/iptv/index.m3u"},
+    {nombre:"TDTChannels", url:"https://www.tdtchannels.com/lists/tv.m3u8"},
+    {nombre:"RD", url:IPTV_RD}
 ];
 function esDeporte(canal){
     return /(?:^|[;,])\s*(?:sports?|deportes?)\s*(?:$|[;,])/i.test(canal.categorias || "");
@@ -966,9 +968,9 @@ async function descargarLista(fuente){
         if(!texto.trimStart().startsWith("#EXTM3U")) throw new Error("Lista inválida");
         return parseM3U(texto).map(c => ({
             ...c, fuente:fuente.nombre,
+            id: fuente.nombre === "TDTChannels" && /^(La1|La2|Antena3|Telecinco|Cuatro|Clan|Boing|Neox|Nova)\.TV$/.test(c.id) ? c.id.replace(/\.TV$/, ".es") : c.id,
             internacional:fuente.nombre !== "RD" && !/\.do(?:@|$)/i.test(c.id || "")
-        })).filter(c => fuente.nombre === "RD" ||
-            /\.do(?:@|$)/i.test(c.id || "") || esPreferido(c.nombre) || esDeporte(c));
+        }));
     }finally{
         clearTimeout(limite);
     }
@@ -1010,7 +1012,7 @@ async function cargarCanalesIPTV(){
     const agregados = new Set();
     const clave = c => c.id.split("@")[0].toLowerCase();
 
-    actualizar("Consultando las 2 fuentes...");
+    actualizar("Consultando " + FUENTES_CANALES.length + " fuentes...");
     const resultados = await Promise.allSettled(FUENTES_CANALES.map(descargarLista));
     const disponibles = resultados.filter(r => r.status === "fulfilled");
     const candidatos = disponibles.flatMap(r=>r.value).filter(c=>{
@@ -1021,7 +1023,7 @@ async function cargarCanalesIPTV(){
         Number(!/disney/i.test(a.nombre))-Number(!/disney/i.test(b.nombre)));
     for(let posicion=0;posicion<candidatos.length;posicion+=1){
         const lote=candidatos.slice(posicion,posicion+1);
-        actualizar(disponibles.length+"/2 fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+1,candidatos.length)+"/"+candidatos.length);
+        actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+1,candidatos.length)+"/"+candidatos.length);
         const visibles=await Promise.all(lote.map(c=>agregados.has(clave(c))?false:comprobarReproduccion(c.url)));
         lote.forEach((c,i)=>{
             if(visibles[i] && !agregados.has(clave(c))){
@@ -1031,7 +1033,7 @@ async function cargarCanalesIPTV(){
         });
     }
     const disney=canales.some(c=>/disney/i.test(c.nombre));
-    actualizar(disponibles.length+"/2 fuentes · "+(disponibles.length?"Búsqueda completada":"No se pudieron cargar las listas")+
+    actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · "+(disponibles.length?"Búsqueda completada":"No se pudieron cargar las listas")+
         (disney?"":" · Disney: sin señal verificada"));
 }
 
