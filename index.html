@@ -1,44 +1,444 @@
-<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TV PRO · En vivo</title>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TV PRO</title>
+<link rel="icon" type="image/x-icon" href="tvpro.ico">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
 <style>
-:root{color-scheme:dark;font-family:Inter,Segoe UI,Arial,sans-serif;color:#eef3f9;background:#080c12}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button{cursor:pointer}button,select{color:#e9eff7;background:#18212e;border:1px solid #2b3849;border-radius:10px;padding:11px 15px}button:hover{background:#233246}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #57e4b4;outline-offset:3px}button:disabled{opacity:.5;cursor:wait}header{height:82px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #202a36}.brand{font-weight:850;font-size:23px;letter-spacing:2px}.brand b{color:#57e4b4}.live{font-size:11px;letter-spacing:2px;color:#57e4b4;background:#143329;padding:8px 12px;border-radius:20px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;min-height:calc(100vh - 82px)}main{padding:30px;min-width:0}.eyebrow{color:#8a9caf;font-size:11px;letter-spacing:2px;margin-bottom:16px}.screen{position:relative;background:#000;border:1px solid #25313e;border-radius:18px;overflow:hidden;aspect-ratio:16/9}#player{width:100%;height:100%;object-fit:contain}#welcome{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:radial-gradient(ellipse at 50% 90%,#163b38,#0a101a 70%);padding:25px}#welcome[hidden]{display:none}#welcome h1{font-size:clamp(24px,3vw,42px);margin:0 0 14px;letter-spacing:-1px}#welcome p{color:#9baebe;margin:0 0 25px}#begin{background:#57e4b4;color:#08271d;font-weight:750;border:0;justify-self:center;padding:14px 27px}.now{display:flex;align-items:center;gap:16px;margin:24px 0}#number{font-size:32px;color:#57e4b4;font-weight:800}#name{font-size:21px;margin:0 0 5px}#status{font-size:13px;color:#98acbd}.controls{display:flex;gap:8px;flex-wrap:wrap}.help{font-size:12px;color:#7e90a5;margin-top:26px;line-height:1.8}aside{border-left:1px solid #202a36;padding:26px 20px;background:#0d131d}aside h2{font-size:20px;margin:0 0 8px}#count{color:#8fa3b6;font-size:12px}.tools{display:flex;gap:8px;margin:22px 0 12px}.tools select{width:100%;min-width:0;font-size:12px}.tools button{font-size:12px;padding:10px}input{width:100%;background:#080e17;border:1px solid #2b3849;color:white;border-radius:10px;padding:13px;margin-bottom:14px}#progress{font-size:12px;color:#57e4b4;line-height:1.5;min-height:36px;margin-bottom:12px}#channels{max-height:57vh;overflow:auto;display:grid;gap:7px}.channel{width:100%;display:grid;grid-template-columns:32px 1fr;gap:2px 8px;text-align:left;padding:13px 10px;background:transparent;border:1px solid transparent}.channel.selected{background:#153129;border-color:#326451}.number{grid-row:span 2;color:#8198a8;align-self:center;font-size:13px}.channel span:nth-child(2){font-size:13px}.channel small{font-size:9px;letter-spacing:1px;color:#7f9b96;margin-top:5px}#notice{color:#8c9bad;line-height:1.6;font-size:12px}#digits{position:absolute;top:20px;right:20px;font-size:40px;background:#111c;padding:10px;border-radius:10px}.probe{position:fixed;left:-8px;bottom:0;width:2px;height:2px;opacity:.01;pointer-events:none}#menu{display:none}@media(min-width:1500px){main{padding:45px}}@media(max-width:1000px){.layout{grid-template-columns:minmax(0,1fr) 300px}main{padding:20px}}@media(max-width:760px){header{height:68px;padding:0 18px}.layout{display:block}main{padding:20px 14px}aside{display:none;border-left:0;border-top:1px solid #263342}aside.open{display:block}#menu{display:block}.live{display:none}#channels{max-height:50vh}.screen{border-radius:12px}.help{margin-top:18px}#welcome p{font-size:12px}#welcome h1{font-size:25px}.controls button{font-size:12px;padding:10px}.now{margin:18px 0}}
-/* TV layout: video fills the display; navigation stays inside the safe area. */
-html,body{height:100%;overflow:hidden;background:#000}
-header{position:fixed;inset:0 0 auto;height:110px;padding:25px 5vw;border:0;z-index:5;background:linear-gradient(#000c,transparent)}
-.layout{display:block;min-height:100%}main{padding:0!important}.eyebrow,main>.help{display:none}
-.screen{position:fixed;inset:0;border:0;border-radius:0;aspect-ratio:auto}
-#player{width:100vw;height:100vh;object-fit:contain}
-#welcome{z-index:10}#welcome h1{font-size:clamp(32px,4vw,64px)}#welcome p{font-size:22px}#begin{font-size:24px;padding:20px 40px}
-.now{position:fixed;left:0;right:0;bottom:0;margin:0;padding:55px 5vw 130px;background:linear-gradient(transparent,#000e);pointer-events:none;gap:24px}
-#number{font-size:58px}#name{font-size:32px}#status{font-size:21px;color:#cfdae3}
-.controls{position:fixed;left:5vw;bottom:5vh;z-index:5;gap:12px}.controls button,header button{font-size:19px;padding:14px 20px;min-height:52px}
-header,.now,.controls{opacity:0;visibility:hidden;transition:opacity .2s}body.hud header,body.hud .now,body.hud .controls{opacity:1;visibility:visible}
-body:not(.hud){cursor:none}#menu{display:block}.live{display:block;font-size:15px}
-#guide{display:none;position:fixed;z-index:20;right:3vw;top:5vh;bottom:5vh;width:min(580px,92vw);padding:30px;background:#0b1426f5;border:1px solid #435069;border-radius:18px;overflow:auto;box-shadow:0 20px 80px #000b}
-#guide.open{display:block}aside h2{font-size:29px}#count,#progress,#notice,aside .help{font-size:17px}#channels{max-height:48vh;gap:8px}.channel{min-height:74px;padding:15px;grid-template-columns:45px 1fr}.channel span:nth-child(2){font-size:22px}.channel .number{font-size:20px}.channel small{font-size:12px}.tools select,.tools button,input{font-size:18px;min-height:50px}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid #57e4b4;outline-offset:-2px;background:#234538}
-#digits{top:8vh;right:6vw;font-size:64px;z-index:25}
-@media(max-width:760px){.controls{gap:6px;bottom:4vh}.controls button{font-size:13px;padding:10px}.now{padding-bottom:110px}#name{font-size:23px}#status{font-size:16px}.live{display:none}header{height:85px}#guide{padding:20px}#welcome p{font-size:17px}}
-/* Match the original TV controls: only channel information at the bottom. */
-.controls{display:none!important}
-.now{padding-bottom:5vh}
-#channelCount{position:fixed;right:4vw;bottom:4vh;z-index:6;padding:6px 10px;border-radius:7px;background:rgba(0,0,0,.55);color:#eaf8f2;font-size:13px;font-weight:500;pointer-events:none;text-shadow:0 1px 3px #000}
-body .now,body.hud .now{opacity:0;visibility:hidden;transition:opacity .2s}
-body.channel-info .now{opacity:1;visibility:visible}
-#channelCount{color:#ffdf00;font-size:17px;background:#000;opacity:1;visibility:visible}
-#noSignal{position:fixed;inset:0;z-index:3;display:grid;place-items:center;background:#000;color:#fff;font-size:clamp(32px,4vw,64px);font-weight:600;pointer-events:none}
-#noSignal[hidden]{display:none}
-</style></head><body>
-<div id="noSignal" role="status" hidden>Sin señal</div>
-<div id="channelCount" role="status" aria-live="polite">8 canales encontrados</div>
-<header><div class="brand">TV <b>PRO</b></div><span class="live">● TELEVISIÓN EN VIVO</span><button id="menu">Canales</button></header>
-<div class="layout"><main><div class="eyebrow">TU TELEVISIÓN · EN UN SOLO LUGAR</div><div class="screen"><video id="player" playsinline></video><div id="welcome"><h1>Presiona OK, para empezar a ver</h1><p>Tus canales favoritos y más televisión en vivo.</p><button id="begin">Comenzar a ver →</button></div><div id="digits" hidden></div></div>
-<div class="now"><span id="number">00</span><div><h2 id="name">La Voz de María</h2><div id="status" role="status">Listo para reproducir</div></div></div>
-<div class="controls"><button id="previous" aria-label="Canal anterior">← Anterior</button><button id="next">Siguiente →</button><button id="retry">Reproducir / Reintentar</button><button id="mute">Silenciar</button><button id="fullscreen">Pantalla completa</button></div>
-<p class="help">↑ ↓ Cambiar canal &nbsp; · &nbsp; 0–9 Marcar número &nbsp; · &nbsp; OK Confirmar<br>Los canales adicionales aparecen a medida que se comprueba su reproducción.</p>
-</main><aside id="guide" class="open"><h2>Explora los canales</h2><div id="count"></div><div class="tools"><select id="scope" aria-label="Catálogo"><option value="es" selected>Locales e internacionales · Español</option></select><button id="refresh">Actualizar</button></div><input id="search" type="search" placeholder="Buscar canal…" aria-label="Buscar canal"><div id="progress" role="status">Comienza a ver para comprobar las señales.</div><div id="channels"></div><p id="notice">Solo se agregan señales con reproducción comprobada. Los ocho canales manuales se conservan siempre.</p><p class="help">Un aviso regional dentro del video puede superar la comprobación. El acceso depende del proveedor de la señal.</p></aside></div>
-<script>let canales = [
+
+*{
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+    background:#000;
+    color:white;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+body{
+    cursor:none;
+}
+
+/* =====================================================
+   VIDEO
+===================================================== */
+
+#player{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    object-fit:contain;
+    background:#000;
+}
+
+
+/* =====================================================
+   PANTALLA INICIAL
+===================================================== */
+
+#startOverlay{
+
+    position:fixed;
+    inset:0;
+
+    z-index:1000;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0,195,255,.10),
+            rgba(0,0,0,.96) 70%
+        );
+}
+
+.startCard{
+
+    width:min(400px,88vw);
+
+    padding:32px;
+
+    text-align:center;
+
+    border-radius:20px;
+
+    background:rgba(10,15,20,.88);
+
+    border:1px solid rgba(0,195,255,.20);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.8);
+
+}
+
+.startIcon{
+    font-size:48px;
+    margin-bottom:10px;
+}
+
+.startTitle{
+
+    font-size:30px;
+
+    font-weight:900;
+
+    letter-spacing:3px;
+
+}
+
+.startSubtitle{
+
+    margin-top:5px;
+
+    font-size:14px;
+
+    color:#8999a3;
+
+}
+
+.startHint{
+
+    margin-top:22px;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    background:rgba(0,195,255,.07);
+
+    font-size:13px;
+
+    color:#aabac3;
+
+}
+
+.startHint strong{
+
+    color:#00c3ff;
+
+    font-size:16px;
+
+}
+
+
+/* =====================================================
+   NUMERO MARCADO
+===================================================== */
+
+#inputDisplay{
+
+    position:fixed;
+
+    top:7%;
+
+    right:5%;
+
+    z-index:500;
+
+    display:none;
+
+    min-width:65px;
+
+    padding:6px 12px;
+
+    text-align:center;
+
+    font-size:42px;
+
+    line-height:1;
+
+    font-weight:800;
+
+    letter-spacing:2px;
+
+    color:white;
+
+    border-radius:10px;
+
+    background:rgba(0,0,0,.55);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    text-shadow:
+        0 0 15px rgba(0,195,255,.7);
+
+}
+
+
+/* =====================================================
+   INFORMACIÓN DEL CANAL
+===================================================== */
+
+#infoBar{
+
+    position:fixed;
+
+    left:0;
+    bottom:0;
+
+    z-index:300;
+
+    width:100%;
+
+    padding:25px 35px 30px;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.95),
+            rgba(0,0,0,.55),
+            transparent
+        );
+
+    transform:translateY(100%);
+
+    transition:
+        transform .3s ease;
+
+}
+
+#infoContent{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:13px;
+
+}
+
+#canalNum{
+
+    min-width:52px;
+
+    font-size:34px;
+
+    font-weight:900;
+
+    color:#00c3ff;
+
+}
+
+#canalLogo{
+
+    width:48px;
+    height:48px;
+
+    object-fit:contain;
+
+    padding:5px;
+
+    border-radius:8px;
+
+    background:rgba(255,255,255,.08);
+
+}
+
+#canalNombre{
+
+    font-size:18px;
+
+    font-weight:650;
+
+}
+
+#estado{
+
+    margin-top:3px;
+
+    color:#8c999f;
+
+    font-size:12px;
+
+}
+
+
+/* =====================================================
+   MENSAJE
+===================================================== */
+
+#toast{
+
+    position:fixed;
+
+    left:50%;
+
+    bottom:30px;
+
+    z-index:900;
+
+    padding:9px 16px;
+
+    border-radius:20px;
+
+    background:rgba(10,15,20,.9);
+
+    border:1px solid rgba(0,195,255,.20);
+
+    transform:
+        translate(-50%,20px);
+
+    opacity:0;
+
+    transition:.2s;
+
+    font-size:13px;
+
+}
+
+#toast.show{
+
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
+
+}
+
+</style>
+
+<style>
+#contadorCanales{
+    position:fixed; bottom:8px; right:12px; z-index:1100;
+    max-width:calc(100vw - 24px); padding:6px 10px;
+    border-radius:7px; background:rgba(0,0,0,.78);
+    color:#fff; font-size:12px; pointer-events:none;
+}
+#infoBar{padding-bottom:52px;}
+</style>
+<style>
+body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
+.startCard{background:rgba(12,22,40,.92);border-color:rgba(72,190,255,.32);}
+.startTitle{color:#edf5ff;}
+.startSubtitle,.startHint{color:#a9bdd5;}
+.startHint{background:rgba(72,190,255,.09);}
+.startHint strong,#canalNum{color:#48beff;}
+#canalNombre{color:#f4f8ff;}
+#estado{color:#a9bdd5;}
+#inputDisplay{color:#edf5ff;background:rgba(12,22,40,.78);border-color:rgba(72,190,255,.3);text-shadow:0 0 15px rgba(72,190,255,.5);}
+#infoBar{background:linear-gradient(to top,rgba(7,16,31,.96),rgba(7,16,31,.60),transparent);}
+#contadorCanales,#toast{background:rgba(12,22,40,.88);color:#d9ecff;}
+</style>
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     VIDEO
+===================================================== -->
+
+<video
+    id="player"
+    autoplay
+    muted
+    playsinline
+></video>
+
+
+<!-- =====================================================
+     INICIO
+===================================================== -->
+
+<div id="startOverlay">
+
+    <div class="startCard">
+
+        <div class="startIcon">
+            📺
+        </div>
+
+        <div class="startTitle">
+            TV PRO
+        </div>
+
+        <div class="startSubtitle">
+            Televisión en vivo
+        </div>
+
+        <div class="startHint">
+
+            <strong>
+                Presiona OK
+            </strong>
+
+            <br>
+
+            para comenzar
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     NUMERO
+===================================================== -->
+
+<div id="inputDisplay"></div>
+
+
+<!-- =====================================================
+     INFORMACIÓN
+===================================================== -->
+
+<div id="infoBar">
+
+    <div id="infoContent">
+
+        <div id="canalNum"></div>
+
+        <img
+            id="canalLogo"
+            src=""
+            alt=""
+        >
+
+        <div>
+
+            <div id="canalNombre"></div>
+
+            <div id="estado">
+                En vivo
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite">Canales encontrados: 8 · Buscando...</div>
+
+
+<script>
+
+
+/* =====================================================
+   CANALES ORIGINALES
+   ESTOS SIEMPRE SERÁN LOS PRIMEROS
+===================================================== */
+
+let canales = [
 
     {
         nombre:"La Voz de María",
@@ -64,269 +464,972 @@ body.channel-info .now{opacity:1;visibility:visible}
         logo:"https://telever.com.do/wp-content/uploads/2025/07/LOGO-FINAL.svg"
     },
 
-    {
-        nombre:"Teleuniverso",
-        url:"https://videoserver.tmcreativos.com:19360/kptjeckkaa/kptjeckkaa.m3u8",
-        logo:"https://stscdn.teleuniversotv.com/wp-content/uploads/2020/11/Teleuniverso.webp"
-    },
-
-    {
-        nombre:"6 Wise TV",
-        url:"https://live.enhdtv.com:8081/8150/index.m3u8",
-        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9JTxrz_0LCVISHKDdzNmZfi9tVwQs174J4Q&s"
-    },
-
-    {
-        nombre:"Univision Noticias",
-        url:"https://amg26269-dogtv-amg26269c2-stirr-us-8504.playouts.now.amagi.tv/playlist.m3u8",
-        logo:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkoMy8wfofxfOljm8fKQ9mxO2nIkdZ10U37g&s"
-    },
-
-    {
-        nombre:"Canal 4 RD",
-        url:"https://sh1.domint.net:19360/rtvd/rtvd/playlist.m3u8",
-        logo:"https://certvdominicana.com/wp-content/uploads/2021/04/Logo-Canal-4RD.png"
-    }
+   
 
 ];
-const manuales = canales.slice();
-const $ = id => document.getElementById(id);
-const video = $('player');
-let index = 0, hls, started = false, generation = 0, playbackTimer, scanBusy = false;
-let digits = '', digitTimer, statusText = 'Listo para reproducir';
-const unavailable = new Set();
-// Candidate URLs found in IPTV-org's Dominican stream catalog. Never assumed live.
-const priorityRD = [
-  {id:'TeleAntillas.do', nombre:'Teleantillas · RD 2', match:/^tele\s*antillas\b/i, urls:['http://190.122.104.210:5080/LiveApp/streams/C6ngUWmvwMhliYPN3668193473821155.m3u8','http://45.171.108.253:8888/TELEANTILLAS/index.m3u8']},
-  {id:'Telemicro.do', nombre:'Telemicro · RD 5', match:/^telemicro(?:\s*\([^)]*\))?$/i, urls:['https://live2.telemicro.com.do/live/55/playlist.m3u8']},
-  {id:'Antena7.do', nombre:'Antena 7 · RD 7', match:/^antena\s*7\b/i, urls:['https://alba-do-antena7-antena7.stream.mediatiquestream.com/index.m3u8']},
-  {id:'ColorVision.do', nombre:'Color Visión · RD 9', match:/^color\s*visi[oó]n\b/i, urls:['https://hls.tvabierta.net/hls/009.m3u8']},
-  {id:'Telesistema11.do', nombre:'Telesistema · RD 11', match:/^telesistema\b/i, urls:['https://cdn4.wind.do/streams/telesistema/telesistema_master.m3u8']},
-  {id:'Telecentro.do', nombre:'Telecentro · RD 13', match:/^telecentro\b/i, urls:['https://live2.telemicro.com.do/live/telecentrocast_1080p/playlist.m3u8','https://live4.telemicro.com.do/live/telecentrocast_1080p/playlist.m3u8']}
-];
-function priorityOf(c) {
-  return priorityRD.findIndex(p => c.id ? c.id.toLowerCase() === p.id.toLowerCase() : p.match.test(c.nombre));
+
+
+/* =====================================================
+   IPTV-ORG
+===================================================== */
+
+const IPTV_RD =
+    "https://iptv-org.github.io/iptv/countries/do.m3u";
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let index = 0;
+
+let hls = null;
+
+let sonidoActivado = false;
+
+let inputBuffer = "";
+
+let inputTimer = null;
+
+
+/* =====================================================
+   ELEMENTOS
+===================================================== */
+
+const video =
+    document.getElementById("player");
+
+const overlay =
+    document.getElementById("startOverlay");
+
+const bar =
+    document.getElementById("infoBar");
+
+const displayNum =
+    document.getElementById("inputDisplay");
+
+const toast =
+    document.getElementById("toast");
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+function mostrarToast(texto){
+
+    toast.innerText =
+        texto;
+
+    toast.classList.add("show");
+
+    clearTimeout(
+        toast.timer
+    );
+
+    toast.timer =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            1600
+        );
+
 }
-function addVerified(c) {
-  const current = canales[index];
-  unavailable.delete(c.url);
-  const existing = canales.slice(manuales.length).find(old => c.priority !== undefined ? old.priority === c.priority : old.url === c.url);
-  if (existing) Object.assign(existing, c); else canales.push(c);
-  // Preserve manual objects/order and keep the current playing object selected.
-  const extras = canales.slice(manuales.length).sort((a,b) => (a.priority ?? 99) - (b.priority ?? 99));
-  canales = [...manuales, ...extras]; index = canales.indexOf(current);
-  render();
+
+
+/* =====================================================
+   ACTIVAR SONIDO
+===================================================== */
+
+function activarSonido(){
+
+    if(sonidoActivado)
+        return;
+
+    sonidoActivado = true;
+
+    video.muted = false;
+
+    video.volume = 1;
+
+    overlay.style.display = "none";
+
+    video.play().catch(() => {});
+
 }
-const validURL = value => { try { return ['http:', 'https:'].includes(new URL(value).protocol); } catch { return false; } };
-function parseM3U(text) {
-  const result = []; let info;
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (line.startsWith('#EXTINF:')) {
-      const match = line.match(/^#EXTINF:(?:[^",]|"[^"]*")*,(.*)$/);
-      info = {nombre: match?.[1].trim() || 'Canal', logo: line.match(/tvg-logo="([^"]*)"/)?.[1] || '', id: (line.match(/tvg-id="([^"]*)"/)?.[1] || '').split('@')[0]};
-    } else if (info && line && !line.startsWith('#')) {
-      if (validURL(line)) result.push({...info, url: line});
-      info = null;
+
+
+/* =====================================================
+   INFORMACIÓN
+===================================================== */
+
+function mostrarBarra(
+    estado = "En vivo"
+){
+
+    const canal =
+        canales[index];
+
+    if(!canal)
+        return;
+
+
+    /*
+       El canal visualmente empieza en 0.
+       
+       Por eso:
+       índice 0 = canal 0
+       índice 1 = canal 1
+       etc.
+    */
+
+    document.getElementById(
+        "canalNum"
+    ).innerText =
+        String(index);
+
+
+    document.getElementById(
+        "canalNombre"
+    ).innerText =
+        canal.nombre;
+
+
+    document.getElementById(
+        "canalLogo"
+    ).src =
+        canal.logo || "";
+
+
+    document.getElementById(
+        "estado"
+    ).innerText =
+        estado;
+
+
+    bar.style.transform =
+        "translateY(0)";
+
+
+    clearTimeout(
+        bar.timer
+    );
+
+
+    bar.timer =
+        setTimeout(
+            () => {
+
+                bar.style.transform =
+                    "translateY(100%)";
+
+            },
+            3000
+        );
+
+}
+
+
+/* =====================================================
+   CARGAR CANAL
+===================================================== */
+
+function cargarCanal(numero){
+
+    if(
+        !canales.length
+    )
+        return;
+
+
+    /*
+       CICLO DE CANALES
+
+       Si estamos en 0 y bajamos:
+       último canal.
+
+       Si estamos en el último y subimos:
+       canal 0.
+    */
+
+    index =
+        (
+            numero +
+            canales.length
+        ) %
+        canales.length;
+
+
+    if(hls){
+
+        hls.destroy();
+
+        hls = null;
+
     }
-  }
-  return result;
+
+
+    const canal =
+        canales[index];
+
+    const url =
+        canal.url;
+
+
+    mostrarBarra(
+        "Cargando..."
+    );
+
+
+    if(
+        typeof Hls !== "undefined" && Hls.isSupported()
+    ){
+
+        hls =
+            new Hls({
+
+                enableWorker:true,
+
+                lowLatencyMode:true,
+
+                backBufferLength:30
+
+            });
+
+
+        preferirAudioEspanol(hls);
+
+        hls.loadSource(
+            url
+        );
+
+
+        hls.attachMedia(
+            video
+        );
+
+
+        hls.on(
+            Hls.Events.MANIFEST_PARSED,
+            function(){
+
+                video.play()
+                    .catch(() => {});
+
+                mostrarBarra(
+                    "● En vivo"
+                );
+
+            }
+        );
+
+
+        hls.on(
+            Hls.Events.ERROR,
+            function(
+                event,
+                data
+            ){
+
+                if(data.fatal){
+
+                    mostrarBarra(
+                        "Sin señal"
+                    );
+
+                }
+
+            }
+        );
+
+
+    }else{
+
+        video.src =
+            url;
+
+        video.play()
+            .catch(() => {});
+
+    }
+
 }
-function visibleChannels() { return canales.filter(c => manuales.includes(c) || !unavailable.has(c.url)); }
-function render() {
-  const focusedURL = document.activeElement?.dataset?.url;
-  const query = $('search').value.toLocaleLowerCase();
-  const fragment = document.createDocumentFragment();
-  canales.forEach((c, n) => {
-    if ((!manuales.includes(c) && unavailable.has(c.url)) || !c.nombre.toLocaleLowerCase().includes(query)) return;
-    const button = document.createElement('button');
-    button.className = 'channel' + (n === index ? ' selected' : '');
-    button.dataset.url = c.url;
-    button.setAttribute('aria-current', String(n === index));
-    const number = document.createElement('span'); number.className = 'number'; number.textContent = String(n).padStart(2, '0');
-    const name = document.createElement('span'); name.textContent = c.nombre;
-    const tag = document.createElement('small'); tag.textContent = manuales.includes(c) ? 'MANUAL' : 'VERIFICADO';
-    button.append(number, name, tag);
-    button.onclick = () => { start(); tune(n); closeGuide(); };
-    fragment.append(button);
-  });
-  $('channels').replaceChildren(fragment);
-  if (focusedURL) Array.from($('channels').children).find(b => b.dataset.url === focusedURL)?.focus();
-  $('count').textContent = `${visibleChannels().length} canales · 8 manuales protegidos`;
-  $('channelCount').textContent = `${visibleChannels().length} canales encontrados`;
-}
-function status(message) { statusText = message; $('status').textContent = message; showHUD(); }
-function start() { if (started) return; started = true; $('welcome').hidden = true; video.muted = false; tune(index); scan(); }
-function play() { video.play().catch(e => { if (e.name === 'NotAllowedError') status('Pulsa Reproducir para continuar'); }); }
-function tune(n) {
-  if (!canales[n]) return;
-  index = n; const c = canales[n], token = ++generation;
-  $('noSignal').hidden = true;
-  clearTimeout(playbackTimer); if (hls) { hls.destroy(); hls = null; }
-  video.onplaying = video.onerror = video.onwaiting = null;
-  video.pause(); video.removeAttribute('src'); video.load();
-  $('name').textContent = c.nombre; $('number').textContent = String(n).padStart(2, '0');
-  status('Conectando con la señal…'); render();
-  showChannelInfo();
-  let failed = false, recoveries = 0;
-  const fail = code => {
-    if (token !== generation || failed) return; failed = true; clearTimeout(playbackTimer);
-    $('noSignal').hidden = !manuales.includes(c);
-    if (hls) { hls.destroy(); hls = null; }
-    video.pause(); video.removeAttribute('src'); video.load();
-    const reason = [401,403,451].includes(code) ? 'El proveedor restringe el acceso a esta señal' : 'No se pudo reproducir desde esta conexión';
-    status(reason);
-    if (!manuales.includes(c)) { unavailable.add(c.url); render(); $('notice').textContent = `${c.nombre}: ocultado por falta de señal. Actualiza para comprobarlo otra vez.`; }
-  };
-  const deadline = () => { clearTimeout(playbackTimer); playbackTimer = setTimeout(() => fail(), 22000); };
-  video.onplaying = () => { if (token !== generation || failed) return; $('noSignal').hidden = true; clearTimeout(playbackTimer); status('● En vivo'); };
-  video.onwaiting = () => { if (token === generation && !failed) { status('Recuperando señal…'); deadline(); } };
-  video.onerror = () => fail(); deadline();
-  if (window.Hls?.isSupported()) {
-    hls = new Hls({enableWorker: true, backBufferLength: 20, maxBufferLength: 15});
-    const instance = hls;
-    instance.on(Hls.Events.MANIFEST_PARSED, () => { if (token === generation) play(); });
-    instance.on(Hls.Events.ERROR, (_, data) => {
-      if (token !== generation || !data.fatal) return;
-      if (data.type === Hls.ErrorTypes.MEDIA_ERROR && recoveries++ < 1) instance.recoverMediaError();
-      else fail(data.response?.code);
-    });
-    instance.loadSource(c.url); instance.attachMedia(video);
-  } else if (video.canPlayType('application/vnd.apple.mpegurl')) { video.src = c.url; play(); }
-  else { clearTimeout(playbackTimer); status('Este navegador no tiene soporte HLS o no cargó el reproductor. Prueba actualizar la página.'); }
-}
-// Verify actual decoded playback, not just a successful playlist download.
-function probe(url) {
-  return new Promise(resolve => {
-    const v = document.createElement('video'); let instance, settled = false, firstTime;
-    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.className = 'probe'; document.body.append(v);
-    const finish = ok => { if (settled) return; settled = true; clearTimeout(timer); v.onerror = v.ontimeupdate = null; if (instance) instance.destroy(); v.pause(); v.removeAttribute('src'); v.load(); v.remove(); resolve(ok); };
-    const timer = setTimeout(() => finish(false), 15000);
-    v.onerror = () => finish(false);
-    v.ontimeupdate = () => { if (firstTime === undefined) firstTime = v.currentTime; if (v.readyState >= 2 && v.videoWidth > 0 && v.currentTime - firstTime > 0.3) finish(true); };
-    const begin = () => v.play().catch(() => finish(false));
-    try {
-      if (window.Hls?.isSupported()) {
-        instance = new Hls({enableWorker: true, maxBufferLength: 2, maxMaxBufferLength: 4, backBufferLength: 0, startLevel: 0});
-        instance.on(Hls.Events.LEVEL_LOADED, (_, data) => { if (!data.details.live) finish(false); });
-        instance.on(Hls.Events.MANIFEST_PARSED, begin);
-        instance.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) finish(false); });
-        instance.loadSource(url); instance.attachMedia(v);
-      } else if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = url; begin(); }
-      else finish(false);
-    } catch { finish(false); }
-  });
-}
-async function scan() {
-  if (scanBusy) return;
-  scanBusy = true; $('refresh').disabled = true; $('scope').disabled = true;
-  $('progress').textContent = 'Descargando catálogo…';
-  try {
-    const fetchList = async url => {
-      const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 20000);
-      try {
-        const response = await fetch(url, {signal:controller.signal, cache:'no-store'});
-        if (!response.ok) throw new Error('catalog');
-        const content = await response.text();
-        if (!content.trimStart().startsWith('#EXTM3U')) throw new Error('format');
-        return parseM3U(content);
-      } finally { clearTimeout(timeout); }
-    };
-    const lists = await Promise.allSettled([
-      fetchList('https://iptv-org.github.io/iptv/languages/spa.m3u'),
-      fetchList('https://raw.githubusercontent.com/iptv-org/iptv/master/streams/do.m3u')
-    ]);
-    const spanish = lists[0].status === 'fulfilled' ? lists[0].value : [];
-    const dominican = lists[1].status === 'fulfilled' ? lists[1].value : [];
-    const all = [...dominican, ...spanish];
-    const seen = new Set(manuales.map(c => c.url));
-    const candidates = spanish.filter(c => { if (priorityOf(c) >= 0 || seen.has(c.url)) return false; seen.add(c.url); return true; });
-    let next = 0, checked = 0, accepted = 0;
-    // Existing extracted entries are hidden until revalidated; manual entries never change.
-    canales.slice(manuales.length).forEach(c => unavailable.add(c.url)); render();
-    // Complete this small ordered group before publishing any international entries.
-    for (let rank = 0; rank < priorityRD.length; rank++) {
-      const p = priorityRD[rank];
-      const options = [...new Set([...p.urls, ...all.filter(c => priorityOf(c) === rank).map(c => c.url)])].filter(url => !manuales.some(c => c.url === url));
-      for (let attempt = 0; attempt < options.length; attempt++) {
-        $('progress').textContent = `${p.nombre} · probando señal ${attempt + 1}/${options.length}`;
-        if (await probe(options[attempt])) {
-          addVerified({nombre:p.nombre, id:p.id, url:options[attempt], logo:'', priority:rank});
-          accepted++; break;
+
+
+/* =====================================================
+   PARSEAR M3U
+===================================================== */
+
+function parseM3U(text){
+
+    const lines =
+        text.split(/\r?\n/);
+
+    const resultado = [];
+
+    let info = null;
+
+
+    for(
+        let i = 0;
+        i < lines.length;
+        i++
+    ){
+
+        const line =
+            lines[i].trim();
+
+
+        if(
+            line.startsWith(
+                "#EXTINF"
+            )
+        ){
+
+            const nombreMatch =
+                line.match(
+                    /,(.*)$/
+                );
+
+
+            const logoMatch =
+                line.match(
+                    /tvg-logo="([^"]*)"/
+                );
+
+
+            info = {
+                id: (line.match(/tvg-id="([^"]*)"/) || [,""])[1],
+                categorias: (line.match(/group-title="([^"]*)"/) || [,""])[1],
+
+                nombre:
+                    nombreMatch
+                        ? nombreMatch[1].trim()
+                        : "Canal",
+
+                logo:
+                    logoMatch
+                        ? logoMatch[1]
+                        : ""
+
+            };
+
         }
-      }
+
+        else if(
+
+            info &&
+            line &&
+            !line.startsWith("#")
+
+        ){
+
+            resultado.push({
+                id: info.id,
+                categorias: info.categorias,
+
+                nombre:
+                    info.nombre,
+
+                url:
+                    line,
+
+                logo:
+                    info.logo
+
+            });
+
+
+            info = null;
+
+        }
+
     }
-    const worker = async () => {
-      while (next < candidates.length) {
-        const c = candidates[next++];
-        const ok = await probe(c.url); checked++;
-        if (ok) { accepted++; addVerified(c); }
-        $('progress').textContent = `Comprobados ${checked}/${candidates.length} · ${accepted} disponibles`;
-      }
+
+
+    return resultado;
+
+}
+
+
+/* =====================================================
+   CARGAR CANALES IPTV-ORG
+===================================================== */
+
+function prioridadRD(canal){
+    if(canal.internacional) return 6;
+    const nombre = canal.nombre.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    const grupos = [
+        /\b(?:tele\s*antillas|(?:canal\s*)0?2)\b/,
+        /\b(?:telemicro|(?:canal\s*)0?5)\b/,
+        /\b(?:antena\s*7|(?:canal\s*)0?7)\b/,
+        /\b(?:color\s*vision|(?:canal\s*)0?9)\b/,
+        /\b(?:telesistema|(?:canal\s*)11)\b/,
+        /\b(?:digital\s*15|(?:canal\s*)15)\b/
+    ];
+    // Telemicro Internacional no representa el canal nacional 5.
+    if(/internacional/.test(nombre)) return grupos.length;
+    const posicion = grupos.findIndex(patron => patron.test(nombre));
+    return posicion < 0 ? grupos.length : posicion;
+}
+
+
+function preferirAudioEspanol(motor){
+    motor.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => {
+        const pista = motor.audioTracks.findIndex(t =>
+            /^(?:es|spa)(?:-|$)/i.test(t.lang || "") ||
+            /espa[nñ]ol|spanish|castellano/i.test(t.name || ""));
+        if(pista >= 0) motor.audioTrack = pista;
+    });
+}
+
+function comprobarReproduccion(url){
+    return new Promise(resolve => {
+        const prueba = document.createElement("video");
+        prueba.muted = true;
+        prueba.playsInline = true;
+        prueba.preload = "auto";
+        prueba.setAttribute("aria-hidden", "true");
+        prueba.style.cssText = "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none";
+        document.body.appendChild(prueba);
+        let motor = null;
+        let terminado = false;
+        const finalizar = visible => {
+            if(terminado) return;
+            terminado = true;
+            clearTimeout(limite);
+            prueba.onloadeddata = null;
+            prueba.onerror = null;
+            if(motor) motor.destroy();
+            prueba.pause();
+            prueba.removeAttribute("src");
+            prueba.load();
+            prueba.remove();
+            resolve(visible);
+        };
+        const limite = setTimeout(() => finalizar(false), 18000);
+        prueba.onloadeddata = () => finalizar(prueba.videoWidth > 0);
+        prueba.onerror = () => finalizar(false);
+        try{
+            if(typeof Hls !== "undefined" && Hls.isSupported()){
+                motor = new Hls({
+                    enableWorker:true, maxBufferLength:2,
+                    maxMaxBufferLength:4, backBufferLength:0
+                });
+                motor.on(Hls.Events.ERROR, (evento, datos) => {
+                    if(datos.fatal) finalizar(false);
+                });
+                preferirAudioEspanol(motor);
+                motor.attachMedia(prueba);
+                motor.loadSource(url);
+            }else if(prueba.canPlayType("application/vnd.apple.mpegurl")){
+                prueba.src = url;
+            }else{
+                finalizar(false);
+                return;
+            }
+            if(!terminado) prueba.play().catch(() => {});
+        }catch(error){
+            finalizar(false);
+        }
+    });
+}
+
+
+const FUENTES_CANALES = [
+    {nombre:"Free-TV", url:"https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"},
+    {nombre:"Internacional", url:"https://iptv-org.github.io/iptv/index.m3u"}
+];
+function esDeporte(canal){
+    return /(?:^|[;,])\s*(?:sports?|deportes?)\s*(?:$|[;,])/i.test(canal.categorias || "");
+}
+function esPreferido(nombre){
+    return /\b(?:disney|fox|fx|nickelodeon|nick\s*jr|cartoon\s*network|dreamworks|discovery\s*kids|boomerang)\b/i.test(nombre);
+}
+function prioridadCanal(canal){
+    const rd = prioridadRD(canal);
+    if(rd < 6) return rd;
+    if(esPreferido(canal.nombre)) return 6;
+    return 7;
+}
+function fuenteBloqueada(url){
+    // Esta señal devuelve el video de bloqueo regional mostrado por el usuario.
+    return /^https?:\/\/cdn4\.wind\.do\/streams\/telesistema\//i.test(url);
+}
+async function descargarLista(fuente){
+    const controlador = new AbortController();
+    const limite = setTimeout(() => controlador.abort(), 20000);
+    try{
+        const respuesta = await fetch(fuente.url, {
+            cache:"no-store", signal:controlador.signal
+        });
+        if(!respuesta.ok) throw new Error(fuente.nombre + ": " + respuesta.status);
+        const texto = await respuesta.text();
+        if(!texto.trimStart().startsWith("#EXTM3U")) throw new Error("Lista inválida");
+        return parseM3U(texto).map(c => ({
+            ...c, fuente:fuente.nombre,
+            internacional:fuente.nombre !== "RD" && !/\.do(?:@|$)/i.test(c.id || "")
+        })).filter(c => fuente.nombre === "RD" ||
+            /\.do(?:@|$)/i.test(c.id || "") || esPreferido(c.nombre) || esDeporte(c));
+    }finally{
+        clearTimeout(limite);
+    }
+}
+
+function crearFiltroEspanol(feeds){
+    const porFeed = new Map(feeds.map(f => [f.channel + "@" + f.id, f]));
+    const principales = new Map(feeds.filter(f => f.is_main).map(f => [f.channel, f]));
+    return canal => {
+        const ficha = canal.id.includes("@") ? porFeed.get(canal.id) : principales.get(canal.id);
+        if(!ficha || !Array.isArray(ficha.languages)) return false;
+        const espanol = ficha.languages.includes("spa");
+        return espanol || (esDeporte(canal) && ficha.languages.includes("eng"));
     };
-    await Promise.all([worker(), worker()]);
-    $('progress').textContent = `Verificación terminada · ${accepted} canales adicionales disponibles${lists[0].status === 'rejected' ? ' · catálogo español no disponible; pulsa Actualizar' : ''}`;
-    $('notice').textContent = accepted ? 'Disponibilidad comprobada desde tu conexión. Puede cambiar durante la emisión.' : 'No se verificaron señales adicionales. Puedes volver a comprobar; tus canales manuales siguen disponibles.';
-  } catch { $('progress').textContent = 'No se pudo descargar el catálogo. Pulsa Actualizar para reintentar.'; }
-  finally { scanBusy = false; $('refresh').disabled = false; $('scope').disabled = false; }
 }
-function step(delta) {
-  const list = visibleChannels(), current = list.indexOf(canales[index]);
-  tune(canales.indexOf(list[(current + delta + list.length) % list.length]));
-}
-function submitNumber() {
-  clearTimeout(digitTimer); const n = Number(digits); digits = ''; $('digits').hidden = true;
-  if (canales[n] && (manuales.includes(canales[n]) || !unavailable.has(canales[n].url))) tune(n);
-  else $('notice').textContent = `Canal ${n} no disponible`;
-}
-$('begin').onclick = () => { start(); scan(); };
-$('refresh').onclick = scan; $('scope').onchange = scan; $('search').oninput = render;
-$('previous').onclick = () => { start(); step(-1); }; $('next').onclick = () => { start(); step(1); };
-$('retry').onclick = () => { start(); tune(index); };
-$('mute').onclick = () => { video.muted = !video.muted; $('mute').textContent = video.muted ? 'Activar sonido' : 'Silenciar'; };
-$('fullscreen').onclick = () => { const p = document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); p?.catch(() => status('Pantalla completa no disponible')); };
-$('menu').onclick = () => $('guide').classList.contains('open') ? closeGuide() : openGuide();
-let hudTimer;
-let channelInfoTimer;
-function showChannelInfo() {
-  document.body.classList.add('channel-info');
-  clearTimeout(channelInfoTimer);
-  channelInfoTimer = setTimeout(() => document.body.classList.remove('channel-info'), 3000);
-}
-function showHUD() {
-  document.body.classList.add('hud'); clearTimeout(hudTimer);
-  hudTimer = setTimeout(() => {
-    if (!$('guide').classList.contains('open') && started) {
-      document.body.classList.remove('hud');
-      if (document.activeElement?.closest('header,.controls')) document.activeElement.blur();
+async function cargarCanalesIPTV(){
+    const contador = document.getElementById("contadorCanales");
+    const actualizar = mensaje => {
+        contador.textContent = "Canales encontrados: " + canales.length + " · " + mensaje;
+    };
+    actualizar("Consultando idiomas...");
+    let esEspanol;
+    const controlador = new AbortController();
+    const limite = setTimeout(() => controlador.abort(),20000);
+    try{
+        const respuesta = await fetch("https://iptv-org.github.io/api/feeds.json",{signal:controlador.signal});
+        if(!respuesta.ok) throw new Error("Idiomas no disponibles");
+        const feeds = await respuesta.json();
+        if(!Array.isArray(feeds)) throw new Error("Formato de idiomas inválido");
+        esEspanol = crearFiltroEspanol(feeds);
+    }catch(error){
+        actualizar("No se pudo verificar el idioma; recarga para reintentar");
+        return;
+    }finally{
+        clearTimeout(limite);
     }
-  }, 5000);
+    const fijos = canales.slice();
+    const existentes = new Set(canales.map(c => c.url));
+    const agregados = new Set();
+    const clave = c => c.id.split("@")[0].toLowerCase();
+
+    actualizar("Consultando las 2 fuentes...");
+    const resultados = await Promise.allSettled(FUENTES_CANALES.map(descargarLista));
+    const disponibles = resultados.filter(r => r.status === "fulfilled");
+    const candidatos = disponibles.flatMap(r=>r.value).filter(c=>{
+        if(!esEspanol(c) || !/^https?:\/\//i.test(c.url) || fuenteBloqueada(c.url) || existentes.has(c.url)) return false;
+        existentes.add(c.url);
+        return true;
+    }).sort((a,b)=>prioridadCanal(a)-prioridadCanal(b) ||
+        Number(!/disney/i.test(a.nombre))-Number(!/disney/i.test(b.nombre)));
+    for(let posicion=0;posicion<candidatos.length;posicion+=3){
+        const lote=candidatos.slice(posicion,posicion+3);
+        actualizar(disponibles.length+"/2 fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+3,candidatos.length)+"/"+candidatos.length);
+        const visibles=await Promise.all(lote.map(c=>agregados.has(clave(c))?false:comprobarReproduccion(c.url)));
+        lote.forEach((c,i)=>{
+            if(visibles[i] && !agregados.has(clave(c))){
+                agregados.add(clave(c));
+                canales.push(c);
+            }
+        });
+    }
+    const disney=canales.some(c=>/disney/i.test(c.nombre));
+    actualizar(disponibles.length+"/2 fuentes · "+(disponibles.length?"Búsqueda completada":"No se pudieron cargar las listas")+
+        (disney?"":" · Disney: sin señal verificada"));
 }
-function openGuide() { $('guide').classList.add('open'); showHUD(); ($('channels').querySelector('.selected') || $('channels').querySelector('button') || $('search')).focus(); }
-function closeGuide() { $('guide').classList.remove('open'); document.activeElement?.blur(); showHUD(); }
-document.addEventListener('keydown', e => {
-  const key = ({10009:'Escape',461:'Escape',427:'ChannelUp',428:'ChannelDown'})[e.keyCode] || e.key;
-  if (['Escape','Back','BrowserBack'].includes(key)) { e.preventDefault(); digits = ''; clearTimeout(digitTimer); $('digits').hidden = true; closeGuide(); return; }
-  showHUD();
-  if (digits && ['Enter','Select','OK'].includes(key)) { e.preventDefault(); submitNumber(); closeGuide(); return; }
-  if (e.target.matches('input,select') && ['ArrowRight','ArrowDown'].includes(key) && (e.target.matches('input') || key === 'ArrowRight')) { e.preventDefault(); $('channels').querySelector('button')?.focus(); return; }
-  if (e.target.matches('input,select')) return;
-  if ($('guide').classList.contains('open') && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(key)) {
-    e.preventDefault(); const items = Array.from($('guide').querySelectorAll('button:not(:disabled),input,select:not(:disabled)'));
-    const pos = items.indexOf(document.activeElement), delta = ['ArrowUp','ArrowLeft'].includes(key) ? -1 : 1;
-    items[(pos + delta + items.length) % items.length]?.focus(); return;
-  }
-  if (e.target.matches('button') && ['Enter','Select','OK',' '].includes(key)) { e.preventDefault(); e.target.click(); return; }
-  if (/^[0-9]$/.test(e.key)) { e.preventDefault(); start(); digits = (digits + e.key).slice(-6); $('digits').textContent = digits; $('digits').hidden = false; clearTimeout(digitTimer); digitTimer = setTimeout(submitNumber,1200); }
-  else if (['ArrowUp','PageUp','ChannelUp','ArrowDown','PageDown','ChannelDown'].includes(key)) { e.preventDefault(); start(); digits = ''; clearTimeout(digitTimer); $('digits').hidden = true; step(['ArrowUp','PageUp','ChannelUp'].includes(key) ? 1 : -1); }
-  else if (['Enter','Select','OK'].includes(key)) { e.preventDefault(); if (!started) start(); else if (digits) submitNumber(); else showChannelInfo(); }
-  else if (['ArrowLeft','ArrowRight'].includes(key)) { e.preventDefault(); openGuide(); }
-});
-document.addEventListener('pointermove', showHUD);
-document.addEventListener('focusin', showHUD);
-video.onclick = openGuide;
-$('guide').classList.remove('open');
-$('begin').focus();
-showHUD();
-render();
-</script></body></html>
+
+/* =====================================================
+   NUMERACIÓN
+
+   MUY IMPORTANTE:
+
+   El 0 ahora NO tiene ninguna función especial.
+
+   Es simplemente un dígito.
+
+   Ejemplo:
+
+   0       = canal 0
+   1       = canal 1
+   10      = canal 10
+   20      = canal 20
+   105     = canal 105
+===================================================== */
+
+function marcarNumero(
+    digito
+){
+
+    clearTimeout(
+        inputTimer
+    );
+
+
+    inputBuffer +=
+        digito;
+
+
+    displayNum.innerText =
+        inputBuffer;
+
+
+    displayNum.style.display =
+        "block";
+
+
+    inputTimer =
+        setTimeout(
+            () => {
+
+                cambiarPorNumero();
+
+            },
+            1200
+        );
+
+}
+
+
+/* =====================================================
+   CAMBIAR POR NUMERO
+===================================================== */
+
+function cambiarPorNumero(){
+
+    if(
+        inputBuffer === ""
+    )
+        return;
+
+
+    const numero =
+        parseInt(
+            inputBuffer,
+            10
+        );
+
+
+    /*
+       IMPORTANTE:
+
+       El canal 0 corresponde
+       al índice 0.
+
+       Canal 10 corresponde
+       al índice 10.
+    */
+
+    if(
+        !isNaN(numero) &&
+        numero >= 0 &&
+        numero < canales.length
+    ){
+
+        cargarCanal(
+            numero
+        );
+
+    }
+
+    else{
+
+        mostrarToast(
+            "Canal " +
+            numero +
+            " no disponible"
+        );
+
+    }
+
+
+    inputBuffer =
+        "";
+
+
+    displayNum.style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   TECLADO
+
+   UN SOLO LISTENER.
+   Esto evita que 1 termine convirtiéndose en 11.
+===================================================== */
+
+function manejarTeclado(e){
+
+    activarSonido();
+
+
+    const key =
+        String(
+            e.key || ""
+        ).toLowerCase();
+
+
+    const code =
+        e.keyCode;
+
+
+    /* ================================================
+       TODOS LOS NÚMEROS
+       
+       INCLUYE 0
+       ================================================ */
+
+    if(
+        /^[0-9]$/.test(
+            e.key
+        )
+    ){
+
+        marcarNumero(
+            e.key
+        );
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        return;
+
+    }
+
+
+    /* ================================================
+       CANAL ARRIBA
+       ================================================ */
+
+    if(
+
+        key === "arrowup" ||
+        key === "up" ||
+        key === "channelup" ||
+        key === "ch+" ||
+        key === "pageup" ||
+
+        code === 38 ||
+        code === 33
+
+    ){
+
+        /*
+           Siguiente canal
+        */
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
+
+        cargarCanal(
+            index + 1
+        );
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        return;
+
+    }
+
+
+    /* ================================================
+       CANAL ABAJO
+       ================================================ */
+
+    if(
+
+        key === "arrowdown" ||
+        key === "down" ||
+        key === "channeldown" ||
+        key === "ch-" ||
+        key === "pagedown" ||
+
+        code === 40 ||
+        code === 34
+
+    ){
+
+        /*
+           Canal anterior
+        */
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
+
+        cargarCanal(
+            index - 1
+        );
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        return;
+
+    }
+
+
+    /* ================================================
+       ENTER / OK
+       ================================================ */
+
+    if(
+
+        key === "enter" ||
+        key === "select" ||
+        key === "ok" ||
+
+        code === 13 ||
+        code === 23
+
+    ){
+
+        if(
+            inputBuffer !== ""
+        ){
+
+            cambiarPorNumero();
+
+        }
+
+        else{
+
+            mostrarBarra(
+                "● En vivo"
+            );
+
+        }
+
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        return;
+
+    }
+
+
+    /* ================================================
+       ESC / BACK
+       ================================================ */
+
+    if(
+
+        key === "escape" ||
+        key === "back" ||
+        key === "browserback" ||
+
+        code === 27
+
+    ){
+
+        inputBuffer = "";
+
+        displayNum.style.display =
+            "none";
+
+        clearTimeout(
+            inputTimer
+        );
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        return;
+
+    }
+
+}
+
+
+/* =====================================================
+   ÚNICO EVENTO DE TECLADO
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    manejarTeclado,
+    true
+);
+
+
+/* =====================================================
+   CLICK / TOUCH
+===================================================== */
+
+document.addEventListener(
+    "pointerdown",
+    function(){
+
+        activarSonido();
+
+    },
+    true
+);
+
+
+/* =====================================================
+   INICIO
+===================================================== */
+
+window.addEventListener(
+    "load",
+    async function(){
+
+        /*
+        PRIMERO:
+
+        Cargamos inmediatamente
+        tu primer canal.
+
+        Así nunca dependemos
+        de IPTV-org para arrancar.
+        */
+
+        cargarCanal(0);
+
+
+        /*
+        DESPUÉS:
+
+        Descargamos todos los
+        canales dominicanos.
+        */
+
+        await cargarCanalesIPTV();
+
+    }
+);
+
+
+/* =====================================================
+   CLICK EN INICIO
+===================================================== */
+
+overlay.addEventListener(
+    "click",
+    function(){
+
+        activarSonido();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
