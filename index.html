@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>TV PRO</title>
-<link rel="icon" type="image/x-icon" href="tvpro.ico">
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<link rel="icon" href="icon.svg"><link rel="manifest" href="tv.webmanifest"><meta name="theme-color" content="#08101e">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.13"></script>
 
 <style>
 
@@ -340,26 +338,31 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 </style>
 </head>
 
-<body>
+<body><section id="signalScreen" data-phase="loading" role="status" aria-live="polite" aria-atomic="true" hidden=""><div class="signalGlow"></div><div class="signalContent"><div class="signalBrand">TV<span>PRO</span><i>EN VIVO</i></div><div class="signalOrb"><div class="signalOrbit"></div><svg class="signalAntenna" width="74" height="74" viewBox="0 0 80 80" fill="none" aria-hidden="true"><rect x="15" y="23" width="50" height="35" rx="10" stroke="currentColor" stroke-width="3"></rect><path d="m29 11 11 11 12-11M30 67h20M40 58v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path><path class="signalWave" d="m33 39 5 5 10-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path class="signalCross" d="m33 34 14 14m0-14L33 48" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></div><p id="signalChannel">00 / La Voz de María</p><h1 id="signalTitle">Cargando<span class="signalDots">…</span></h1><p id="signalDescription">Estamos preparando tu canal. Enseguida comienza lo bueno.</p><div class="signalProgress"><span></span></div><p class="signalFoot">TU PRÓXIMO MOMENTO FAVORITO.</p></div></section><style>
+#linkToggle{position:fixed;top:18px;left:18px;z-index:1201;background:#11283ddd;color:#8ce9df;border:1px solid #39716c;border-radius:9px;padding:10px;cursor:pointer}
+#pairPanel{position:fixed;right:4%;top:5%;width:min(510px,92vw);z-index:1200;background:#0b192af5;border:1px solid #3a8f8a;border-radius:20px;padding:28px;box-shadow:0 20px 80px #000b;font-size:16px;cursor:auto}
+#pairPanel h2{margin:0 0 12px}#pairCode{font:bold 32px monospace;letter-spacing:5px;color:#63e4ce;margin:18px 0;overflow-wrap:anywhere}#pairUrl{word-break:break-all;color:#8fb8d0;font-size:13px}#linkStatus{color:#b5c7db;font-size:14px;line-height:1.5}#pairPanel button{background:#56ddc9;color:#052d28;border:0;border-radius:8px;padding:12px;margin:5px;cursor:pointer}#pairPanel button:focus{outline:3px solid white}#contadorCanales{font-size:12px}#pairPanel[hidden]{display:none}#requestText{color:#ffe3a0}
+</style><button id="linkToggle" aria-label="Vincular control móvil">▣ TV 3959 · Control</button>
+<aside id="pairPanel" aria-label="Conectar control móvil"><div class="pairCard">
+ <div class="pairVisual"><div class="tvSculpture"><div class="screenMark">TV<span>PRO</span><i></i></div></div><span class="visualCaption">TELEVISIÓN A TU MANERA</span></div>
+ <div class="pairCopy"><span class="pairEyebrow">01 / CONECTA TU CELULAR</span><h1>Tu TV.<br>Tu control.</h1><p class="pairDescription">Abre <b>control.html</b> en tu celular e introduce este código. La conexión es automática.</p>
+ <div class="codeLabel">CÓDIGO DE TU TELEVISIÓN</div><div id="pairCode" aria-live="polite">3959</div><p id="pairUrl">file:///C:/Users/orlin/Desktop/control.html</p><p id="linkStatus" role="status">Código fijo de esta TV · conexión automática.</p>
+ <button id="continueTv" class="continueTv">Comenzar a ver <span>↗</span></button><div class="pairTools"><button id="renew">Actualizar conexión</button><button id="revoke">Desvincular controles</button></div>
+ <p class="skipHint">O presiona <strong>cualquier tecla</strong> para continuar.</p></div></div></aside>
 
 
 <!-- =====================================================
      VIDEO
 ===================================================== -->
 
-<video
-    id="player"
-    autoplay
-    muted
-    playsinline
-></video>
+<video id="player" autoplay="" muted="" playsinline="" src="blob:null/b6dd6ed1-22fb-4a5f-ba8d-7d2948c14e50"></video>
 
 
 <!-- =====================================================
      INICIO
 ===================================================== -->
 
-<div id="startOverlay">
+<div id="startOverlay" style="display: none;">
 
     <div class="startCard">
 
@@ -403,34 +406,8 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
      INFORMACIÓN
 ===================================================== -->
 
-<div id="infoBar">
-
-    <div id="infoContent">
-
-        <div id="canalNum"></div>
-
-        <img
-            id="canalLogo"
-            src=""
-            alt=""
-        >
-
-        <div>
-
-            <div id="canalNombre"></div>
-
-            <div id="estado">
-                En vivo
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite">Canales encontrados: 8 · Buscando...</div>
+<div id="infoBar" data-state="live" style="transform: translateY(100%);"><div id="infoContent"><div class="channelNumber"><span>CANAL</span><div id="canalNum">00</div></div><div class="channelLogoBox"><span class="logoFallback" aria-hidden="true">TV</span><img id="canalLogo" alt="" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&amp;s"></div><div class="channelIdentity"><span class="channelEyebrow">ESTÁS VIENDO</span><div id="canalNombre">La Voz de María</div><div class="channelState"><i class="liveDot"></i><span id="estado">● En vivo</span><span class="signalBars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><div class="nextChannel"><span>SIGUIENTE CANAL <b>↗</b></span><div id="nextChannelName">Jarabacoa TV</div><small>CH + para cambiar</small></div></div></div>
+<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite" title="Fuentes no cargadas: TDTChannels: red/CORS">Canales encontrados: 14 · 17/18 fuentes · Verificando 17–20/2657 · TDTChannels: red/CORS</div>
 
 
 <script>
@@ -499,11 +476,38 @@ const IPTV_RD =
    VARIABLES
 ===================================================== */
 
-let index = 0;
+['LaVozdeMaria.do','JarabacoaTV.do','LaVozdeJesus.do','Telever.do','TeleAntillas.do','Telesistema11.do','ColorVision.do'].forEach((id,i)=>canales[i].id=id);
+canales.push({id:'Antena7.do',nombre:'Antena 7',url:'https://alba-do-antena7-antena7.stream.mediatiquestream.com/index.m3u8',logo:''},{id:'Telemicro.do',nombre:'Telemicro · Canal 5',url:'https://live2.telemicro.com.do/live/55/playlist.m3u8',logo:''},{id:'Digital15.do',nombre:'Digital 15',url:'https://live2.telemicro.com.do/live/digital15cast_1080p/playlist.m3u8',logo:''},{id:'Telecentro.do',nombre:'Telecentro · Canal 13',url:'https://live2.telemicro.com.do/live/telecentrocast_1080p/playlist.m3u8',logo:''});
+const fixedChannels=canales.slice();
+try {const saved=JSON.parse(localStorage.getItem('tvpro-channels-v2')||'null');if(Array.isArray(saved)&&saved.length&&saved.length<=12000&&saved.every(c=>typeof c.nombre==='string'&&/^https?:\/\//.test(c.url)))canales=saved;for(const fixed of fixedChannels){if(!canales.some(c=>c.url===fixed.url))canales.push(fixed);}}catch{}
+let index = Math.min(Math.max(0,Number(localStorage.getItem('tvpro-last'))||0),canales.length-1);
+let lastGood=Date.now(), retries=0, intentionalPause=false, episodeName='';
+let cacheTimer,cachedCount=-1;
+function flushChannelCache(){clearTimeout(cacheTimer);try{localStorage.setItem('tvpro-channels-v2',JSON.stringify(canales));localStorage.setItem('tvpro-cache-date',String(Date.now()));cachedCount=canales.length;}catch{document.getElementById('contadorCanales').title='No hay espacio para guardar todos los canales en este navegador.';}window.dispatchEvent(new Event('tvpro:state'));}
+function saveChannels(){try{localStorage.setItem('tvpro-last',String(index));}catch{}if(cachedCount!==canales.length){clearTimeout(cacheTimer);cacheTimer=setTimeout(flushChannelCache,300);}}
+window.addEventListener('pagehide',()=>{if(cachedCount!==canales.length)flushChannelCache()});
+
 
 let hls = null;
 
 let sonidoActivado = false;
+let signalPhase='loading',signalTimer=null;
+function setSignal(phase){
+ if(intentionalPause&&phase==='loading')return;
+ const screen=document.getElementById('signalScreen');if(!screen)return;
+ const changed=signalPhase!==phase;signalPhase=phase;clearTimeout(signalTimer);
+ if(phase==='playing'){screen.hidden=true;}
+ else{
+  screen.hidden=false;screen.dataset.phase=phase;
+  document.getElementById('signalChannel').textContent=episodeName||((String(index).padStart(2,'0'))+' / '+(canales[index]?.nombre||'TV PRO'));
+  const title=document.getElementById('signalTitle');title.textContent=phase==='error'?'Sin señal':'Cargando';
+  if(phase==='loading'){const dots=document.createElement('span');dots.className='signalDots';dots.textContent='…';title.append(dots);const generation=playbackGeneration;signalTimer=setTimeout(()=>{if(generation===playbackGeneration&&signalPhase==='loading'&&!intentionalPause)setSignal('error')},20000);}
+  document.getElementById('signalDescription').textContent=phase==='error'?'No pudimos conectar con este canal. Puedes elegir otro mientras reintentamos.':'Estamos preparando tu canal. Enseguida comienza lo bueno.';
+ }
+ if(changed)window.dispatchEvent(new Event('tvpro:state'));
+}
+
+let audioRequested=false,audioBlocked=false,userMuted=false,playbackGeneration=0,awaitingPhysicalOk=false;
 
 let inputBuffer = "";
 
@@ -564,32 +568,35 @@ function mostrarToast(texto){
    ACTIVAR SONIDO
 ===================================================== */
 
-function activarSonido(){
-
-    if(sonidoActivado)
-        return;
-
-    sonidoActivado = true;
-
-    video.muted = false;
-
-    video.volume = 1;
-
-    overlay.style.display = "none";
-
-    video.play().catch(() => {});
-
+async function reproducirAutomaticamente(){
+ if(intentionalPause)return false;
+ const generation=playbackGeneration;
+ try{await video.play();return generation===playbackGeneration;}
+ catch(error){
+  if(generation!==playbackGeneration||error.name==='AbortError')return false;
+  if(error.name==='NotAllowedError'){
+   // Mantener el video en marcha aunque el navegador bloquee el audio remoto.
+   audioBlocked=audioRequested&&!userMuted;video.muted=true;
+   try{await video.play();if(audioBlocked)mostrarBarra('Reproduciendo · el navegador de la TV bloquea el sonido automático');return true;}
+   catch(fallback){if(fallback.name!=='AbortError')mostrarBarra('El navegador bloqueó la reproducción automática');}
+  }else if(video.error){mostrarBarra('No se pudo reproducir esta señal');}
+  return false;
+ }
 }
-
-
-/* =====================================================
-   INFORMACIÓN
-===================================================== */
+function activarSonido(){
+ if(awaitingPhysicalOk)return Promise.resolve(false);
+ const needsAudio=!audioRequested||audioBlocked;
+ sonidoActivado=true;audioRequested=true;overlay.style.display='none';
+ if(needsAudio){audioBlocked=false;video.muted=userMuted;}
+ return reproducirAutomaticamente();
+}
 
 function mostrarBarra(
     estado = "En vivo"
 ){
 
+    if(/^(Cargando|Preparando)/i.test(estado))setSignal('loading');
+    else if(/Sin señal|No se pudo reproducir|no admite/i.test(estado))setSignal('error');
     const canal =
         canales[index];
 
@@ -609,7 +616,7 @@ function mostrarBarra(
     document.getElementById(
         "canalNum"
     ).innerText =
-        String(index);
+        String(index).padStart(2,'0');
 
 
     document.getElementById(
@@ -630,6 +637,9 @@ function mostrarBarra(
         estado;
 
 
+    const logo=document.getElementById('canalLogo');logo.hidden=!canal.logo;logo.onerror=()=>{logo.hidden=true};
+    document.getElementById('nextChannelName').textContent=canales[(index+1)%canales.length]?.nombre||'';
+    bar.dataset.state=/Sin señal|No se pudo/i.test(estado)?'error':/Cargando|Preparando/i.test(estado)?'loading':/pausa/i.test(estado)?'paused':'live';
     bar.style.transform =
         "translateY(0)";
 
@@ -658,133 +668,31 @@ function mostrarBarra(
 ===================================================== */
 
 function cargarCanal(numero){
-
-    if(
-        !canales.length
-    )
-        return;
-
-
-    /*
-       CICLO DE CANALES
-
-       Si estamos en 0 y bajamos:
-       último canal.
-
-       Si estamos en el último y subimos:
-       canal 0.
-    */
-
-    index =
-        (
-            numero +
-            canales.length
-        ) %
-        canales.length;
-
-
-    if(hls){
-
-        hls.destroy();
-
-        hls = null;
-
-    }
-
-
-    const canal =
-        canales[index];
-
-    const url =
-        canal.url;
-
-
-    mostrarBarra(
-        "Cargando..."
-    );
-
-
-    if(
-        typeof Hls !== "undefined" && Hls.isSupported()
-    ){
-
-        hls =
-            new Hls({
-
-                enableWorker:true,
-
-                lowLatencyMode:true,
-
-                backBufferLength:5,
-                maxBufferLength:15,
-                maxMaxBufferLength:30,
-                capLevelToPlayerSize:true
-
-            });
-
-
-        preferirAudioEspanol(hls);
-
-        hls.loadSource(
-            url
-        );
-
-
-        hls.attachMedia(
-            video
-        );
-
-
-        hls.on(
-            Hls.Events.MANIFEST_PARSED,
-            function(){
-
-                video.play()
-                    .catch(() => {});
-
-                mostrarBarra(
-                    "● En vivo"
-                );
-
-            }
-        );
-
-
-        hls.on(
-            Hls.Events.ERROR,
-            function(
-                event,
-                data
-            ){
-
-                if(data.fatal){
-
-                    mostrarBarra(
-                        "Sin señal"
-                    );
-
-                }
-
-            }
-        );
-
-
-    }else{
-
-        video.src =
-            url;
-
-        video.play()
-            .catch(() => {});
-
-    }
-
+ if(!canales.length)return;
+ episodeName='';intentionalPause=false;lastGood=Date.now();retries=0;playbackGeneration++;document.getElementById('transportFeedback').hidden=true;transportWasPaused=false;
+ index=((numero%canales.length)+canales.length)%canales.length;saveChannels();
+ video.autoplay=true;video.muted=userMuted||audioBlocked||!audioRequested;
+ mostrarBarra('Cargando…');window.dispatchEvent(new Event('tvpro:state'));const url=canales[index].url;
+ if(typeof Hls!=='undefined'&&Hls.isSupported()){
+  if(!hls){
+   const motor=hls=new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:5,maxBufferLength:15,maxMaxBufferLength:30,capLevelToPlayerSize:true});
+   preferirAudioEspanol(motor);
+   motor.on(Hls.Events.MANIFEST_PARSED,()=>reproducirAutomaticamente());
+   motor.on(Hls.Events.ERROR,(event,data)=>{
+    if(!data.fatal||hls!==motor)return;
+    if(retries++<3){
+     const generation=playbackGeneration;
+     if(data.type===Hls.ErrorTypes.NETWORK_ERROR)setTimeout(()=>{if(hls===motor&&generation===playbackGeneration)motor.startLoad()},1500*retries);
+     else if(data.type===Hls.ErrorTypes.MEDIA_ERROR)motor.recoverMediaError();
+    }else mostrarBarra('Sin señal');
+   });
+   motor.attachMedia(video);
+  }else hls.stopLoad();
+  hls.loadSource(url);
+ }else if(video.canPlayType('application/vnd.apple.mpegurl')){
+  video.src=url;video.load();reproducirAutomaticamente();
+ }else mostrarBarra('Este navegador no admite la señal HLS');
 }
-
-
-/* =====================================================
-   PARSEAR M3U
-===================================================== */
 
 function parseM3U(text){
 
@@ -794,6 +702,7 @@ function parseM3U(text){
     const resultado = [];
 
     let info = null;
+    const epgUrls=((text.match(/(?:x-tvg-url|url-tvg|tvg-url)="([^"]+)"/i)||[])[1]||'').split(',').map(s=>s.trim()).filter(s=>/^https:\/\//i.test(s)&&!/_ALL_SOURCES/i.test(s));
 
 
     for(
@@ -825,6 +734,7 @@ function parseM3U(text){
 
 
             info = {
+                pais:(line.match(/tvg-country="([^"]*)"/)||[,""])[1],
                 id: (line.match(/tvg-id="([^"]*)"/) || [,""])[1],
                 categorias: (line.match(/group-title="([^"]*)"/) || [,""])[1],
 
@@ -852,6 +762,9 @@ function parseM3U(text){
 
             resultado.push({
                 id: info.id,
+                epgId: info.id,
+                epgUrls,
+                pais: info.pais||'',
                 categorias: info.categorias,
 
                 nombre:
@@ -881,6 +794,25 @@ function parseM3U(text){
 /* =====================================================
    CARGAR CANALES IPTV-ORG
 ===================================================== */
+
+
+let directoryById=new Map(),directoryByName=new Map();
+const cleanChannelName=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function applyChannelMetadata(c){
+ const ficha=directoryById.get((c.id||'').split('@')[0].toLowerCase())||directoryByName.get(cleanChannelName(c.nombre));
+ if(ficha){c.id=c.id||ficha.id;c.categoriasAPI=ficha.categories||[];c.pais=c.pais||ficha.country||'';c.web=ficha.website||'';}
+ const country=(c.pais||(c.id||'').split('@')[0].split('.').pop()||'').toUpperCase();
+ if(c.epgUrls?.length)c.epgUrls=c.epgUrls.filter(u=>!u.includes('epgshare01.online')||new RegExp('_'+country+'1\\.xml','i').test(u)).slice(0,2);
+ return c;
+}
+async function enrichChannelDirectory(){
+ try{const controller=new AbortController(),limit=setTimeout(()=>controller.abort(),20000);
+ let records;try{const response=await fetch('https://iptv-org.github.io/api/channels.json',{signal:controller.signal});if(!response.ok)throw Error('Metadata HTTP '+response.status);records=await response.json();}finally{clearTimeout(limit)}
+ if(!Array.isArray(records))return;
+ for(const r of records){directoryById.set(r.id.toLowerCase(),r);for(const name of [r.name,...(r.alt_names||[])]){const key=cleanChannelName(name);if(!directoryByName.has(key))directoryByName.set(key,r);else if(directoryByName.get(key)?.id!==r.id)directoryByName.set(key,null);}}
+ canales.forEach(applyChannelMetadata);flushChannelCache();
+ }catch(error){console.warn('Categorías adicionales no disponibles; se conserva la clasificación local.',error.message)}
+}
 
 function prioridadRD(canal){
     if(canal.internacional) return 6;
@@ -950,11 +882,80 @@ async function comprobarReproduccion(url){
 }
 
 const FUENTES_CANALES = [
-    {nombre:"Free-TV", url:"https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"},
-    {nombre:"Internacional", url:"https://iptv-org.github.io/iptv/index.m3u"},
-    {nombre:"TDTChannels", url:"https://www.tdtchannels.com/lists/tv.m3u8"},
-    {nombre:"RD", url:IPTV_RD}
+  {
+    "nombre": "Free-TV",
+    "url": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8"
+  },
+  {
+    "nombre": "Internacional",
+    "url": "https://iptv-org.github.io/iptv/index.m3u"
+  },
+  {
+    "nombre": "TDTChannels",
+    "url": "https://www.tdtchannels.com/lists/tv.m3u8"
+  },
+  {
+    "nombre": "RD",
+    "url": "https://iptv-org.github.io/iptv/countries/do.m3u"
+  },
+  {
+    "nombre": "Español",
+    "url": "https://iptv-org.github.io/iptv/languages/spa.m3u"
+  },
+  {
+    "nombre": "México",
+    "url": "https://iptv-org.github.io/iptv/countries/mx.m3u"
+  },
+  {
+    "nombre": "Argentina",
+    "url": "https://iptv-org.github.io/iptv/countries/ar.m3u"
+  },
+  {
+    "nombre": "Colombia",
+    "url": "https://iptv-org.github.io/iptv/countries/co.m3u"
+  },
+  {
+    "nombre": "Chile",
+    "url": "https://iptv-org.github.io/iptv/countries/cl.m3u"
+  },
+  {
+    "nombre": "Perú",
+    "url": "https://iptv-org.github.io/iptv/countries/pe.m3u"
+  },
+  {
+    "nombre": "España",
+    "url": "https://iptv-org.github.io/iptv/countries/es.m3u"
+  },
+  {
+    "nombre": "Venezuela",
+    "url": "https://iptv-org.github.io/iptv/countries/ve.m3u"
+  },
+  {
+    "nombre": "Ecuador",
+    "url": "https://iptv-org.github.io/iptv/countries/ec.m3u"
+  },
+  {
+    "nombre": "Uruguay",
+    "url": "https://iptv-org.github.io/iptv/countries/uy.m3u"
+  },
+  {
+    "nombre": "Panamá",
+    "url": "https://iptv-org.github.io/iptv/countries/pa.m3u"
+  },
+  {
+    "nombre": "Puerto Rico",
+    "url": "https://iptv-org.github.io/iptv/countries/pr.m3u"
+  },
+  {
+    "nombre": "Infantiles",
+    "url": "https://iptv-org.github.io/iptv/categories/kids.m3u"
+  },
+  {
+    "nombre": "Deportes",
+    "url": "https://iptv-org.github.io/iptv/categories/sports.m3u"
+  }
 ];
+
 function esDeporte(canal){
     return /(?:^|[;,])\s*(?:sports?|deportes?)\s*(?:$|[;,])/i.test(canal.categorias || "");
 }
@@ -981,7 +982,7 @@ async function descargarLista(fuente){
         if(!respuesta.ok) throw new Error(fuente.nombre + ": " + respuesta.status);
         const texto = await respuesta.text();
         if(!texto.trimStart().startsWith("#EXTM3U")) throw new Error("Lista inválida");
-        return parseM3U(texto).map(c => ({
+        return parseM3U(texto).map(applyChannelMetadata).map(c => ({
             ...c, fuente:fuente.nombre,
             id: fuente.nombre === "TDTChannels" && /^(La1|La2|Antena3|Telecinco|Cuatro|Clan|Boing|Neox|Nova)\.TV$/.test(c.id) ? c.id.replace(/\.TV$/, ".es") : c.id,
             internacional:fuente.nombre !== "RD" && !/\.do(?:@|$)/i.test(c.id || "")
@@ -1003,8 +1004,9 @@ function crearFiltroEspanol(feeds){
 }
 async function cargarCanalesIPTV(){
     const contador = document.getElementById("contadorCanales");
+    let sourceFailures='';
     const actualizar = mensaje => {
-        contador.textContent = "Canales encontrados: " + canales.length + " · " + mensaje;
+        contador.textContent = "Canales encontrados: " + canales.length + " · " + mensaje + sourceFailures;
     };
     actualizar("Consultando idiomas...");
     let esEspanol;
@@ -1024,26 +1026,31 @@ async function cargarCanalesIPTV(){
     }
     const fijos = canales.slice();
     const existentes = new Set(canales.map(c => c.url));
-    const agregados = new Set();
-    const clave = c => c.id.split("@")[0].toLowerCase();
+    const agregados = new Set(canales.map(c=>(c.id||"nombre:"+c.nombre).split("@")[0].toLowerCase()));
+    const clave = c => (c.id||"nombre:"+c.nombre).split("@")[0].toLowerCase();
 
     actualizar("Consultando " + FUENTES_CANALES.length + " fuentes...");
     const resultados = await Promise.allSettled(FUENTES_CANALES.map(descargarLista));
     const disponibles = resultados.filter(r => r.status === "fulfilled");
-    const candidatos = disponibles.flatMap(r=>r.value).filter(c=>{
+    const fallidas=resultados.flatMap((r,i)=>r.status==='rejected'?[FUENTES_CANALES[i].nombre+': '+(r.reason?.name==='AbortError'?'tiempo agotado':r.reason instanceof TypeError?'red/CORS':r.reason?.message||'error')]:[]);
+    sourceFailures=fallidas.length?' · '+fallidas.join(' · '):'';
+    contador.title=fallidas.length?'Fuentes no cargadas: '+fallidas.join(' | '):'Todas las listas se descargaron correctamente';
+    const knownByUrl=new Map(canales.map(c=>[c.url,c]));
+    const candidatos = disponibles.flatMap(r=>r.value).map(c=>{const known=knownByUrl.get(c.url);if(known){for(const key of ['id','epgId','categorias','categoriasAPI','pais','web','epgUrls'])if(c[key]?.length)known[key]=c[key];applyChannelMetadata(known);}return c;}).filter(c=>{
         if(!esEspanol(c) || !/^https?:\/\//i.test(c.url) || fuenteBloqueada(c.url) || existentes.has(c.url)) return false;
         existentes.add(c.url);
         return true;
     }).sort((a,b)=>prioridadCanal(a)-prioridadCanal(b) ||
         Number(!/disney/i.test(a.nombre))-Number(!/disney/i.test(b.nombre)));
-    for(let posicion=0;posicion<candidatos.length;posicion+=1){
-        const lote=candidatos.slice(posicion,posicion+1);
-        actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+1,candidatos.length)+"/"+candidatos.length);
+    flushChannelCache();
+    for(let posicion=0;posicion<candidatos.length;posicion+=4){
+        const lote=candidatos.slice(posicion,posicion+4);
+        actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+4,candidatos.length)+"/"+candidatos.length);
         const visibles=await Promise.all(lote.map(c=>agregados.has(clave(c))?false:comprobarReproduccion(c.url)));
         lote.forEach((c,i)=>{
             if(visibles[i] && !agregados.has(clave(c))){
                 agregados.add(clave(c));
-                canales.push(c);
+                canales.push(applyChannelMetadata(c));saveChannels();
             }
         });
     }
@@ -1174,10 +1181,24 @@ function cambiarPorNumero(){
 ===================================================== */
 
 function manejarTeclado(e){
+    if(awaitingPhysicalOk){
+        awaitingPhysicalOk=false;intentionalPause=false;window.dismissPairing(true);window.dispatchEvent(new Event('tvpro:state'));
+        e.preventDefault();e.stopPropagation();return;
+    }
 
+    const pairing=document.getElementById('pairPanel');
+    if(!pairing.hidden){window.dismissPairing(true);e.preventDefault();e.stopPropagation();return;}
+    if(e.key==='p'||e.key==='P'){pairing.hidden=false;e.preventDefault();return;}
+    if(e.repeat && /^[0-9]$/.test(e.key))return;
     activarSonido();
-
-
+    const mediaKey=String(e.key||'').toLowerCase();
+    if(['arrowleft','arrowright','audiovolumeup','audiovolumedown'].includes(mediaKey)){
+      const step=['arrowright','audiovolumeup'].includes(mediaKey) ? 0.05 : -0.05;
+      video.volume=Math.max(0,Math.min(1,Math.round((video.volume+step)*100)/100));showVolumeFeedback();e.preventDefault();e.stopPropagation();return;
+    }
+    if(mediaKey===' '||mediaKey==='mediaplaypause'){
+      intentionalPause=!video.paused;if(intentionalPause)video.pause();else reproducirAutomaticamente();e.preventDefault();e.stopPropagation();return;
+    }
     const key =
         String(
             e.key || ""
@@ -1317,7 +1338,7 @@ function manejarTeclado(e){
         else{
 
             mostrarBarra(
-                "● En vivo"
+                video.paused ? "En pausa" : "Reproduciendo"
             );
 
         }
@@ -1410,7 +1431,7 @@ window.addEventListener(
         de IPTV-org para arrancar.
         */
 
-        cargarCanal(0);
+        cargarCanal(index);
 
 
         /*
@@ -1420,6 +1441,7 @@ window.addEventListener(
         canales dominicanos.
         */
 
+        enrichChannelDirectory();
         await cargarCanalesIPTV();
 
     }
@@ -1439,7 +1461,168 @@ overlay.addEventListener(
     }
 );
 
+
+let volumeFeedbackTimer,transportFeedbackTimer,transportWasPaused=false;
+function showVolumeFeedback(){
+ if(!sonidoActivado||awaitingPhysicalOk)return;
+ const percent=video.muted?0:Math.round(video.volume*100);
+ document.getElementById('volumeNumber').innerHTML=percent+'<span>%</span>';
+ document.getElementById('volumeLabel').textContent=video.muted?'SILENCIO':'VOLUMEN';
+ document.getElementById('volumeSymbol').textContent=video.muted?'×':'♪';
+ document.getElementById('volumeFill').style.width=percent+'%';
+ document.getElementById('volumeFeedback').hidden=false;
+ clearTimeout(volumeFeedbackTimer);volumeFeedbackTimer=setTimeout(()=>document.getElementById('volumeFeedback').hidden=true,2000);
+}
+function showTransportFeedback(paused){
+ clearTimeout(transportFeedbackTimer);
+ document.getElementById('transportSymbol').textContent=paused?'Ⅱ':'▶';
+ document.getElementById('transportLabel').textContent=paused?'En pausa':'Reproduciendo';
+ document.getElementById('transportFeedback').hidden=false;
+ if(!paused)transportFeedbackTimer=setTimeout(()=>document.getElementById('transportFeedback').hidden=true,1300);
+}
+video.addEventListener('volumechange',showVolumeFeedback);
+video.addEventListener('pause',()=>{if(intentionalPause&&!awaitingPhysicalOk){transportWasPaused=true;showTransportFeedback(true);}});
+
+video.addEventListener('playing',()=>{if(transportWasPaused){transportWasPaused=false;showTransportFeedback(false);}setSignal('playing');lastGood=Date.now();retries=0;mostrarBarra(audioBlocked?'Reproduciendo · sonido bloqueado por el navegador':'● En vivo');});
+video.addEventListener('loadeddata',()=>reproducirAutomaticamente());
+video.addEventListener('canplay',()=>reproducirAutomaticamente());
+video.addEventListener('timeupdate',()=>lastGood=Date.now());
+video.addEventListener('waiting',()=>mostrarBarra('Cargando señal…'));
+video.addEventListener('error',()=>mostrarBarra('No se pudo reproducir la señal'));
+setInterval(()=>{if(sonidoActivado&&!intentionalPause&&!document.hidden&&navigator.onLine&&Date.now()-lastGood>30000){lastGood=Date.now();if(episodeName){reproducirAutomaticamente();}else cargarCanal(index);}},10000);
+window.dismissPairing=(withSound=false)=>{document.getElementById('pairPanel').hidden=true;overlay.style.display='none';if(!awaitingPhysicalOk)document.getElementById('startupGate').hidden=true;if(withSound)activarSonido();else reproducirAutomaticamente();if(document.activeElement?.closest('#pairPanel'))document.activeElement.blur();};
+document.getElementById('continueTv').onclick=()=>window.dismissPairing(true);
+window.TVPro={channels:()=>canales,started:()=>sonidoActivado,resume:()=>{if(!intentionalPause)reproducirAutomaticamente();},state:()=>({index,name:episodeName||canales[index]?.nombre||'',volume:video.volume,muted:video.muted,audioBlocked,awaitingPhysicalOk,status:awaitingPhysicalOk?'Presione cualquier tecla en la TV o PC para iniciar':signalPhase==='error'?'Sin señal':video.error?'Sin señal':video.paused?'En pausa':video.readyState<3?'Cargando…':'Reproduciendo'}),command:async(action,value)=>{
+ if(awaitingPhysicalOk)return;
+ if(action==='channel'&&Number.isInteger(value)&&value>=0&&value<canales.length)cargarCanal(value);
+ else if(action==='next')cargarCanal(index+1);
+ else if(action==='previous')cargarCanal(index-1);
+ else if(action==='toggle'){intentionalPause=!video.paused;if(intentionalPause)video.pause();else await reproducirAutomaticamente();}
+ else if(action==='mute'){userMuted=!video.muted;video.muted=userMuted;if(!userMuted){audioRequested=true;audioBlocked=false;reproducirAutomaticamente();}}
+ else if(action==='volume'&&typeof value==='number')video.volume=Math.max(0,Math.min(1,value));
+ else if(action==='info')mostrarBarra(video.paused?'En pausa':'Reproduciendo');
+ else if(action==='episode'){const allowed=window.SERIES_CATALOG.flatMap(s=>s.episodes||[]).find(e=>e.url===value?.url);if(!allowed)throw Error('Episodio no autorizado en el catálogo de esta TV');episodeName=value.title;intentionalPause=false;if(hls){hls.destroy();hls=null;}if(/\.m3u8(?:[?#]|$)/i.test(value.url)&&typeof Hls!=='undefined'&&Hls.isSupported()){hls=new Hls();preferirAudioEspanol(hls);hls.loadSource(value.url);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>reproducirAutomaticamente());}else{video.src=value.url;await reproducirAutomaticamente();}}
+}};
 </script>
 
-</body>
-</html>
+<script>const SERIES_CATALOG=[];window.SERIES_CATALOG=SERIES_CATALOG;
+</script><script type="module">const firebaseConfig = {
+ apiKey:'AIzaSyDA0U2Vym07lqWs_Eu6bvTAUZhaa6QOkks',
+ authDomain:'finanzas-admin-74216.firebaseapp.com',
+ projectId:'finanzas-admin-74216',
+ databaseURL:'https://finanzas-admin-74216-default-rtdb.firebaseio.com',
+ storageBucket:'finanzas-admin-74216.firebasestorage.app',
+ messagingSenderId:'175832735845',appId:'1:175832735845:web:caf3836d519f1131a8268c'
+};
+
+async function connectFirebase(){
+ const [app,auth,fs,rt]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js')]);
+ const instance=app.initializeApp(firebaseConfig),a=auth.getAuth(instance);await auth.setPersistence(a,auth.browserLocalPersistence);await a.authStateReady();const account=a.currentUser?.email==='or@gmail.com'?a.currentUser:(await auth.signInWithEmailAndPassword(a,'or@gmail.com','1234567890')).user;let device=localStorage.getItem('tvpro-device');if(!device){device=crypto.randomUUID().replaceAll('-','');localStorage.setItem('tvpro-device',device);}const user={uid:device};const db=fs.getFirestore(instance);
+ 
+ const realtime=rt.getDatabase(instance,firebaseConfig.databaseURL);let connected=false,clockOffset=0;
+ rt.onValue(rt.ref(realtime,'.info/connected'),s=>connected=s.val()===true);
+ rt.onValue(rt.ref(realtime,'.info/serverTimeOffset'),s=>clockOffset=s.val()||0);
+ const live={
+  now:()=>Date.now()+clockOffset,connected:()=>connected,timestamp:rt.serverTimestamp,
+  setState:(room,value)=>rt.set(rt.ref(realtime,'tvproLive/'+room+'/state'),value),
+  watchState:(room,cb,error)=>rt.onValue(rt.ref(realtime,'tvproLive/'+room+'/state'),s=>cb(s.val()),error),
+  send:(room,value)=>rt.set(rt.push(rt.ref(realtime,'tvproLive/'+room+'/commands')),value),
+  watchCommands:(room,cb,error)=>rt.onChildAdded(rt.ref(realtime,'tvproLive/'+room+'/commands'),s=>cb({id:s.key,...s.val()}),error),
+  removeCommand:(room,id)=>rt.remove(rt.ref(realtime,'tvproLive/'+room+'/commands/'+id)),
+  presence:(room,ready,error)=>rt.onValue(rt.ref(realtime,'.info/connected'),async s=>{if(!s.val())return;try{await rt.onDisconnect(rt.ref(realtime,'tvproLive/'+room+'/state')).update({online:false,heartbeat:rt.serverTimestamp()});ready()}catch(e){error(e)}})
+ };
+return {user,live,authUid:account.uid,claimPair:async(code,value)=>fs.runTransaction(db,async tx=>{const ref=fs.doc(db,'tvproPairs/'+code),current=await tx.get(ref);if(current.exists()&&current.data().room!==value.room)return false;tx.set(ref,value);return true;}),at:p=>p,serverTimestamp:fs.serverTimestamp,get:async p=>{const s=await fs.getDoc(fs.doc(db,p));return {val:()=>s.exists()?s.data():null}},set:(p,v)=>fs.setDoc(fs.doc(db,p),v),remove:p=>fs.deleteDoc(fs.doc(db,p)),onValue:(p,cb,err)=>fs.onSnapshot(fs.doc(db,p),s=>cb({val:()=>s.exists()?s.data():null}),err),push:p=>fs.doc(fs.collection(db,p)).path,watchCollection:(p,cb,err)=>fs.onSnapshot(fs.collection(db,p),s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),err)};
+}
+function errorText(e){return ['auth/admin-restricted-operation','auth/operation-not-allowed','auth/configuration-not-found'].includes(e.code)?'Activa Correo/contraseña en Firebase Authentication y crea la cuenta interna configurada.':e.message||String(e)}
+
+const api=window.TVPro,$=id=>document.getElementById(id);let f,room,code,expires=0,publishing=false,lastCatalog='',lastState='',publishAgain=false,wake,linking=new Set(),handled=new Set();
+const status=t=>$('linkStatus').textContent=t;
+async function awake(){if(!document.hidden&&!wake&&'wakeLock'in navigator)try{wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',()=>wake=null)}catch{}}
+document.addEventListener('visibilitychange',()=>{awake();if(!document.hidden&&api.started())api.resume()});document.addEventListener('pointerdown',awake);document.addEventListener('keydown',awake);window.addEventListener('online',()=>{if(api.started())api.resume()});
+function randomCode(){let n;do{n=crypto.getRandomValues(new Uint32Array(1))[0]}while(n>=4294960000);return String(n%10000).padStart(4,'0')}
+async function newCode(){
+ if(!f)return;let found=false;const saved=localStorage.getItem('tvpro-pair-code');
+ for(let attempt=0;attempt<100;attempt++){
+  const candidate=attempt===0&&/^\d{4}$/.test(saved||'')?saved:randomCode(),until=f.live.now()+590000;
+  if(await f.claimPair(candidate,{owner:f.authUid,room,expiresAt:until,permanent:true})){
+   code=candidate;expires=until;found=true;localStorage.setItem('tvpro-pair-code',code);break;
+  }
+ }
+ if(!found)throw Error('No se encontró un código libre. Hay un máximo de 10.000 dispositivos.');
+ $('pairCode').textContent=code;$('linkToggle').textContent='▣ TV '+code+' · Control';$('pairUrl').textContent=new URL('control.html',location.href).href;
+ status('Código fijo de esta TV · conexión automática.');
+}
+function selectEpgSources(c){
+ const country=(c.pais||(c.id||'').split('@')[0].split('.').pop()||'').toUpperCase();
+ const urls=(c.epgUrls||[]).filter(u=>/^https:\/\//i.test(u));
+ return urls.filter(u=>!u.includes('epgshare01.online')||new RegExp('_'+country+'1\\.xml','i').test(u)).slice(0,2);
+}
+async function publish(force=false){
+ if(!f||!room)return;if(publishing){publishAgain=true;return;}publishing=true;
+ try{
+  const state=api.state(),signature=JSON.stringify(state),jobs=[];
+  if(force||signature!==lastState)jobs.push(f.live.setState(room,{...state,online:true,heartbeat:f.live.timestamp()}).then(()=>lastState=signature));
+  const c=api.channels().map((c,numero)=>({numero,nombre:c.nombre,id:c.id||'',epgId:c.epgId||c.id||'',categorias:c.categorias||'',categoriasAPI:c.categoriasAPI||[],pais:c.pais||'',web:c.web||'',logo:c.logo||'',epgUrls:selectEpgSources(c)})),json=JSON.stringify(c);
+  if(json!==lastCatalog)jobs.push((async()=>{
+   const pages=Math.ceil(c.length/300),revision=Date.now();
+   await Promise.all(Array.from({length:pages},(_,page)=>f.set('tvproRooms/'+room+'/catalog/page-'+page,{items:c.slice(page*300,(page+1)*300),revision})));
+   await f.set('tvproRooms/'+room+'/catalog/list',{pages,total:c.length,code:code||'',revision});lastCatalog=json;
+  })());
+  await Promise.all(jobs);
+ }catch(e){status(errorText(e))}finally{publishing=false;if(publishAgain){publishAgain=false;queueMicrotask(()=>publish(true));}}
+}
+window.addEventListener('tvpro:state',()=>publish());
+for(const event of ['playing','waiting','pause','volumechange','error','loadeddata'])document.getElementById('player').addEventListener(event,()=>publish());
+let commandQueue=[],flushTimer;
+async function flushCommands(){
+ const batch=commandQueue;commandQueue=[];flushTimer=null;
+ for(let i=0;i<batch.length;i++){
+  let cmd=batch[i];
+  if(cmd.action==='channel'){while(i+1<batch.length&&batch[i+1].action==='channel')cmd=batch[++i];}
+  if(f.live.now()-cmd.at<15000)try{await api.command(cmd.action,cmd.value)}catch(e){status(errorText(e))}
+ }
+ publish();
+}
+async function linkPhone(p){
+ if(linking.has(p.id))return;linking.add(p.id);
+ try{
+  const current=await f.get('tvproPairs/'+p.code),pair=current.val();
+  if(!pair||pair.room!==room||pair.expiresAt<=Date.now()||!p.at||Date.now()-p.at.toMillis()>600000)return;
+  await f.set('tvproRooms/'+room+'/members/'+p.id,{approved:true});
+  await f.set('tvproGrants/'+p.id,{room});
+  await f.remove('tvproRequests/'+room+'/pending/'+p.id);
+  status('Celular conectado.');
+  if(!api.started()){
+   awaitingPhysicalOk=true;intentionalPause=true;video.pause();window.dismissPairing();document.getElementById('startupGate').hidden=false;
+  }else{window.dismissPairing(true);api.resume();}
+  publish();
+ }catch(e){status(errorText(e))}finally{linking.delete(p.id)}
+}
+$('revoke').onclick=async()=>{if(!f)return;try{const members=await new Promise((resolve,reject)=>{let off;off=f.watchCollection('tvproRooms/'+room+'/members',rows=>{setTimeout(()=>off(),0);resolve(rows)},reject)});for(const m of members)await f.remove('tvproRooms/'+room+'/members/'+m.id);status('Controles desvinculados.');await newCode()}catch(e){status(errorText(e))}};
+$('renew').textContent='Actualizar conexión';$('renew').onclick=()=>newCode().catch(e=>status(errorText(e)));$('linkToggle').onclick=()=>{$('pairPanel').hidden=!$('pairPanel').hidden};
+try{f=await connectFirebase();room=f.user.uid;await f.set('tvproRooms/'+room,{owner:f.authUid});await newCode();await publish();f.watchCollection('tvproRequests/'+room+'/pending',rows=>{for(const request of rows)linkPhone(request)},e=>status(errorText(e)));
+ f.live.watchCommands(room,cmd=>{
+  if(handled.has(cmd.id))return;handled.add(cmd.id);
+  f.live.removeCommand(room,cmd.id).catch(e=>status(errorText(e)));
+  if(f.live.now()-cmd.at>15000)return;
+  commandQueue.push(cmd);if(!flushTimer)flushTimer=setTimeout(flushCommands,65);
+ },e=>status(errorText(e)));
+ f.live.presence(room,()=>publish(true),e=>status(errorText(e)));
+
+ setInterval(()=>publish(true),15000);setInterval(()=>{if(f.live.now()>expires){expires=f.live.now()+30000;newCode().catch(e=>status(errorText(e)))}},10000);
+}catch(e){status(errorText(e));$('pairCode').textContent='Sin conexión';}
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script><style>
+/* TV PRO — formas suaves, contraste claro y controles grandes */
+#startOverlay{display:none!important}#linkToggle{position:fixed;z-index:1201;top:20px;left:24px;min-height:44px;padding:10px 18px;border:1px solid #ffffff26;border-radius:28px;background:#2229;color:#eee;cursor:pointer;opacity:.24;transition:opacity .2s}#linkToggle:hover,#linkToggle:focus-visible{opacity:1}
+#pairPanel{position:fixed;inset:0;top:0;right:0;width:100%;z-index:1200;display:grid;place-items:center;padding:5vh 6vw;background:radial-gradient(ellipse at 50% 10%,#565758a6,#121314eb 65%);border:0;border-radius:0;box-shadow:none;cursor:auto;backdrop-filter:blur(18px);color:#161718;font-family:Segoe UI,Arial,sans-serif}
+#pairPanel[hidden]{display:none!important}.pairCard{width:min(1020px,100%);display:grid;grid-template-columns:1fr 1.12fr;gap:6%;align-items:center;padding:48px 56px;background:#fafaf9;border:1px solid #fff;border-radius:46px;box-shadow:0 35px 100px #0005}.pairVisual{text-align:center}.tvSculpture{position:relative;aspect-ratio:1/1;border-radius:30%;display:grid;place-items:center;background:radial-gradient(ellipse at 35% 10%,#56595b 0,#252728 37%,#101112 70%);box-shadow:inset 3px 3px 5px #fff8,inset -4px -5px 7px #000,0 22px 35px #0002,0 0 0 4px #ddd;transform:rotate(-3deg)}.screenMark{font-size:clamp(36px,4.2vw,66px);font-weight:800;letter-spacing:-4px;color:#f4f5f2;transform:rotate(3deg);text-shadow:0 3px 5px #000}.screenMark span{font-weight:300;color:#b3b7b7}.screenMark i{display:block;width:25px;height:4px;background:#d0ebc3;border-radius:4px;margin:17px auto;box-shadow:0 0 16px #c7e8b8}.visualCaption{display:block;font-size:10px;letter-spacing:3px;color:#888;margin-top:30px}.pairEyebrow{font-size:10px;letter-spacing:2px;color:#777}.pairCopy h1{font-size:clamp(36px,4.1vw,60px);letter-spacing:-3px;line-height:1.02;margin:19px 0}.pairDescription{font-size:15px;line-height:1.6;color:#676969;max-width:330px}.codeLabel{font-size:9px;letter-spacing:2px;color:#777;margin-top:24px}#pairCode{font:600 clamp(38px,5vw,64px)/1.2 Segoe UI,Arial,sans-serif;letter-spacing:9px;color:#17191a;margin:5px 0 8px;min-height:65px}#pairUrl{max-width:330px;font-size:11px;color:#777;overflow-wrap:anywhere;margin:0}#linkStatus{font-size:12px;line-height:1.5;color:#687163;min-height:32px;margin:12px 0}#pairPanel button{font:500 12px Segoe UI;cursor:pointer;min-height:44px;margin:0;border:0}#pairPanel .continueTv{border-radius:28px;background:linear-gradient(#303333,#101212);color:#fff;padding:14px 24px;width:100%;display:flex;justify-content:space-between;align-items:center;box-shadow:inset 0 1px 1px #fff7,0 4px 8px #0002}.continueTv span{font-size:19px}.pairTools{display:flex;gap:16px;justify-content:center;margin-top:7px}#pairPanel .pairTools button{background:none;padding:5px;color:#666;font-size:11px}.skipHint{text-align:center;font-size:11px;color:#888;margin:8px 0 0}.skipHint strong{font-weight:600;color:#555}#pairPanel button:focus-visible{outline:3px solid #6f915e;outline-offset:3px}#contadorCanales{font-size:11px}
+@media(max-width:650px){#pairPanel{padding:25px 18px;overflow:auto}.pairCard{grid-template-columns:1fr;padding:28px;border-radius:30px;gap:24px}.pairVisual{display:none}.pairCopy h1{font-size:42px}#pairCode{font-size:50px}.pairCopy{max-width:360px;margin:auto;width:100%}}
+</style><section id="startupGate" hidden="" role="status" aria-live="polite"><div><span class="gateEyebrow">CELULAR CONECTADO</span><h2>Todo listo para ver.</h2><p>Presione <strong>cualquier tecla</strong> en su control físico<br>o teclado de PC para iniciar con sonido.</p><span class="gateKey">⌨</span><small>Este paso se realiza una sola vez al abrir la TV.</small></div></section><style>#startupGate{position:fixed;inset:0;z-index:1300;display:grid;place-items:center;background:#101311aa;backdrop-filter:blur(14px);padding:24px;color:#1b211b;font-family:Segoe UI,Arial,sans-serif}#startupGate[hidden]{display:none!important}#startupGate>div{text-align:center;width:min(500px,100%);background:#fafaf8;border-radius:36px;padding:45px 35px;box-shadow:0 30px 80px #0004}.gateEyebrow{font-size:10px;letter-spacing:2px;color:#7b8b70}#startupGate h2{font-size:32px;letter-spacing:-1px;margin:18px 0}#startupGate p{font-size:17px;color:#6b7565;line-height:1.7}.gateKey{display:grid;place-items:center;margin:25px auto;width:70px;height:70px;border-radius:50%;background:linear-gradient(#3b413b,#151b16);color:white;box-shadow:inset 0 1px 2px #fff7,0 5px 10px #0002;font-size:22px;font-weight:600}#startupGate small{font-size:11px;color:#90998a}</style><style>
+#infoBar{left:0;bottom:0;width:100%;padding:0 clamp(18px,4vw,70px) 44px;background:none;pointer-events:none;transition:transform .4s cubic-bezier(.22,.8,.3,1)}#infoContent{position:relative;display:flex;align-items:center;gap:22px;max-width:1120px;margin:auto;padding:20px 26px 20px 18px;border:1px solid #fff9;border-radius:28px;background:linear-gradient(115deg,#fafbf4f5,#e9eee4ed);backdrop-filter:blur(22px);box-shadow:0 18px 65px #0006,inset 0 1px #fff;color:#20261d;min-height:112px}.channelNumber{width:82px;flex-shrink:0;text-align:center;border-right:1px solid #cbd2c4;padding-right:18px}.channelNumber>span{display:block;font-size:8px;letter-spacing:2px;color:#8c9782;margin-bottom:2px}#canalNum{min-width:0;font-size:44px;line-height:1.1;font-weight:500;letter-spacing:-2px;color:#283120;font-variant-numeric:tabular-nums}.channelLogoBox{position:relative;flex-shrink:0;width:66px;height:66px;display:grid;place-items:center;border:1px solid #dce1d5;background:#fff;border-radius:19px;overflow:hidden;box-shadow:0 3px 9px #29331f09}.logoFallback{font-size:20px;letter-spacing:-2px;font-weight:800;color:#8d9c80}#canalLogo{position:absolute;inset:0;width:100%;height:100%;padding:9px;border-radius:0;background:#fff;object-fit:contain}#canalLogo[hidden]{display:none}.channelIdentity{flex:1;min-width:0}.channelEyebrow{font-size:8px;letter-spacing:2px;color:#8a9680}#canalNombre{font-size:clamp(18px,2.3vw,28px);font-weight:600;letter-spacing:-.7px;line-height:1.25;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#222a1e}.channelState{display:flex;align-items:center;gap:7px;margin-top:7px}#estado{font-size:11px;margin:0;color:#7a896d;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.liveDot{height:5px;width:5px;border-radius:50%;background:#8ba477;box-shadow:0 0 0 3px #8ba47716;flex-shrink:0}.signalBars{display:flex;align-items:flex-end;gap:2px;height:10px;margin-left:7px}.signalBars i{width:2px;background:#9caf8b;border-radius:2px}.signalBars i:nth-child(1){height:3px}.signalBars i:nth-child(2){height:5px}.signalBars i:nth-child(3){height:7px}.signalBars i:nth-child(4){height:10px}.nextChannel{width:210px;flex-shrink:0;border-left:1px solid #d6ddce;padding-left:24px}.nextChannel>span{font-size:8px;letter-spacing:1.5px;color:#929d89}.nextChannel b{font-size:16px;float:right;line-height:10px;font-weight:400;color:#7d8a71}#nextChannelName{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#66755b;margin-top:8px}.nextChannel small{font-size:9px;color:#a2ac99;display:block;margin-top:5px}#infoBar[data-state=error] .liveDot{background:#bc8a68;box-shadow:0 0 0 3px #bc8a6819}#infoBar[data-state=error] #estado{color:#a47b60}#infoBar[data-state=error] .signalBars{opacity:.2}#infoBar[data-state=loading] .liveDot{animation:channelPulse 1s ease infinite}#infoBar[data-state=paused] .liveDot{background:#a7aea1}#contadorCanales{left:50%;right:auto;bottom:11px;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 48px);background:#151c15aa;border:1px solid #ffffff13;padding:5px 12px;border-radius:20px;color:#9ba68e;font-size:9px;line-height:1.4;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:310}#linkToggle{opacity:1;left:auto;right:22px;font-size:11px;color:#d9e4ce;background:#171e17b8;border-color:#ffffff1f;padding:9px 16px;min-height:38px;backdrop-filter:blur(16px)}#inputDisplay{top:8%;right:5%;padding:17px 25px;border-radius:22px;color:#e8f0de;border:1px solid #d0dfb830;background:linear-gradient(135deg,#303c2ef0,#141d14f0);box-shadow:0 16px 45px #0006,inset 0 1px #ffffff19;font-size:58px;font-weight:500;letter-spacing:3px;text-shadow:none}#inputDisplay:before{content:'CANAL';display:block;font-size:8px;letter-spacing:3px;color:#a7b894;margin-bottom:9px}@keyframes channelPulse{50%{opacity:.3}}@media(max-width:760px){#infoContent{gap:14px;padding:15px;border-radius:22px}.nextChannel{display:none}.channelNumber{width:65px;padding-right:14px}#canalNum{font-size:36px}.channelLogoBox{width:50px;height:50px;border-radius:14px}#infoBar{padding-bottom:44px}.channelEyebrow{font-size:7px}#canalNombre{font-size:19px}#estado{font-size:10px}}@media(prefers-reduced-motion:reduce){#infoBar{transition:none}#infoBar .liveDot{animation:none!important}}
+</style><div id="transportFeedback" hidden="" role="status" aria-live="polite"><span id="transportSymbol" aria-hidden="true">Ⅱ</span><div><small>TV PRO</small><strong id="transportLabel">En pausa</strong></div></div><div id="volumeFeedback" role="status" aria-live="polite" aria-atomic="true" hidden=""><div class="volumeTop"><span id="volumeSymbol" aria-hidden="true">♪</span><span id="volumeLabel">VOLUMEN</span><strong id="volumeNumber">100<span>%</span></strong></div><div class="volumeTrack"><i id="volumeFill" style="width: 100%;"></i></div><small>VOLUMEN DEL REPRODUCTOR</small></div><style>
+#transportFeedback{position:fixed;z-index:850;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:20px;border:1px solid #eff7e22e;border-radius:28px;padding:24px 34px;background:linear-gradient(125deg,#263124ed,#101a10ed);backdrop-filter:blur(24px);box-shadow:0 20px 65px #0006;color:#f0f5e9;pointer-events:none}#transportFeedback[hidden],#volumeFeedback[hidden]{display:none!important}#transportSymbol{font-size:51px;font-weight:300;line-height:1;min-width:45px;text-align:center;color:#cadfb4}#transportFeedback small{display:block;font-size:9px;letter-spacing:2px;color:#9daf8c;margin-bottom:7px}#transportLabel{font-size:27px;font-weight:500;letter-spacing:-.6px}#volumeFeedback{position:fixed;right:4%;top:25%;width:280px;z-index:850;padding:23px 25px 19px;background:linear-gradient(120deg,#f8fbf0f5,#e3eadbea);color:#293520;border:1px solid #fff9;border-radius:25px;backdrop-filter:blur(24px);box-shadow:0 15px 50px #0005;pointer-events:none}.volumeTop{display:flex;align-items:center;gap:12px}#volumeSymbol{font-size:27px;line-height:1;color:#72865f}#volumeLabel{font-size:9px;letter-spacing:1.8px;color:#81936f}#volumeNumber{margin-left:auto;font-size:33px;font-weight:500;letter-spacing:-1px;font-variant-numeric:tabular-nums}#volumeNumber span{font-size:14px;margin-left:2px;color:#9ca991}.volumeTrack{height:6px;background:#c6d2b7;border-radius:10px;margin:18px 0 13px;overflow:hidden}#volumeFill{display:block;height:100%;width:100%;background:linear-gradient(90deg,#8b9e77,#465e34);border-radius:10px;transition:width .1s linear}#volumeFeedback>small{font-size:7px;letter-spacing:1.5px;color:#a0ad92}@media(max-width:650px){#volumeFeedback{width:220px;padding:18px;right:20px}#volumeNumber{font-size:28px}#transportFeedback{padding:20px 25px;gap:14px}#transportLabel{font-size:23px}}@media(prefers-reduced-motion:reduce){#volumeFill{transition:none}}
+</style><style>
+#infoContent{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:linear-gradient(110deg,#fffffff7,#eff2f8f2);border-color:#ffffffc9;box-shadow:0 15px 55px #0004,inset 0 1px #fff;border-radius:29px;color:#1d1d1f}.channelNumber{border-color:#dce0e8}.channelNumber>span{color:#a0a7b5}#canalNum{color:#2e3646;font-weight:450}.channelLogoBox{border-color:#e6e9ef;box-shadow:0 3px 9px #23354c05}.logoFallback{color:#b4bdcc}.channelEyebrow{color:#9aa6b9}#canalNombre{color:#252b36;font-weight:550;letter-spacing:-.9px}#estado{color:#8098b7}.liveDot{background:#0071e3;box-shadow:0 0 0 3px #0071e310}.signalBars i{background:#84abda}.nextChannel{border-color:#dce2ed}.nextChannel>span{color:#a1adbf}.nextChannel b{color:#7a9ec7}#nextChannelName{color:#72859d}.nextChannel small{color:#aab5c5}#inputDisplay{color:#1d1d1f;background:linear-gradient(130deg,#fffffff7,#e9eef7f0);border-color:#fff9;backdrop-filter:blur(20px);box-shadow:0 15px 45px #0003;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:450}#inputDisplay:before{color:#8d9eb8}#volumeFeedback{background:linear-gradient(120deg,#fffffff8,#edf2faf2);color:#28394c;border-color:#fff9;box-shadow:0 15px 50px #0003}#volumeSymbol{color:#0071e3}#volumeLabel{color:#8a9cb5}#volumeNumber{color:#26354b}#volumeNumber span,#volumeFeedback>small{color:#a0adc1}.volumeTrack{background:#d7e2f2}#volumeFill{background:linear-gradient(90deg,#8bbcf4,#0071e3)}#transportFeedback{background:linear-gradient(125deg,#ffffffed,#edf2fae8);border-color:#fff9;color:#1d1d1f;box-shadow:0 20px 65px #0003}#transportSymbol{color:#0071e3}#transportFeedback small{color:#9caec5}#startupGate>div{background:#fbfcff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.gateEyebrow{color:#859fc1}.gateKey{background:linear-gradient(135deg,#388df0,#0068d8)}#startupGate p{color:#8590a1}#startupGate small{color:#a7afbc}#linkToggle{background:#ffffffde;color:#6c7f98;border-color:#ffffff88;box-shadow:0 3px 12px #00000010}#contadorCanales{background:#151a22a6;color:#a9b4c5;border-color:#d9e6ff16}
+</style>
+</body></html>
