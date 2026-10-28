@@ -1,4 +1,4 @@
-<html lang="es"><head>
+<html lang="es" data-tv-compact="false"><head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -336,7 +336,14 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 <style>
 #contadorCanales{font-size:6px;padding:3px 5px;border-radius:4px;background:rgba(0,0,0,.70);}
 </style>
-</head>
+<script>
+// El video conserva su tamaño. Solo se compactan los controles de televisores.
+(function(){
+ const television=/smart[ -]?tv|hbbtv|netcast|viera|tizen|web[o0]s|aft[a-z0-9]+|googletv|android tv|bravia|hisense|vidaa/i.test(navigator.userAgent)||matchMedia('(hover: none) and (pointer: coarse) and (min-width: 800px)').matches;
+ let saved=null;try{saved=localStorage.getItem('tvpro-compact-view')}catch{}
+ document.documentElement.dataset.tvCompact=saved===null?String(television):saved;
+})();
+</script></head>
 
 <body><section id="signalScreen" data-phase="loading" role="status" aria-live="polite" aria-atomic="true" hidden=""><div class="signalGlow"></div><div class="signalContent"><div class="signalBrand">TV<span>PRO</span><i>EN VIVO</i></div><div class="signalOrb"><div class="signalOrbit"></div><svg class="signalAntenna" width="74" height="74" viewBox="0 0 80 80" fill="none" aria-hidden="true"><rect x="15" y="23" width="50" height="35" rx="10" stroke="currentColor" stroke-width="3"></rect><path d="m29 11 11 11 12-11M30 67h20M40 58v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path><path class="signalWave" d="m33 39 5 5 10-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path class="signalCross" d="m33 34 14 14m0-14L33 48" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></div><p id="signalChannel">00 / La Voz de María</p><h1 id="signalTitle">Cargando<span class="signalDots">…</span></h1><p id="signalDescription">Estamos preparando tu canal. Enseguida comienza lo bueno.</p><div class="signalProgress"><span></span></div><p class="signalFoot">TU PRÓXIMO MOMENTO FAVORITO.</p></div></section><style>
 #linkToggle{position:fixed;top:18px;left:18px;z-index:1201;background:#11283ddd;color:#8ce9df;border:1px solid #39716c;border-radius:9px;padding:10px;cursor:pointer}
@@ -347,7 +354,7 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
  <div class="pairVisual"><div class="tvSculpture"><div class="screenMark">TV<span>PRO</span><i></i></div></div><span class="visualCaption">TELEVISIÓN A TU MANERA</span></div>
  <div class="pairCopy"><span class="pairEyebrow">01 / CONECTA TU CELULAR</span><h1>Tu TV.<br>Tu control.</h1><p class="pairDescription">Abre <b>control.html</b> en tu celular e introduce este código. La conexión es automática.</p>
  <div class="codeLabel">CÓDIGO DE TU TELEVISIÓN</div><div id="pairCode" aria-live="polite">3959</div><p id="pairUrl">file:///C:/Users/orlin/Desktop/control.html</p><p id="linkStatus" role="status">Código fijo de esta TV · conexión automática.</p>
- <button id="continueTv" class="continueTv">Comenzar a ver <span>↗</span></button><div class="pairTools"><button id="renew">Actualizar conexión</button><button id="revoke">Desvincular controles</button></div>
+ <button id="continueTv" class="continueTv">Comenzar a ver <span>↗</span></button><div class="pairTools"><button id="compactView" type="button">Vista compacta</button><button id="renew">Actualizar conexión</button><button id="revoke">Desvincular controles</button></div>
  <p class="skipHint">O presiona <strong>cualquier tecla</strong> para continuar.</p></div></div></aside>
 
 
@@ -355,7 +362,7 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
      VIDEO
 ===================================================== -->
 
-<video id="player" autoplay="" muted="" playsinline="" src="blob:null/b6dd6ed1-22fb-4a5f-ba8d-7d2948c14e50"></video>
+<video id="player" autoplay="" muted="" playsinline="" src="blob:null/495f5f39-b42a-44ce-b927-abab3e70fa8f"></video>
 
 
 <!-- =====================================================
@@ -407,7 +414,7 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 ===================================================== -->
 
 <div id="infoBar" data-state="live" style="transform: translateY(100%);"><div id="infoContent"><div class="channelNumber"><span>CANAL</span><div id="canalNum">00</div></div><div class="channelLogoBox"><span class="logoFallback" aria-hidden="true">TV</span><img id="canalLogo" alt="" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&amp;s"></div><div class="channelIdentity"><span class="channelEyebrow">ESTÁS VIENDO</span><div id="canalNombre">La Voz de María</div><div class="channelState"><i class="liveDot"></i><span id="estado">● En vivo</span><span class="signalBars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><div class="nextChannel"><span>SIGUIENTE CANAL <b>↗</b></span><div id="nextChannelName">Jarabacoa TV</div><small>CH + para cambiar</small></div></div></div>
-<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite" title="Fuentes no cargadas: TDTChannels: red/CORS">Canales encontrados: 14 · 17/18 fuentes · Verificando 17–20/2657 · TDTChannels: red/CORS</div>
+<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite" title="Fuentes no cargadas: TDTChannels: red/CORS">Canales encontrados: 16 · 17/18 fuentes · Verificando 13–16/2652 · TDTChannels: red/CORS</div>
 
 
 <script>
@@ -1491,7 +1498,20 @@ video.addEventListener('waiting',()=>mostrarBarra('Cargando señal…'));
 video.addEventListener('error',()=>mostrarBarra('No se pudo reproducir la señal'));
 setInterval(()=>{if(sonidoActivado&&!intentionalPause&&!document.hidden&&navigator.onLine&&Date.now()-lastGood>30000){lastGood=Date.now();if(episodeName){reproducirAutomaticamente();}else cargarCanal(index);}},10000);
 window.dismissPairing=(withSound=false)=>{document.getElementById('pairPanel').hidden=true;overlay.style.display='none';if(!awaitingPhysicalOk)document.getElementById('startupGate').hidden=true;if(withSound)activarSonido();else reproducirAutomaticamente();if(document.activeElement?.closest('#pairPanel'))document.activeElement.blur();};
-document.getElementById('continueTv').onclick=()=>window.dismissPairing(true);
+document.getElementById('continueTv').onclick=()=>{awaitingPhysicalOk=false;intentionalPause=false;window.dismissPairing(true);};
+function beginFromPhysicalInput(event){
+ const panel=document.getElementById('pairPanel'),gate=document.getElementById('startupGate');
+ if(sonidoActivado&&!awaitingPhysicalOk&&panel.hidden&&gate.hidden&&!audioBlocked)return;
+ awaitingPhysicalOk=false;intentionalPause=false;
+ panel.hidden=true;gate.hidden=true;overlay.style.display='none';
+ if(document.activeElement&&document.activeElement!==document.body)document.activeElement.blur();
+ activarSonido();window.dispatchEvent(new Event('tvpro:state'));
+ event.preventDefault();event.stopImmediatePropagation();
+}
+// Algunas TV comunican OK en keyup o keypress, otras en keydown.
+for(const event of ['keydown','keypress','keyup'])window.addEventListener(event,beginFromPhysicalInput,true);
+window.addEventListener('pointerdown',event=>{if(!document.getElementById('startupGate').hidden)beginFromPhysicalInput(event)},true);
+
 window.TVPro={channels:()=>canales,started:()=>sonidoActivado,resume:()=>{if(!intentionalPause)reproducirAutomaticamente();},state:()=>({index,name:episodeName||canales[index]?.nombre||'',volume:video.volume,muted:video.muted,audioBlocked,awaitingPhysicalOk,status:awaitingPhysicalOk?'Presione cualquier tecla en la TV o PC para iniciar':signalPhase==='error'?'Sin señal':video.error?'Sin señal':video.paused?'En pausa':video.readyState<3?'Cargando…':'Reproduciendo'}),command:async(action,value)=>{
  if(awaitingPhysicalOk)return;
  if(action==='channel'&&Number.isInteger(value)&&value>=0&&value<canales.length)cargarCanal(value);
@@ -1599,6 +1619,7 @@ async function linkPhone(p){
  }catch(e){status(errorText(e))}finally{linking.delete(p.id)}
 }
 $('revoke').onclick=async()=>{if(!f)return;try{const members=await new Promise((resolve,reject)=>{let off;off=f.watchCollection('tvproRooms/'+room+'/members',rows=>{setTimeout(()=>off(),0);resolve(rows)},reject)});for(const m of members)await f.remove('tvproRooms/'+room+'/members/'+m.id);status('Controles desvinculados.');await newCode()}catch(e){status(errorText(e))}};
+$('compactView').onclick=()=>{const enabled=document.documentElement.dataset.tvCompact!=='true';document.documentElement.dataset.tvCompact=String(enabled);try{localStorage.setItem('tvpro-compact-view',String(enabled))}catch{}};
 $('renew').textContent='Actualizar conexión';$('renew').onclick=()=>newCode().catch(e=>status(errorText(e)));$('linkToggle').onclick=()=>{$('pairPanel').hidden=!$('pairPanel').hidden};
 try{f=await connectFirebase();room=f.user.uid;await f.set('tvproRooms/'+room,{owner:f.authUid});await newCode();await publish();f.watchCollection('tvproRequests/'+room+'/pending',rows=>{for(const request of rows)linkPhone(request)},e=>status(errorText(e)));
  f.live.watchCommands(room,cmd=>{
@@ -1624,5 +1645,58 @@ if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch
 #transportFeedback{position:fixed;z-index:850;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:20px;border:1px solid #eff7e22e;border-radius:28px;padding:24px 34px;background:linear-gradient(125deg,#263124ed,#101a10ed);backdrop-filter:blur(24px);box-shadow:0 20px 65px #0006;color:#f0f5e9;pointer-events:none}#transportFeedback[hidden],#volumeFeedback[hidden]{display:none!important}#transportSymbol{font-size:51px;font-weight:300;line-height:1;min-width:45px;text-align:center;color:#cadfb4}#transportFeedback small{display:block;font-size:9px;letter-spacing:2px;color:#9daf8c;margin-bottom:7px}#transportLabel{font-size:27px;font-weight:500;letter-spacing:-.6px}#volumeFeedback{position:fixed;right:4%;top:25%;width:280px;z-index:850;padding:23px 25px 19px;background:linear-gradient(120deg,#f8fbf0f5,#e3eadbea);color:#293520;border:1px solid #fff9;border-radius:25px;backdrop-filter:blur(24px);box-shadow:0 15px 50px #0005;pointer-events:none}.volumeTop{display:flex;align-items:center;gap:12px}#volumeSymbol{font-size:27px;line-height:1;color:#72865f}#volumeLabel{font-size:9px;letter-spacing:1.8px;color:#81936f}#volumeNumber{margin-left:auto;font-size:33px;font-weight:500;letter-spacing:-1px;font-variant-numeric:tabular-nums}#volumeNumber span{font-size:14px;margin-left:2px;color:#9ca991}.volumeTrack{height:6px;background:#c6d2b7;border-radius:10px;margin:18px 0 13px;overflow:hidden}#volumeFill{display:block;height:100%;width:100%;background:linear-gradient(90deg,#8b9e77,#465e34);border-radius:10px;transition:width .1s linear}#volumeFeedback>small{font-size:7px;letter-spacing:1.5px;color:#a0ad92}@media(max-width:650px){#volumeFeedback{width:220px;padding:18px;right:20px}#volumeNumber{font-size:28px}#transportFeedback{padding:20px 25px;gap:14px}#transportLabel{font-size:23px}}@media(prefers-reduced-motion:reduce){#volumeFill{transition:none}}
 </style><style>
 #infoContent{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',sans-serif;background:linear-gradient(110deg,#fffffff7,#eff2f8f2);border-color:#ffffffc9;box-shadow:0 15px 55px #0004,inset 0 1px #fff;border-radius:29px;color:#1d1d1f}.channelNumber{border-color:#dce0e8}.channelNumber>span{color:#a0a7b5}#canalNum{color:#2e3646;font-weight:450}.channelLogoBox{border-color:#e6e9ef;box-shadow:0 3px 9px #23354c05}.logoFallback{color:#b4bdcc}.channelEyebrow{color:#9aa6b9}#canalNombre{color:#252b36;font-weight:550;letter-spacing:-.9px}#estado{color:#8098b7}.liveDot{background:#0071e3;box-shadow:0 0 0 3px #0071e310}.signalBars i{background:#84abda}.nextChannel{border-color:#dce2ed}.nextChannel>span{color:#a1adbf}.nextChannel b{color:#7a9ec7}#nextChannelName{color:#72859d}.nextChannel small{color:#aab5c5}#inputDisplay{color:#1d1d1f;background:linear-gradient(130deg,#fffffff7,#e9eef7f0);border-color:#fff9;backdrop-filter:blur(20px);box-shadow:0 15px 45px #0003;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:450}#inputDisplay:before{color:#8d9eb8}#volumeFeedback{background:linear-gradient(120deg,#fffffff8,#edf2faf2);color:#28394c;border-color:#fff9;box-shadow:0 15px 50px #0003}#volumeSymbol{color:#0071e3}#volumeLabel{color:#8a9cb5}#volumeNumber{color:#26354b}#volumeNumber span,#volumeFeedback>small{color:#a0adc1}.volumeTrack{background:#d7e2f2}#volumeFill{background:linear-gradient(90deg,#8bbcf4,#0071e3)}#transportFeedback{background:linear-gradient(125deg,#ffffffed,#edf2fae8);border-color:#fff9;color:#1d1d1f;box-shadow:0 20px 65px #0003}#transportSymbol{color:#0071e3}#transportFeedback small{color:#9caec5}#startupGate>div{background:#fbfcff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.gateEyebrow{color:#859fc1}.gateKey{background:linear-gradient(135deg,#388df0,#0068d8)}#startupGate p{color:#8590a1}#startupGate small{color:#a7afbc}#linkToggle{background:#ffffffde;color:#6c7f98;border-color:#ffffff88;box-shadow:0 3px 12px #00000010}#contadorCanales{background:#151a22a6;color:#a9b4c5;border-color:#d9e6ff16}
+</style><style>
+/* Vista compacta: exclusiva de TV, con ajuste manual en la pantalla de enlace. */
+html[data-tv-compact=true] #pairPanel{padding:4vh 7vw}
+html[data-tv-compact=true] .pairCard{width:min(740px,86vw);gap:5%;padding:30px 36px;border-radius:32px}
+html[data-tv-compact=true] .tvSculpture{max-width:255px;margin:auto}
+html[data-tv-compact=true] .screenMark{font-size:45px;letter-spacing:-3px}
+html[data-tv-compact=true] .visualCaption{font-size:8px;letter-spacing:2px;margin-top:22px}
+html[data-tv-compact=true] .pairEyebrow{font-size:8px;letter-spacing:1.5px}
+html[data-tv-compact=true] .pairCopy h1{font-size:38px;letter-spacing:-1.8px;margin:13px 0}
+html[data-tv-compact=true] .pairDescription{font-size:12px;line-height:1.55;margin:9px 0}
+html[data-tv-compact=true] .codeLabel{font-size:8px;letter-spacing:1.5px;margin-top:16px}
+html[data-tv-compact=true] #pairCode{font-size:44px;letter-spacing:7px;min-height:50px;margin:4px 0}
+html[data-tv-compact=true] #pairUrl{font-size:9px;line-height:1.4}
+html[data-tv-compact=true] #linkStatus{font-size:10px;min-height:26px;line-height:1.45;margin:8px 0}
+html[data-tv-compact=true] #pairPanel .continueTv{padding:10px 18px;min-height:37px;font-size:11px}
+html[data-tv-compact=true] .pairTools{gap:9px;flex-wrap:wrap;margin-top:4px}
+html[data-tv-compact=true] #pairPanel .pairTools button{font-size:9px;min-height:30px;padding:4px}
+html[data-tv-compact=true] .skipHint{font-size:9px;margin-top:5px}
+html[data-tv-compact=true] #infoBar{padding:0 5vw 33px}
+html[data-tv-compact=true] #infoContent{max-width:860px;min-height:79px;padding:13px 17px;gap:16px;border-radius:22px}
+html[data-tv-compact=true] .channelNumber{width:61px;padding-right:14px}
+html[data-tv-compact=true] #canalNum{font-size:33px}
+html[data-tv-compact=true] .channelNumber>span{font-size:7px}
+html[data-tv-compact=true] .channelLogoBox{width:47px;height:47px;border-radius:14px}
+html[data-tv-compact=true] #canalLogo{padding:6px}
+html[data-tv-compact=true] #canalNombre{font-size:20px;margin-top:3px;letter-spacing:-.5px}
+html[data-tv-compact=true] .channelEyebrow{font-size:7px;letter-spacing:1.3px}
+html[data-tv-compact=true] #estado{font-size:9px}
+html[data-tv-compact=true] .channelState{margin-top:5px}
+html[data-tv-compact=true] .nextChannel{width:170px;padding-left:17px}
+html[data-tv-compact=true] .nextChannel>span{font-size:7px;letter-spacing:1px}
+html[data-tv-compact=true] #nextChannelName{font-size:11px;margin-top:6px}
+html[data-tv-compact=true] .nextChannel small{font-size:8px}
+html[data-tv-compact=true] #contadorCanales{font-size:8px;bottom:8px;padding:3px 9px;max-width:90vw}
+html[data-tv-compact=true] #linkToggle{font-size:10px;min-height:31px;right:3vw;top:14px;padding:7px 12px}
+html[data-tv-compact=true] #signalTitle{font-size:clamp(44px,6vw,76px);letter-spacing:-3px}
+html[data-tv-compact=true] .signalOrb{width:100px;height:100px;border-radius:30px;margin:25px auto 18px}
+html[data-tv-compact=true] .signalOrbit{border-radius:37px}
+html[data-tv-compact=true] .signalAntenna{width:55px;height:55px}
+html[data-tv-compact=true] #signalChannel{font-size:14px;margin:15px 0 5px}
+html[data-tv-compact=true] #signalDescription{font-size:16px;max-width:540px}
+html[data-tv-compact=true] #startupGate>div{width:min(365px,80vw);padding:29px 25px;border-radius:28px}
+html[data-tv-compact=true] #startupGate h2{font-size:25px;margin:14px 0}
+html[data-tv-compact=true] #startupGate p{font-size:14px}
+html[data-tv-compact=true] .gateKey{width:54px;height:54px;font-size:20px;margin:18px auto}
+html[data-tv-compact=true] #startupGate small{font-size:9px}
+html[data-tv-compact=true] #volumeFeedback{width:218px;padding:17px 19px;border-radius:20px}
+html[data-tv-compact=true] #volumeNumber{font-size:27px}
+html[data-tv-compact=true] #transportFeedback{padding:19px 25px;gap:15px;border-radius:23px}
+html[data-tv-compact=true] #transportSymbol{font-size:38px;min-width:35px}
+html[data-tv-compact=true] #transportLabel{font-size:22px}
+html[data-tv-compact=true] #inputDisplay{font-size:43px;padding:13px 19px;border-radius:18px}
+@media(max-height:600px){html[data-tv-compact=true] .pairCard{padding:22px 28px}html[data-tv-compact=true] .pairCopy h1{font-size:31px}html[data-tv-compact=true] .pairDescription{font-size:11px}html[data-tv-compact=true] #pairCode{font-size:36px;min-height:43px}html[data-tv-compact=true] .tvSculpture{max-width:200px}}
 </style>
 </body></html>
