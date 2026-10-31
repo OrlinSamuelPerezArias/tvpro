@@ -1,4 +1,4 @@
-<html lang="es" data-tv-compact="false"><head>
+<html lang="es" data-tv-compact="false" data-tv-density="normal"><head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -342,13 +342,16 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 <script>
 // El video conserva su tamaño. Solo se compactan los controles de televisores.
 (function(){
- const television=/discovery|smart[ -]?tv|hbbtv|netcast|viera|tizen|web[o0]s|aft[a-z0-9]+|googletv|android tv|bravia|hisense|vidaa/i.test(navigator.userAgent)||(/android/i.test(navigator.userAgent)&&(!/mobile/i.test(navigator.userAgent)||window.innerWidth>=900||(window.screen&&window.screen.width>=900)))||matchMedia('(hover: none) and (pointer: coarse) and (min-width: 800px)').matches;
- let saved=null;try{saved=TVStorage.getItem('tvpro-compact-view')}catch{}
- document.documentElement.dataset.tvCompact=television?'true':(saved===null?'false':saved);
+ const ua=navigator.userAgent,detected=/discovery|smart[ -]?tv|hbbtv|netcast|viera|tizen|web[o0]s|aft[a-z0-9]+|googletv|android tv|bravia|hisense|vidaa/i.test(ua)||(/android/i.test(ua)&&(!/mobile/i.test(ua)||innerWidth>=900))||matchMedia('(hover:none) and (pointer:coarse) and (min-width:800px)').matches;
+ const forced=new URLSearchParams(location.search).get('tv')==='1';
+ const saved=TVStorage.getItem('tvpro-ui-density');
+ let mode=['normal','compact','mini'].includes(saved)?saved:(forced||detected?'mini':'normal');
+ const apply=next=>{mode=next;document.documentElement.dataset.tvCompact=String(mode!=='normal');document.documentElement.dataset.tvDensity=mode;};
+ apply(mode);window.TVLayout={get:()=>mode,set:next=>{if(!['normal','compact','mini'].includes(next))return;apply(next);TVStorage.setItem('tvpro-ui-density',next);window.dispatchEvent(new Event('tvpro:state'));}};
 })();
 </script></head>
 
-<body tabindex="-1"><section id="signalScreen" data-phase="loading" role="status" aria-live="polite" aria-atomic="true" hidden=""><div class="signalGlow"></div><div class="signalContent"><div class="signalBrand">TV<span>PRO</span><i>EN VIVO</i></div><div class="signalOrb"><div class="signalOrbit"></div><svg class="signalAntenna" width="74" height="74" viewBox="0 0 80 80" fill="none" aria-hidden="true"><rect x="15" y="23" width="50" height="35" rx="10" stroke="currentColor" stroke-width="3"></rect><path d="m29 11 11 11 12-11M30 67h20M40 58v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path><path class="signalWave" d="m33 39 5 5 10-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path class="signalCross" d="m33 34 14 14m0-14L33 48" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></div><p id="signalChannel">00 / La Voz de María</p><h1 id="signalTitle">Cargando<span class="signalDots">…</span></h1><p id="signalDescription">Estamos preparando tu canal. Enseguida comienza lo bueno.</p><div class="signalProgress"><span></span></div><p class="signalFoot">TU PRÓXIMO MOMENTO FAVORITO.</p></div></section><style>
+<body tabindex="-1"><section id="signalScreen" data-phase="loading" role="status" aria-live="polite" aria-atomic="true" hidden=""><div class="signalGlow"></div><div class="signalContent"><div class="signalBrand">TV<span>PRO</span><i>EN VIVO</i></div><div class="signalOrb"><div class="signalOrbit"></div><svg class="signalAntenna" width="74" height="74" viewBox="0 0 80 80" fill="none" aria-hidden="true"><rect x="15" y="23" width="50" height="35" rx="10" stroke="currentColor" stroke-width="3"></rect><path d="m29 11 11 11 12-11M30 67h20M40 58v9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path><path class="signalWave" d="m33 39 5 5 10-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path><path class="signalCross" d="m33 34 14 14m0-14L33 48" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></div><p id="signalChannel">00 / La Voz de María</p><h1 id="signalTitle">Cargando<span class="signalDots">…</span></h1><p id="signalDescription">Estamos preparando tu canal. Enseguida comienza lo bueno.</p><div class="signalProgress"><span></span></div><div class="signalStages" aria-hidden="true"><span class="stageConnected">Conectando</span><i></i><span class="stageReceiving">Recibiendo señal</span><i></i><span>Reproduciendo</span></div><p class="signalFoot">TU PRÓXIMO MOMENTO FAVORITO.</p></div></section><style>
 #linkToggle{position:fixed;top:18px;left:18px;z-index:1201;background:#11283ddd;color:#8ce9df;border:1px solid #39716c;border-radius:9px;padding:10px;cursor:pointer}
 #pairPanel{position:fixed;right:4%;top:5%;width:min(510px,92vw);z-index:1200;background:#0b192af5;border:1px solid #3a8f8a;border-radius:20px;padding:28px;box-shadow:0 20px 80px #000b;font-size:16px;cursor:auto}
 #pairPanel h2{margin:0 0 12px}#pairCode{font:bold 32px monospace;letter-spacing:5px;color:#63e4ce;margin:18px 0;overflow-wrap:anywhere}#pairUrl{word-break:break-all;color:#8fb8d0;font-size:13px}#linkStatus{color:#b5c7db;font-size:14px;line-height:1.5}#pairPanel button{background:#56ddc9;color:#052d28;border:0;border-radius:8px;padding:12px;margin:5px;cursor:pointer}#pairPanel button:focus{outline:3px solid white}#contadorCanales{font-size:12px}#pairPanel[hidden]{display:none}#requestText{color:#ffe3a0}
@@ -356,8 +359,8 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 <aside id="pairPanel" aria-label="Conectar control móvil" hidden=""><div class="pairCard">
  <div class="pairVisual"><div class="tvSculpture"><div class="screenMark">TV<span>PRO</span><i></i></div></div><span class="visualCaption">TELEVISIÓN A TU MANERA</span></div>
  <div class="pairCopy"><span class="pairEyebrow">01 / CONECTA TU CELULAR</span><h1>Tu TV.<br>Tu control.</h1><p class="pairDescription">Abre <b>control.html</b> en tu celular e introduce este código. La conexión es automática.</p>
- <div class="codeLabel">CÓDIGO DE TU TELEVISIÓN</div><div id="pairCode" aria-live="polite">3959</div><p id="pairUrl">file:///C:/Users/orlin/Desktop/control.html</p><p id="linkStatus" role="status">Código fijo de esta TV · conexión automática.</p><p id="screenAwakeStatus" role="status">Pantalla activa: protección concedida por el navegador.</p>
- <button id="continueTv" class="continueTv">Comenzar a ver <span>↗</span></button><div class="pairTools"><button id="compactView" type="button">Vista compacta</button><button id="renew">Actualizar conexión</button><button id="revoke">Desvincular controles</button></div>
+ <div class="codeLabel">CÓDIGO DE TU TELEVISIÓN</div><div id="pairCode" aria-live="polite">3959</div><p id="pairUrl">file:///C:/Users/orlin/Desktop/tvpro/control.html</p><p id="linkStatus" role="status">Missing or insufficient permissions.</p><p id="screenAwakeStatus" role="status">Pantalla activa: protección concedida por el navegador.</p>
+ <button id="continueTv" class="continueTv">Comenzar a ver <span>↗</span></button><div class="pairTools"><button id="compactView" type="button">Reducir interfaz</button><button id="renew">Actualizar conexión</button><button id="revoke">Desvincular controles</button></div>
  <p class="skipHint">O presiona <strong>cualquier tecla</strong> para continuar.</p></div></div></aside>
 
 
@@ -365,7 +368,7 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
      VIDEO
 ===================================================== -->
 
-<video id="player" autoplay="" muted="" playsinline="" src="blob:null/cb4d94c8-6e5f-4cb5-86dc-63445b42a298"></video>
+<video id="player" autoplay="" muted="" playsinline="" src="blob:null/4fcb9d48-4d99-483e-9e0d-2a58b4de3fbf"></video>
 
 
 <!-- =====================================================
@@ -417,7 +420,7 @@ body{font-family:"Segoe UI Variable","Segoe UI",Arial,sans-serif;color:#edf5ff;}
 ===================================================== -->
 
 <div id="infoBar" data-state="live" style="transform: translateY(100%);"><div id="infoContent"><div class="channelNumber"><span>CANAL</span><div id="canalNum">00</div></div><div class="channelLogoBox"><span class="logoFallback" aria-hidden="true">TV</span><img id="canalLogo" alt="" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScjT6ySNR02aPjARG_jnWlIe1mgABegRlk2A&amp;s"></div><div class="channelIdentity"><span class="channelEyebrow">ESTÁS VIENDO</span><div id="canalNombre">La Voz de María</div><div class="channelState"><i class="liveDot"></i><span id="estado">● En vivo</span><span class="signalBars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><div class="nextChannel"><span>SIGUIENTE CANAL <b>↗</b></span><div id="nextChannelName">Jarabacoa TV</div><small>CH + para cambiar</small></div></div></div>
-<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite" title="Fuentes no cargadas: TDTChannels: red/CORS">Canales encontrados: 728 · 17/18 fuentes · Verificando 13–16/1940 · TDTChannels: red/CORS</div>
+<div id="toast"></div><div id="contadorCanales" role="status" aria-live="polite" title="Fuentes no cargadas: TDTChannels: red/CORS">Canales encontrados: 767 · 17/18 fuentes · Verificando 13–14/1873 · TDTChannels: red/CORS</div>
 
 
 <script>
@@ -507,13 +510,13 @@ let signalPhase='loading',signalTimer=null;
 function setSignal(phase){
  if(intentionalPause&&phase==='loading')return;
  const screen=document.getElementById('signalScreen');if(!screen)return;
- const changed=signalPhase!==phase;signalPhase=phase;clearTimeout(signalTimer);
- if(phase==='playing'){screen.hidden=true;}
+ const changed=signalPhase!==phase;if(phase==='loading'&&changed)signalLoadingSince=Date.now();signalPhase=phase;clearTimeout(signalTimer);
+ if(phase==='playing'){screen.hidden=true;clearTimeout(loadingHintTimer);}
  else{
   screen.hidden=false;screen.dataset.phase=phase;
   document.getElementById('signalChannel').textContent=episodeName||((String(index).padStart(2,'0'))+' / '+(canales[index]?.nombre||'TV PRO'));
   const title=document.getElementById('signalTitle');title.textContent=phase==='error'?'Sin señal':'Cargando';
-  if(phase==='loading'){const dots=document.createElement('span');dots.className='signalDots';dots.textContent='…';title.append(dots);const generation=playbackGeneration;signalTimer=setTimeout(()=>{if(generation===playbackGeneration&&signalPhase==='loading'&&!intentionalPause)setSignal('error')},20000);}
+  if(phase==='loading'){const dots=document.createElement('span');dots.className='signalDots';dots.textContent='…';title.append(dots);const generation=playbackGeneration;signalTimer=setTimeout(()=>{if(generation===playbackGeneration&&signalPhase==='loading'&&!intentionalPause)streamFailure('network','La señal está tardando demasiado en responder.')},Math.max(1000,20000-(Date.now()-signalLoadingSince)));}
   document.getElementById('signalDescription').textContent=phase==='error'?'No pudimos conectar con este canal. Puedes elegir otro mientras reintentamos.':'Estamos preparando tu canal. Enseguida comienza lo bueno.';
  }
  if(changed)window.dispatchEvent(new Event('tvpro:state'));
@@ -684,31 +687,133 @@ function mostrarBarra(
    CARGAR CANAL
 ===================================================== */
 
+let streamInfo={profile:'auto',engine:'',width:0,height:0,videoCodec:'',audioCodec:'',error:'',errorKind:'',bitrate:0,sourceHost:'',sourceProtocol:'',securePage:location.protocol==='https:'};
+let activeSourceUrl='',sourceAttempts=new Set(),engineFallbackTried=false,recoveryTimers=[],signalLoadingSince=0;
+let streamCanDisplay=false,manifestReady=false,slowSamples=0,networkNoticeTimer=null,loadingHintTimer=null,lastNetworkNotice=0;
+let networkInfo={status:'normal',message:'',throughputKbps:0,requiredKbps:0,stalls:0};let stallTimes=[];
+function bufferSeconds(){try{const t=video.currentTime;for(let i=0;i<video.buffered.length;i++)if(video.buffered.start(i)<=t+.1&&video.buffered.end(i)>=t)return Math.max(0,video.buffered.end(i)-t)}catch{}return 0}
+function networkSnapshot(){return {...networkInfo,offline:navigator.onLine===false,bufferSeconds:Math.round(bufferSeconds()*10)/10}}
+function networkNotice(title,message,kind='warning',persistent=false){
+ const notice=document.getElementById('networkNotice');notice.dataset.kind=kind;document.getElementById('networkNoticeTitle').textContent=title;document.getElementById('networkNoticeMessage').textContent=message;notice.hidden=false;
+ clearTimeout(networkNoticeTimer);if(!persistent)networkNoticeTimer=setTimeout(()=>notice.hidden=true,6500);
+}
+function networkStatus(status,message){if(networkInfo.status===status&&networkInfo.message===message)return;networkInfo.status=status;networkInfo.message=message;window.dispatchEvent(new Event('tvpro:state'))}
+function onPlaybackWaiting(){
+ if(intentionalPause)return;mostrarBarra('Cargando señal…');
+ const now=Date.now();stallTimes=stallTimes.filter(t=>now-t<60000);stallTimes.push(now);networkInfo.stalls=stallTimes.length;
+ if(stallTimes.length>=3&&now-lastNetworkNotice>25000){lastNetworkNotice=now;networkStatus('unstable','La señal se ha detenido varias veces.');networkNotice('Señal inestable','Hay cortes de reproducción. Prueba el modo ligero en el control.');}
+}
+function sampleNetwork(motor,data){
+ const stats=data.frag?.stats||data.stats,start=stats?.loading?.start,end=stats?.loading?.end,bytes=stats?.loaded||data.payload?.byteLength;
+ if(!Number.isFinite(start)||!Number.isFinite(end)||end<=start||!bytes)return;
+ const kbps=Math.round(bytes*8/(end-start)),required=Math.round((motor.levels?.[motor.currentLevel]?.bitrate||streamInfo.bitrate||0)/1000);
+ networkInfo.throughputKbps=kbps;networkInfo.requiredKbps=required;
+ if(required>0&&kbps<required*1.15&&bufferSeconds()<4)slowSamples++;else slowSamples=Math.max(0,slowSamples-1);
+ if(slowSamples>=2){networkStatus('slow','La velocidad de descarga medida es insuficiente para esta calidad.');if(Date.now()-lastNetworkNotice>25000){lastNetworkNotice=Date.now();networkNotice('Internet o servidor lento','La descarga no alcanza la velocidad de esta señal. Prueba una calidad menor.');}}
+ else if(slowSamples===0&&navigator.onLine!==false)networkStatus('normal','');
+ window.dispatchEvent(new Event('tvpro:state'));
+}
+function revealPlaybackIfReady(){
+ if(!streamCanDisplay||intentionalPause||video.paused||video.readyState<3)return;
+ streamInfo.width=video.videoWidth||streamInfo.width;streamInfo.height=video.videoHeight||streamInfo.height;
+ if(activeSourceUrl&&!episodeName&&canales[index]&&canales[index].url!==activeSourceUrl){const channel=canales[index];channel.alternativas=[...new Set([channel.url,...(channel.alternativas||[])])].filter(url=>url!==activeSourceUrl).slice(0,6);channel.url=activeSourceUrl;flushChannelCache();}
+ if(signalPhase!=='playing')setSignal('playing');
+}
+window.addEventListener('offline',()=>{networkStatus('offline','El dispositivo indica que perdió la conexión de red.');networkNotice('Sin conexión a Internet','Comprueba el Wi-Fi o el cable de red de la TV.','offline',true);if(!intentionalPause&&bufferSeconds()<1)setSignal('loading')});
+window.addEventListener('online',()=>{networkStatus('normal','');networkNotice('Conexión recuperada','Reconectando con tu canal.','success');if(sonidoActivado&&!intentionalPause)loadStream(activeSourceUrl||canales[index].url)});
+
+function playbackProfile(){const value=TVStorage.getItem('tvpro-playback-profile');return ['auto','tv','low'].includes(value)?value:(document.documentElement.dataset.tvCompact==='true'?'tv':'auto')}
+function codecSupported(codec,type='video'){
+ if(!codec)return true;const engine=window.MediaSource||window.ManagedMediaSource;
+ if(!engine||!engine.isTypeSupported)return true;
+ try{return engine.isTypeSupported(type+'/mp4; codecs="'+codec+'"')}catch{return false}
+}
+function chooseLevel(levels,profile){
+ let supported=levels.map((level,index)=>({level,index})).filter(x=>codecSupported(x.level.videoCodec)&&codecSupported(x.level.audioCodec,'audio'));
+ if(!supported.length)return -1;
+ if(profile==='auto')return supported.reduce((a,b)=>(a.level.bitrate||0)<=(b.level.bitrate||0)?a:b).index;
+ const h264=supported.filter(x=>!x.level.videoCodec||/^avc[13]/i.test(x.level.videoCodec));if(h264.length)supported=h264;
+ const limit=profile==='low'?480:720,under=supported.filter(x=>(x.level.height||0)<=limit);
+ if(under.length)return under.reduce((a,b)=>(a.level.height||0)>(b.level.height||0)||((a.level.height||0)===(b.level.height||0)&&(a.level.bitrate||0)>(b.level.bitrate||0))?a:b).index;
+ return supported.reduce((a,b)=>(a.level.height||0)<=(b.level.height||0)?a:b).index;
+}
+function clearRecoveryTimers(){for(const timer of recoveryTimers)clearTimeout(timer);recoveryTimers=[];}
+function scheduleRecovery(fn,delay){const generation=playbackGeneration;const timer=setTimeout(()=>{recoveryTimers=recoveryTimers.filter(t=>t!==timer);if(generation===playbackGeneration&&!intentionalPause)fn()},delay);recoveryTimers.push(timer)}
+function streamFailure(kind,message){
+ streamInfo.errorKind=kind;streamInfo.error=String(message).slice(0,220);
+ if(tryAlternative())return;
+ setSignal('error');
+ document.getElementById('signalTitle').textContent=kind==='codec'?'Formato no compatible':kind==='mixed'?'Señal bloqueada':'Sin señal';
+ document.getElementById('signalDescription').textContent=kind==='codec'?'El navegador de esta TV no puede decodificar esta señal. Prueba el modo TV compatible o una señal alternativa.':message;
+ window.dispatchEvent(new Event('tvpro:state'));
+}
+function tryAlternative(){
+ if(episodeName)return false;
+ const channel=canales[index],next=[channel.url,...(channel.alternativas||[])].find(url=>/^https?:\/\//i.test(url)&&!sourceAttempts.has(url));
+ if(!next)return false;loadStream(next);return true;
+}
+function updateStreamLevel(motor,levelIndex){
+ const level=motor.levels?.[levelIndex];if(!level)return;
+ Object.assign(streamInfo,{width:level.width||0,height:level.height||0,videoCodec:level.videoCodec||'',audioCodec:level.audioCodec||'',bitrate:level.bitrate||0});
+ window.dispatchEvent(new Event('tvpro:state'));
+}
+function ensureHls(){
+ if(hls)return hls;
+ const motor=hls=new Hls({enableWorker:true,lowLatencyMode:false,backBufferLength:8,maxBufferLength:20,maxMaxBufferLength:35,capLevelToPlayerSize:true});
+ preferirAudioEspanol(motor);
+ motor.on(Hls.Events.MANIFEST_PARSED,()=>{
+  if(hls!==motor)return;manifestReady=true;const profile=playbackProfile(),target=chooseLevel(motor.levels||[],profile);
+  if(target<0){streamFailure('codec','El dispositivo no admite los códecs anunciados por la señal.');return;}
+  motor.startLevel=target;
+  if(profile!=='auto'){motor.autoLevelCapping=target;motor.currentLevel=-1;motor.nextAutoLevel=target;}else motor.autoLevelCapping=-1;
+  updateStreamLevel(motor,target);reproducirAutomaticamente();
+ });
+ motor.on(Hls.Events.FRAG_LOADED,(_,data)=>{if(hls===motor&&manifestReady)sampleNetwork(motor,data)});
+ motor.on(Hls.Events.FRAG_BUFFERED,()=>{if(hls===motor&&manifestReady){streamCanDisplay=true;revealPlaybackIfReady()}});
+ motor.on(Hls.Events.BUFFER_CODECS,(_,tracks)=>{if(hls!==motor)return;streamInfo.videoCodec=tracks.video?.codec||streamInfo.videoCodec;streamInfo.audioCodec=tracks.audio?.codec||streamInfo.audioCodec;window.dispatchEvent(new Event('tvpro:state'));});
+ motor.on(Hls.Events.LEVEL_SWITCHED,(_,data)=>{if(hls===motor)updateStreamLevel(motor,data.level)});
+ motor.on(Hls.Events.ERROR,(_,data)=>{
+  if(hls!==motor||!data.fatal)return;
+  const detail=String(data.details||data.type||'Error HLS');
+  if(/codec|incompatible|unsupported/i.test(detail)){streamFailure('codec',detail);return;}
+  if(retries++<2){
+   if(data.type===Hls.ErrorTypes.NETWORK_ERROR){scheduleRecovery(()=>motor.startLoad(),1500*retries);return;}
+   if(data.type===Hls.ErrorTypes.MEDIA_ERROR){scheduleRecovery(()=>motor.recoverMediaError(),600*retries);return;}
+  }
+  streamFailure(data.type===Hls.ErrorTypes.MEDIA_ERROR?'codec':'network',detail);
+ });
+ motor.attachMedia(video);return motor;
+}
+function loadStream(url,forceEngine=''){
+ clearRecoveryTimers();clearTimeout(loadingHintTimer);streamCanDisplay=false;manifestReady=false;slowSamples=0;stallTimes=[];networkInfo={status:'normal',message:'',throughputKbps:0,requiredKbps:0,stalls:0};playbackGeneration++;lastGood=Date.now();retries=0;signalLoadingSince=Date.now();
+ activeSourceUrl=url;sourceAttempts.add(url);video.autoplay=true;video.muted=userMuted||audioBlocked||!audioRequested;
+ let host='',protocol='';try{const address=new URL(url,location.href);host=address.hostname;protocol=address.protocol}catch{}
+ streamInfo={profile:playbackProfile(),engine:'',width:0,height:0,videoCodec:'',audioCodec:'',error:'',errorKind:'',bitrate:0,sourceHost:host,sourceProtocol:protocol,securePage:location.protocol==='https:'};
+ mostrarBarra('Cargando…');
+ const loadingGeneration=playbackGeneration;loadingHintTimer=setTimeout(()=>{if(playbackGeneration===loadingGeneration&&signalPhase==='loading'&&!intentionalPause){document.getElementById('signalDescription').textContent=navigator.onLine===false?'La TV perdió la conexión de red. Comprueba el Wi-Fi o el cable.':'La señal está tardando en responder. Puede ser la conexión o el servidor del canal.';if(navigator.onLine!==false)networkNotice('La señal tarda en cargar','Estamos esperando datos del canal. Puedes probar otro mientras tanto.');}},6500);
+ if(location.protocol==='https:'&&protocol==='http:'){streamFailure('mixed','Esta señal usa HTTP y la página está en HTTPS. El navegador puede bloquearla; se necesita una señal HTTPS del proveedor.');return;}
+ const native=!!video.canPlayType('application/vnd.apple.mpegurl'),preferNative=native&&streamInfo.profile!=='low'&&(document.documentElement.dataset.tvCompact==='true'||streamInfo.profile==='tv');
+ const useHls=forceEngine==='hls'||(forceEngine!=='native'&&!preferNative&&typeof Hls!=='undefined'&&Hls.isSupported());
+ if(useHls&&typeof Hls!=='undefined'&&Hls.isSupported()){
+  streamInfo.engine='HLS.js';const motor=ensureHls();motor.stopLoad();motor.loadSource(url);
+ }else if(native||!/\.m3u8(?:[?#]|$)/i.test(url)){
+  if(hls){hls.destroy();hls=null;}streamInfo.engine=native?'HLS nativo':'Video nativo';video.src=url;video.load();reproducirAutomaticamente();
+ }else{streamInfo.engine='No compatible';streamFailure('codec','Este navegador no admite la reproducción HLS.');}
+ window.dispatchEvent(new Event('tvpro:state'));
+}
+function nativeStreamError(){
+ if(!activeSourceUrl)return;
+ if(streamInfo.engine!=='HLS.js'&&!engineFallbackTried&&typeof Hls!=='undefined'&&Hls.isSupported()&&/\.m3u8(?:[?#]|$)/i.test(activeSourceUrl)){
+  engineFallbackTried=true;loadStream(activeSourceUrl,'hls');return;
+ }
+ if(streamInfo.engine==='HLS.js')return;
+ const code=video.error?.code;streamFailure(code===3||code===4?'codec':'network',code===3?'La TV no pudo decodificar el video o el audio.':code===4?'Formato no admitido por el navegador de la TV.':'No se pudo descargar esta señal.');
+}
 function cargarCanal(numero){
- if(!canales.length)return;
- episodeName='';intentionalPause=false;lastGood=Date.now();retries=0;playbackGeneration++;document.getElementById('transportFeedback').hidden=true;transportWasPaused=false;
- index=((numero%canales.length)+canales.length)%canales.length;saveChannels();
- video.autoplay=true;video.muted=userMuted||audioBlocked||!audioRequested;
- mostrarBarra('Cargando…');window.dispatchEvent(new Event('tvpro:state'));const url=canales[index].url;
- if(typeof Hls!=='undefined'&&Hls.isSupported()){
-  if(!hls){
-   const motor=hls=new Hls({enableWorker:true,lowLatencyMode:true,backBufferLength:5,maxBufferLength:15,maxMaxBufferLength:30,capLevelToPlayerSize:true});
-   preferirAudioEspanol(motor);
-   motor.on(Hls.Events.MANIFEST_PARSED,()=>reproducirAutomaticamente());
-   motor.on(Hls.Events.ERROR,(event,data)=>{
-    if(!data.fatal||hls!==motor)return;
-    if(retries++<3){
-     const generation=playbackGeneration;
-     if(data.type===Hls.ErrorTypes.NETWORK_ERROR)setTimeout(()=>{if(hls===motor&&generation===playbackGeneration)motor.startLoad()},1500*retries);
-     else if(data.type===Hls.ErrorTypes.MEDIA_ERROR)motor.recoverMediaError();
-    }else mostrarBarra('Sin señal');
-   });
-   motor.attachMedia(video);
-  }else hls.stopLoad();
-  hls.loadSource(url);
- }else if(video.canPlayType('application/vnd.apple.mpegurl')){
-  video.src=url;video.load();reproducirAutomaticamente();
- }else mostrarBarra('Este navegador no admite la señal HLS');
+ if(!canales.length||!Number.isInteger(numero))return;
+ episodeName='';intentionalPause=false;sourceAttempts=new Set();engineFallbackTried=false;
+ document.getElementById('transportFeedback').hidden=true;transportWasPaused=false;
+ index=((numero%canales.length)+canales.length)%canales.length;saveChannels();loadStream(canales[index].url);
 }
 
 function parseM3U(text){
@@ -1053,6 +1158,11 @@ async function cargarCanalesIPTV(){
     sourceFailures=fallidas.length?' · '+fallidas.join(' · '):'';
     contador.title=fallidas.length?'Fuentes no cargadas: '+fallidas.join(' | '):'Todas las listas se descargaron correctamente';
     const knownByUrl=new Map(canales.map(c=>[c.url,c]));
+    const knownById=new Map(canales.filter(c=>c.id).map(c=>[c.id.split('@')[0].toLowerCase(),c]));
+    for(const c of disponibles.flatMap(r=>r.value)){
+      const known=knownById.get((c.id||'').split('@')[0].toLowerCase());
+      if(known&&c.url!==known.url&&/^https?:\/\//i.test(c.url)&&!fuenteBloqueada(c.url)&&esEspanol(c))known.alternativas=[...new Set([...(known.alternativas||[]),c.url])].filter(u=>u!==known.url).slice(0,6);
+    }
     const candidatos = disponibles.flatMap(r=>r.value).map(c=>{const known=knownByUrl.get(c.url);if(known){for(const key of ['id','epgId','categorias','categoriasAPI','pais','web','epgUrls'])if(c[key]?.length)known[key]=c[key];applyChannelMetadata(known);}return c;}).filter(c=>{
         if(!esEspanol(c) || !/^https?:\/\//i.test(c.url) || fuenteBloqueada(c.url) || existentes.has(c.url)) return false;
         existentes.add(c.url);
@@ -1060,9 +1170,11 @@ async function cargarCanalesIPTV(){
     }).sort((a,b)=>prioridadCanal(a)-prioridadCanal(b) ||
         Number(!/disney/i.test(a.nombre))-Number(!/disney/i.test(b.nombre)));
     flushChannelCache();
-    for(let posicion=0;posicion<candidatos.length;posicion+=4){
-        const lote=candidatos.slice(posicion,posicion+4);
-        actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+4,candidatos.length)+"/"+candidatos.length);
+    for(let posicion=0;posicion<candidatos.length;posicion+=2){
+        while(!document.hidden&&sonidoActivado&&!intentionalPause&&video.readyState<3&&signalPhase!=='error')await new Promise(resolve=>setTimeout(resolve,1500));
+        if(document.hidden){await new Promise(resolve=>setTimeout(resolve,1500));posicion-=2;continue;}
+        const lote=candidatos.slice(posicion,posicion+2);
+        actualizar(disponibles.length+"/"+FUENTES_CANALES.length+" fuentes · Verificando "+(posicion+1)+"–"+Math.min(posicion+2,candidatos.length)+"/"+candidatos.length);
         const visibles=await Promise.all(lote.map(c=>agregados.has(clave(c))?false:comprobarReproduccion(c.url)));
         lote.forEach((c,i)=>{
             if(visibles[i] && !agregados.has(clave(c))){
@@ -1103,6 +1215,7 @@ function marcarNumero(
     );
 
 
+    if(inputBuffer.length>=5)return;
     inputBuffer +=
         digito;
 
@@ -1494,15 +1607,15 @@ function showTransportFeedback(paused){
  if(!paused)transportFeedbackTimer=setTimeout(()=>document.getElementById('transportFeedback').hidden=true,1300);
 }
 video.addEventListener('volumechange',showVolumeFeedback);
-video.addEventListener('pause',()=>{if(intentionalPause&&!awaitingPhysicalOk){transportWasPaused=true;showTransportFeedback(true);}});
+video.addEventListener('pause',()=>{if(intentionalPause&&!awaitingPhysicalOk){clearTimeout(signalTimer);signalPhase='paused';document.getElementById('signalScreen').hidden=true;transportWasPaused=true;showTransportFeedback(true);}});
 
-video.addEventListener('playing',()=>{if(transportWasPaused){transportWasPaused=false;showTransportFeedback(false);}setSignal('playing');lastGood=Date.now();retries=0;mostrarBarra(audioBlocked?'Reproduciendo · sonido bloqueado por el navegador':'● En vivo');});
-video.addEventListener('loadeddata',()=>reproducirAutomaticamente());
+video.addEventListener('playing',()=>{if(streamCanDisplay&&activeSourceUrl&&!episodeName&&canales[index]&&canales[index].url!==activeSourceUrl){const c=canales[index];c.alternativas=[...new Set([c.url,...(c.alternativas||[])])].filter(u=>u!==activeSourceUrl).slice(0,6);c.url=activeSourceUrl;flushChannelCache();}streamInfo.error='';streamInfo.errorKind='';streamInfo.width=video.videoWidth||streamInfo.width;streamInfo.height=video.videoHeight||streamInfo.height;if(transportWasPaused){transportWasPaused=false;showTransportFeedback(false);}if(streamCanDisplay)setSignal('playing');lastGood=Date.now();retries=0;mostrarBarra(audioBlocked?'Reproduciendo · sonido bloqueado por el navegador':'● En vivo');});
+video.addEventListener('loadeddata',()=>{if(streamInfo.engine!=='HLS.js')streamCanDisplay=true;reproducirAutomaticamente();revealPlaybackIfReady()});
 video.addEventListener('canplay',()=>reproducirAutomaticamente());
-video.addEventListener('timeupdate',()=>lastGood=Date.now());
-video.addEventListener('waiting',()=>mostrarBarra('Cargando señal…'));
-video.addEventListener('error',()=>mostrarBarra('No se pudo reproducir la señal'));
-setInterval(()=>{if(sonidoActivado&&!intentionalPause&&!document.hidden&&navigator.onLine&&Date.now()-lastGood>30000){lastGood=Date.now();if(episodeName){reproducirAutomaticamente();}else cargarCanal(index);}},10000);
+video.addEventListener('timeupdate',()=>{lastGood=Date.now();revealPlaybackIfReady()});
+video.addEventListener('waiting',onPlaybackWaiting);
+video.addEventListener('error',nativeStreamError);
+setInterval(()=>{if(sonidoActivado&&!intentionalPause&&!document.hidden&&navigator.onLine&&Date.now()-lastGood>30000){lastGood=Date.now();if(!tryAlternative()){if(episodeName)loadStream(activeSourceUrl);else cargarCanal(index);}}},10000);
 window.dismissPairing=(withSound=false)=>{document.getElementById('pairPanel').hidden=true;overlay.style.display='none';if(!awaitingPhysicalOk)document.getElementById('startupGate').hidden=true;if(withSound)activarSonido();else reproducirAutomaticamente();if(document.activeElement?.closest('#pairPanel'))document.activeElement.blur();};
 document.getElementById('continueTv').onclick=()=>{awaitingPhysicalOk=false;intentionalPause=false;window.dismissPairing(true);};
 // Un único keydown para canales, como en el código original.
@@ -1523,52 +1636,30 @@ if('mediaSession' in navigator){
  video.addEventListener('pause',()=>{try{session.playbackState='paused'}catch(error){}});
 }
 
-window.TVPro={channels:()=>canales,started:()=>sonidoActivado,resume:()=>{if(!intentionalPause)reproducirAutomaticamente();},state:()=>({sessionId:playbackSessionId,screenAwake:window.TVWakeState,index,name:episodeName||canales[index]?.nombre||'',volume:video.volume,muted:video.muted,audioBlocked,awaitingPhysicalOk,status:awaitingPhysicalOk?'Presione cualquier tecla en la TV o PC para iniciar':signalPhase==='error'?'Sin señal':video.error?'Sin señal':video.paused?'En pausa':video.readyState<3?'Cargando…':'Reproduciendo'}),command:async(action,value)=>{
- if(awaitingPhysicalOk)return;
+window.TVPro={channels:()=>canales,started:()=>sonidoActivado,resume:()=>{if(!intentionalPause)reproducirAutomaticamente();},state:()=>({sessionId:playbackSessionId,screenAwake:window.TVWakeState,stream:streamInfo,network:networkSnapshot(),layout:window.TVLayout.get(),paused:video.paused,index,name:episodeName||canales[index]?.nombre||'',volume:video.volume,muted:video.muted,audioBlocked,awaitingPhysicalOk,status:awaitingPhysicalOk?'Presione cualquier tecla en la TV o PC para iniciar':signalPhase==='error'?(streamInfo.errorKind==='codec'?'Formato no compatible':'Sin señal'):video.error?'Sin señal':video.paused?'En pausa':video.readyState<3?'Cargando…':'Reproduciendo'}),command:async(action,value)=>{
+ if(awaitingPhysicalOk)throw Error('Inicia la TV con cualquier tecla de su control físico.');
+ if(action==='channel'&&(!Number.isInteger(value)||value<0||value>=canales.length))throw Error('Número de canal no válido.');
+ if(action==='volume'&&!Number.isFinite(value))throw Error('Volumen no válido.');
  if(action==='channel'&&Number.isInteger(value)&&value>=0&&value<canales.length)cargarCanal(value);
  else if(action==='next')cargarCanal(index+1);
  else if(action==='previous')cargarCanal(index-1);
- else if(action==='toggle'){intentionalPause=!video.paused;if(intentionalPause)video.pause();else await reproducirAutomaticamente();}
+ else if(action==='toggle'){intentionalPause=!video.paused;if(intentionalPause)video.pause();else reproducirAutomaticamente();}
  else if(action==='mute'){userMuted=!video.muted;video.muted=userMuted;if(!userMuted){audioRequested=true;audioBlocked=false;reproducirAutomaticamente();}}
- else if(action==='volume'&&typeof value==='number')video.volume=Math.max(0,Math.min(1,value));
- else if(action==='info')mostrarBarra(video.paused?'En pausa':'Reproduciendo');
- else if(action==='episode'){const allowed=window.SERIES_CATALOG.flatMap(s=>s.episodes||[]).find(e=>e.url===value?.url);if(!allowed)throw Error('Episodio no autorizado en el catálogo de esta TV');episodeName=value.title;intentionalPause=false;if(hls){hls.destroy();hls=null;}if(/\.m3u8(?:[?#]|$)/i.test(value.url)&&typeof Hls!=='undefined'&&Hls.isSupported()){hls=new Hls();preferirAudioEspanol(hls);hls.loadSource(value.url);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>reproducirAutomaticamente());}else{video.src=value.url;await reproducirAutomaticamente();}}
+ else if(action==='volume'&&Number.isFinite(value))video.volume=Math.max(0,Math.min(1,value));
+ else if(action==='info'){
+  if(value&&['normal','compact','mini'].includes(value.layout))window.TVLayout.set(value.layout);
+  if(value&&['auto','tv','low'].includes(value.profile)){TVStorage.setItem('tvpro-playback-profile',value.profile);sourceAttempts=new Set();engineFallbackTried=false;loadStream(activeSourceUrl||canales[index].url);}
+  mostrarBarra(intentionalPause?'En pausa':signalPhase==='loading'?'Cargando…':signalPhase==='error'?(streamInfo.errorKind==='codec'?'Formato no compatible':'Sin señal'):'Reproduciendo');
+ }
+ else if(action==='episode'){
+  const allowed=window.SERIES_CATALOG.flatMap(s=>s.episodes||[]).find(e=>e.url===value?.url);
+  if(!allowed||!/^https?:\/\//i.test(allowed.url))throw Error('Episodio no autorizado en el catálogo de esta TV');
+  episodeName=String(value.title||allowed.title);intentionalPause=false;sourceAttempts=new Set();engineFallbackTried=false;loadStream(allowed.url);
+ }
 }};
-</script>
 
-<script>const SERIES_CATALOG=[];window.SERIES_CATALOG=SERIES_CATALOG;
-</script><script type="module">const firebaseConfig = {
- apiKey:'AIzaSyDA0U2Vym07lqWs_Eu6bvTAUZhaa6QOkks',
- authDomain:'finanzas-admin-74216.firebaseapp.com',
- projectId:'finanzas-admin-74216',
- databaseURL:'https://finanzas-admin-74216-default-rtdb.firebaseio.com',
- storageBucket:'finanzas-admin-74216.firebasestorage.app',
- messagingSenderId:'175832735845',appId:'1:175832735845:web:caf3836d519f1131a8268c'
-};
-
-async function connectFirebase(){
- const [app,auth,fs,rt]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js')]);
- const instance=app.initializeApp(firebaseConfig),a=auth.getAuth(instance);try{await auth.setPersistence(a,auth.browserLocalPersistence)}catch(storageError){await auth.setPersistence(a,auth.inMemoryPersistence)};await a.authStateReady();const account=a.currentUser?.email==='or@gmail.com'?a.currentUser:(await auth.signInWithEmailAndPassword(a,'or@gmail.com','1234567890')).user;let device=TVStorage.getItem('tvpro-device');if(!device){device=(typeof crypto.randomUUID==='function'?crypto.randomUUID().replaceAll('-',''):Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''));TVStorage.setItem('tvpro-device',device);}const user={uid:device};const db=fs.getFirestore(instance);
- 
- const realtime=rt.getDatabase(instance,firebaseConfig.databaseURL);let connected=false,clockOffset=0;
- rt.onValue(rt.ref(realtime,'.info/connected'),s=>connected=s.val()===true);
- rt.onValue(rt.ref(realtime,'.info/serverTimeOffset'),s=>clockOffset=s.val()||0);
- const live={
-  now:()=>Date.now()+clockOffset,connected:()=>connected,timestamp:rt.serverTimestamp,
-  setState:(room,value)=>rt.set(rt.ref(realtime,'tvproLive/'+room+'/state'),value),
-  watchState:(room,cb,error)=>rt.onValue(rt.ref(realtime,'tvproLive/'+room+'/state'),s=>cb(s.val()),error),
-  send:(room,value)=>rt.set(rt.push(rt.ref(realtime,'tvproLive/'+room+'/commands')),value),
-  watchCommands:(room,cb,error)=>rt.onChildAdded(rt.ref(realtime,'tvproLive/'+room+'/commands'),s=>cb({id:s.key,...s.val()}),error),
-  removeCommand:(room,id)=>rt.remove(rt.ref(realtime,'tvproLive/'+room+'/commands/'+id)),
-  presence:(room,ready,error)=>rt.onValue(rt.ref(realtime,'.info/connected'),async s=>{if(!s.val())return;try{await rt.onDisconnect(rt.ref(realtime,'tvproLive/'+room+'/state')).update({online:false,heartbeat:rt.serverTimestamp()});ready()}catch(e){error(e)}})
- };
-return {user,live,authUid:account.uid,claimPair:async(code,value)=>fs.runTransaction(db,async tx=>{const ref=fs.doc(db,'tvproPairs/'+code),current=await tx.get(ref);if(current.exists()&&current.data().room!==value.room)return false;tx.set(ref,value);return true;}),at:p=>p,serverTimestamp:fs.serverTimestamp,get:async p=>{const s=await fs.getDoc(fs.doc(db,p));return {val:()=>s.exists()?s.data():null}},set:(p,v)=>fs.setDoc(fs.doc(db,p),v),remove:p=>fs.deleteDoc(fs.doc(db,p)),onValue:(p,cb,err)=>fs.onSnapshot(fs.doc(db,p),s=>cb({val:()=>s.exists()?s.data():null}),err),push:p=>fs.doc(fs.collection(db,p)).path,watchCollection:(p,cb,err)=>fs.onSnapshot(fs.collection(db,p),s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),err)};
-}
-function errorText(e){return ['auth/admin-restricted-operation','auth/operation-not-allowed','auth/configuration-not-found'].includes(e.code)?'Activa Correo/contraseña en Firebase Authentication y crea la cuenta interna configurada.':e.message||String(e)}
-
-const api=window.TVPro,$=id=>document.getElementById(id);let f,room,code,expires=0,publishing=false,lastCatalog='',lastState='',publishAgain=false,wake,linking=new Set(),handled=new Set();
-const status=t=>$('linkStatus').textContent=t;
-let wakeRequestPending=false;
+(function(){
+let wake=null,wakeRequestPending=false;const api=window.TVPro;
 function wakeStatus(status,reason=''){
  const previous=window.TVWakeState;
  window.TVWakeState={status,reason,supported:!!navigator.wakeLock,secure:window.isSecureContext===true};
@@ -1598,9 +1689,48 @@ window.addEventListener('pageshow',awake);
 setInterval(()=>{if(!document.hidden&&!intentionalPause)awake()},10000);
 awake();
 document.addEventListener('visibilitychange',()=>{awake();if(!document.hidden&&api.started())api.resume()});document.addEventListener('pointerdown',awake);document.addEventListener('keydown',awake);window.addEventListener('online',()=>{if(api.started())api.resume()});
+
+window.TVProWake={ensure:awake};
+})();
+</script>
+
+<script>const SERIES_CATALOG=[];window.SERIES_CATALOG=SERIES_CATALOG;
+</script><script type="module">const firebaseConfig = {
+ apiKey:'AIzaSyDA0U2Vym07lqWs_Eu6bvTAUZhaa6QOkks',
+ authDomain:'finanzas-admin-74216.firebaseapp.com',
+ projectId:'finanzas-admin-74216',
+ databaseURL:'https://finanzas-admin-74216-default-rtdb.firebaseio.com',
+ storageBucket:'finanzas-admin-74216.firebasestorage.app',
+ messagingSenderId:'175832735845',appId:'1:175832735845:web:caf3836d519f1131a8268c'
+};
+
+async function connectFirebase(){
+ const [app,auth,fs,rt]=await Promise.all([import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js'),import('https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js')]);
+ const instance=app.initializeApp(firebaseConfig),a=auth.getAuth(instance);try{await auth.setPersistence(a,auth.browserLocalPersistence)}catch(storageError){await auth.setPersistence(a,auth.inMemoryPersistence)};await a.authStateReady();const account=a.currentUser?.email==='or@gmail.com'?a.currentUser:(await auth.signInWithEmailAndPassword(a,'or@gmail.com','1234567890')).user;let device=TVStorage.getItem('tvpro-device');if(!device){device=(typeof crypto.randomUUID==='function'?crypto.randomUUID().replaceAll('-',''):Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''));TVStorage.setItem('tvpro-device',device);}const user={uid:device};const db=fs.getFirestore(instance);
+ 
+ const realtime=rt.getDatabase(instance,firebaseConfig.databaseURL);let connected=false,clockOffset=0;
+ rt.onValue(rt.ref(realtime,'.info/connected'),s=>connected=s.val()===true);
+ rt.onValue(rt.ref(realtime,'.info/serverTimeOffset'),s=>clockOffset=s.val()||0);
+ const live={
+  now:()=>Date.now()+clockOffset,connected:()=>connected,timestamp:rt.serverTimestamp,
+  setState:(room,value)=>rt.set(rt.ref(realtime,'tvproLive/'+room+'/state'),value),
+  watchState:(room,cb,error)=>rt.onValue(rt.ref(realtime,'tvproLive/'+room+'/state'),s=>cb(s.val()),error),
+  send:async(room,value)=>{const command=rt.push(rt.ref(realtime,'tvproLive/'+room+'/commands'));await rt.set(command,value);return command.key},
+  watchCommands:(room,cb,error)=>rt.onChildAdded(rt.ref(realtime,'tvproLive/'+room+'/commands'),s=>cb({id:s.key,...s.val()}),error),
+  removeCommand:(room,id)=>rt.remove(rt.ref(realtime,'tvproLive/'+room+'/commands/'+id)),
+  presence:(room,session,ready,error)=>rt.onValue(rt.ref(realtime,'.info/connected'),async s=>{if(!s.val())return;try{await rt.onDisconnect(rt.ref(realtime,'tvproLive/'+room+'/state/sessionPresence/'+session)).set(false);ready()}catch(e){error(e)}})
+ };
+return {user,live,authUid:account.uid,claimPair:async(code,value)=>fs.runTransaction(db,async tx=>{const ref=fs.doc(db,'tvproPairs/'+code),current=await tx.get(ref);if(current.exists()&&current.data().room!==value.room)return false;tx.set(ref,value);return true;}),at:p=>p,serverTimestamp:fs.serverTimestamp,get:async p=>{const s=await fs.getDoc(fs.doc(db,p));return {val:()=>s.exists()?s.data():null}},set:(p,v)=>fs.setDoc(fs.doc(db,p),v),remove:p=>fs.deleteDoc(fs.doc(db,p)),onValue:(p,cb,err)=>fs.onSnapshot(fs.doc(db,p),s=>cb({val:()=>s.exists()?s.data():null}),err),push:p=>fs.doc(fs.collection(db,p)).path,watchCollection:(p,cb,err)=>fs.onSnapshot(fs.collection(db,p),s=>cb(s.docs.map(d=>({id:d.id,...d.data()}))),err)};
+}
+function errorText(e){return ['auth/admin-restricted-operation','auth/operation-not-allowed','auth/configuration-not-found'].includes(e.code)?'Activa Correo/contraseña en Firebase Authentication y crea la cuenta interna configurada.':e.message||String(e)}
+
+const api=window.TVPro,$=id=>document.getElementById(id);let f,room,code,expires=0,publishing=false,lastCatalog='',lastState='',publishAgain=false,wake,linking=new Set(),handled=new Set();
+let ownsRoom=true,ownerChannel=null;
+const status=t=>$('linkStatus').textContent=t;
+const awake=()=>window.TVProWake?.ensure();
 function randomCode(){let n;do{n=crypto.getRandomValues(new Uint32Array(1))[0]}while(n>=4294960000);return String(n%10000).padStart(4,'0')}
 async function newCode(){
- if(!f)return;let found=false;const saved=TVStorage.getItem('tvpro-pair-code');
+ if(!f||!ownsRoom)return;let found=false;const saved=TVStorage.getItem('tvpro-pair-code');
  for(let attempt=0;attempt<100;attempt++){
   const candidate=attempt===0&&/^\d{4}$/.test(saved||'')?saved:randomCode(),until=f.live.now()+590000;
   if(await f.claimPair(candidate,{owner:f.authUid,room,expiresAt:until,permanent:true})){
@@ -1616,37 +1746,55 @@ function selectEpgSources(c){
  const urls=(c.epgUrls||[]).filter(u=>/^https:\/\//i.test(u));
  return urls.filter(u=>!u.includes('epgshare01.online')||new RegExp('_'+country+'1\\.xml','i').test(u)).slice(0,2);
 }
-async function publish(force=false){
- if(!f||!room)return;if(publishing){publishAgain=true;return;}publishing=true;
+let stateRunning=false,stateRequested=false,forceState=false,catalogRunning=false,catalogTimer=null,catalogLastAt=0,lastCommand=null;
+function publish(force=false){
+ if(!f||!room||!ownsRoom)return;
+ stateRequested=true;forceState=forceState||force;
+ if(!stateRunning)publishLiveState();
+ if(!catalogRunning&&!catalogTimer)catalogTimer=setTimeout(()=>{catalogTimer=null;publishCatalog()},Math.max(50,4000-(Date.now()-catalogLastAt)));
+}
+async function publishLiveState(){
+ stateRunning=true;
+ try{while(stateRequested&&ownsRoom){
+  stateRequested=false;const force=forceState;forceState=false;
+  const state={...api.state(),lastCommand},signature=JSON.stringify(state);
+  if(!force&&signature===lastState)continue;
+  await f.live.setState(room,{...state,online:true,sessionPresence:{[playbackSessionId]:true},heartbeat:f.live.timestamp()});lastState=signature;
+ }}catch(e){status(errorText(e))}finally{stateRunning=false;}
+}
+async function publishCatalog(){
+ if(!f||!room||!ownsRoom||catalogRunning)return;catalogRunning=true;catalogLastAt=Date.now();
  try{
-  const state=api.state(),signature=JSON.stringify(state),jobs=[];
-  if(force||signature!==lastState)jobs.push(f.live.setState(room,{...state,online:true,heartbeat:f.live.timestamp()}).then(()=>lastState=signature));
-  const c=api.channels().map((c,numero)=>({numero,nombre:c.nombre,id:c.id||'',epgId:c.epgId||c.id||'',categorias:c.categorias||'',categoriasAPI:c.categoriasAPI||[],pais:c.pais||'',web:c.web||'',logo:c.logo||'',epgUrls:selectEpgSources(c)})),json=JSON.stringify(c);
-  if(json!==lastCatalog)jobs.push((async()=>{
-   const pages=Math.ceil(c.length/300),revision=Date.now();
-   await Promise.all(Array.from({length:pages},(_,page)=>f.set('tvproRooms/'+room+'/catalog/page-'+page,{items:c.slice(page*300,(page+1)*300),revision})));
-   await f.set('tvproRooms/'+room+'/catalog/list',{pages,total:c.length,code:code||'',revision});lastCatalog=json;
-  })());
-  await Promise.all(jobs);
- }catch(e){status(errorText(e))}finally{publishing=false;if(publishAgain){publishAgain=false;queueMicrotask(()=>publish(true));}}
+  const c=api.channels().map((c,numero)=>({numero,nombre:c.nombre,id:c.id||'',epgId:c.epgId||c.id||'',categorias:typeof c.categorias==='string'?c.categorias:'',categoriasAPI:Array.isArray(c.categoriasAPI)?c.categoriasAPI:[],pais:c.pais||'',web:c.web||'',logo:c.logo||'',epgUrls:selectEpgSources(c)})),json=JSON.stringify(c);
+  if(json===lastCatalog)return;
+  const pages=Math.ceil(c.length/300),revision=Date.now();
+  await Promise.all(Array.from({length:pages},(_,page)=>f.set('tvproRooms/'+room+'/catalog/page-'+page,{items:c.slice(page*300,(page+1)*300),revision})));
+  await f.set('tvproRooms/'+room+'/catalog/list',{pages,total:c.length,code:code||'',revision});lastCatalog=json;
+ }catch(e){status('No se pudo actualizar el catálogo: '+errorText(e))}finally{catalogRunning=false;}
 }
 window.addEventListener('tvpro:state',()=>publish());
 for(const event of ['playing','waiting','pause','volumechange','error','loadeddata'])document.getElementById('player').addEventListener(event,()=>publish());
-let commandQueue=[],flushTimer,roomSessionStart=0;
+let commandQueue=[],flushTimer,roomSessionStart=0,commandRunning=false;
+function commandPayload(cmd){
+ const value=cmd.value;if(value&&value._tvpro===2)return {data:value.data??null,requestId:value.requestId||'',session:value.session||'',expires:Number(value.expires)||0};
+ return {data:value??null,requestId:'',session:'',expires:cmd.at+15000};
+}
 async function flushCommands(){
- const batch=commandQueue;commandQueue=[];flushTimer=null;
- for(let i=0;i<batch.length;i++){
-  let cmd=batch[i];
-  if(cmd.action==='channel'){while(i+1<batch.length&&batch[i+1].action==='channel')cmd=batch[++i];}
-  if(f.live.now()-cmd.at<15000)try{await api.command(cmd.action,cmd.value);awake()}catch(e){status(errorText(e))}
- }
- publish();
+ flushTimer=null;if(commandRunning||!ownsRoom)return;commandRunning=true;
+ try{while(commandQueue.length&&ownsRoom){
+  let cmd=commandQueue.shift();if(cmd.action==='channel')while(commandQueue[0]?.action==='channel')cmd=commandQueue.shift();
+  const packet=commandPayload(cmd),now=f.live.now();
+  if(packet.expires<now||cmd.at<roomSessionStart||(packet.session&&packet.session!==playbackSessionId))continue;
+  let result='ok',message='';
+  try{await api.command(cmd.action,packet.data);awake()}catch(e){result='error';message=String(e.message||e).slice(0,180);status(message)}
+  lastCommand={id:cmd.id,requestId:packet.requestId,action:cmd.action,result,message,at:now};publish();
+ }}finally{commandRunning=false;if(commandQueue.length&&!flushTimer)flushTimer=setTimeout(flushCommands,0);}
 }
 async function linkPhone(p){
- if(linking.has(p.id))return;linking.add(p.id);
+ if(!ownsRoom||linking.has(p.id))return;linking.add(p.id);
  try{
   const current=await f.get('tvproPairs/'+p.code),pair=current.val();
-  if(!pair||pair.room!==room||pair.expiresAt<=Date.now()||!p.at||Date.now()-p.at.toMillis()>600000)return;
+  if(!pair||pair.room!==room||pair.expiresAt<=f.live.now()||!p.at||f.live.now()-p.at.toMillis()>600000)return;
   await f.set('tvproRooms/'+room+'/members/'+p.id,{approved:true});
   await f.set('tvproGrants/'+p.id,{room});
   await f.remove('tvproRequests/'+room+'/pending/'+p.id);
@@ -1658,17 +1806,24 @@ async function linkPhone(p){
  }catch(e){status(errorText(e))}finally{linking.delete(p.id)}
 }
 $('revoke').onclick=async()=>{if(!f)return;try{const members=await new Promise((resolve,reject)=>{let off;off=f.watchCollection('tvproRooms/'+room+'/members',rows=>{setTimeout(()=>off(),0);resolve(rows)},reject)});for(const m of members)await f.remove('tvproRooms/'+room+'/members/'+m.id);status('Controles desvinculados.');await newCode()}catch(e){status(errorText(e))}};
-$('compactView').onclick=()=>{const enabled=document.documentElement.dataset.tvCompact!=='true';document.documentElement.dataset.tvCompact=String(enabled);try{TVStorage.setItem('tvpro-compact-view',String(enabled))}catch{}};
+$('compactView').textContent='Reducir interfaz';$('compactView').onclick=()=>{const modes=['normal','compact','mini'];window.TVLayout.set(modes[(modes.indexOf(window.TVLayout.get())+1)%modes.length]);};
 $('renew').textContent='Actualizar conexión';$('renew').onclick=()=>newCode().catch(e=>status(errorText(e)));$('linkToggle').onclick=()=>{$('pairPanel').hidden=!$('pairPanel').hidden};
-try{f=await connectFirebase();room=f.user.uid;await f.set('tvproRooms/'+room,{owner:f.authUid});await newCode();await publish();f.watchCollection('tvproRequests/'+room+'/pending',rows=>{for(const request of rows)linkPhone(request)},e=>status(errorText(e)));
+try{f=await connectFirebase();room=f.user.uid;
+ if(typeof BroadcastChannel!=='undefined'){
+  ownerChannel=new BroadcastChannel('tvpro-owner-'+room);
+  const claimedAt=Date.now();ownerChannel.onmessage=event=>{const claim=event.data;if(claim?.type==='claim'&&claim.session!==playbackSessionId&&(claim.at>claimedAt||(claim.at===claimedAt&&claim.session>playbackSessionId))){ownsRoom=false;intentionalPause=true;video.pause();status('Esta TV está activa en otra pestaña.');}};
+  ownerChannel.postMessage({type:'claim',session:playbackSessionId,at:claimedAt});
+ }
+ await f.set('tvproRooms/'+room,{owner:f.authUid});await newCode();await publish();f.watchCollection('tvproRequests/'+room+'/pending',rows=>{for(const request of rows)linkPhone(request)},e=>status(errorText(e)));
  roomSessionStart=f.live.now();
  f.live.watchCommands(room,cmd=>{
-  if(handled.has(cmd.id))return;handled.add(cmd.id);
+  if(!ownsRoom)return;
+  if(handled.has(cmd.id))return;handled.add(cmd.id);if(handled.size>512)handled.delete(handled.values().next().value);
   f.live.removeCommand(room,cmd.id).catch(e=>status(errorText(e)));
   if(cmd.at<roomSessionStart||f.live.now()-cmd.at>15000)return;
   commandQueue.push(cmd);if(!flushTimer)flushTimer=setTimeout(flushCommands,65);
  },e=>status(errorText(e)));
- f.live.presence(room,()=>publish(true),e=>status(errorText(e)));
+ f.live.presence(room,playbackSessionId,()=>publish(true),e=>status(errorText(e)));
 
  setInterval(()=>publish(true),15000);setInterval(()=>{if(f.live.now()>expires){expires=f.live.now()+30000;newCode().catch(e=>status(errorText(e)))}},10000);
 }catch(e){status(errorText(e));$('pairCode').textContent='Sin conexión';}
@@ -1772,5 +1927,53 @@ html[data-tv-compact=true] .gateKey{width:44px;height:44px;font-size:18px;margin
 html[data-tv-compact=true] #signalTitle{font-size:clamp(36px,5vw,61px)}
 html[data-tv-compact=true] #signalDescription{font-size:13px}
 html[data-tv-compact=true] #signalChannel{font-size:11px}
-</style><style>#screenAwakeStatus{font-size:10px;line-height:1.5;color:#8291a9;margin:5px 0 10px}html[data-tv-compact=true] #screenAwakeStatus{font-size:7px;margin:4px 0 7px}</style>
+</style><style>#screenAwakeStatus{font-size:10px;line-height:1.5;color:#8291a9;margin:5px 0 10px}html[data-tv-compact=true] #screenAwakeStatus{font-size:7px;margin:4px 0 7px}</style><style>
+html[data-tv-density=mini] .pairCard{width:min(460px,80vw);padding:17px 20px;gap:5%;border-radius:21px}
+html[data-tv-density=mini] .tvSculpture{max-width:137px}
+html[data-tv-density=mini] .screenMark{font-size:26px}
+html[data-tv-density=mini] .pairCopy h1{font-size:22px;margin:8px 0}
+html[data-tv-density=mini] .pairDescription{font-size:9px}
+html[data-tv-density=mini] #pairCode{font-size:28px;min-height:33px;letter-spacing:4px}
+html[data-tv-density=mini] #linkStatus{font-size:7px;min-height:17px}
+html[data-tv-density=mini] #pairPanel .continueTv{min-height:27px;font-size:8px;padding:7px 10px}
+html[data-tv-density=mini] #infoContent{width:70vw;max-width:560px;min-height:47px;gap:9px;padding:8px 11px;border-radius:14px}
+html[data-tv-density=mini] #infoBar{padding-bottom:24px}
+html[data-tv-density=mini] .channelNumber{width:38px;padding-right:8px}
+html[data-tv-density=mini] #canalNum{font-size:21px}
+html[data-tv-density=mini] .channelNumber>span{font-size:5px}
+html[data-tv-density=mini] .channelLogoBox{width:29px;height:29px;border-radius:8px}
+html[data-tv-density=mini] #canalNombre{font-size:13px;letter-spacing:-.3px}
+html[data-tv-density=mini] .channelEyebrow{font-size:5px;letter-spacing:1px}
+html[data-tv-density=mini] #estado{font-size:7px}
+html[data-tv-density=mini] .channelState{margin-top:3px}
+html[data-tv-density=mini] .nextChannel{width:113px;padding-left:10px}
+html[data-tv-density=mini] #nextChannelName{font-size:8px}
+html[data-tv-density=mini] .nextChannel>span,html[data-tv-density=mini] .nextChannel small{font-size:6px}
+html[data-tv-density=mini] #contadorCanales{font-size:7px;bottom:6px;padding:2px 7px;max-width:78vw}
+html[data-tv-density=mini] #linkToggle{font-size:8px;min-height:25px;padding:5px 10px;top:10px}
+html[data-tv-density=mini] #startupGate>div{width:min(245px,76vw);padding:19px;border-radius:19px}
+html[data-tv-density=mini] #startupGate h2{font-size:18px}
+html[data-tv-density=mini] #startupGate p{font-size:10px}
+html[data-tv-density=mini] .gateKey{width:36px;height:36px;font-size:16px}
+html[data-tv-density=mini] #volumeFeedback{width:172px;padding:14px;border-radius:17px}
+html[data-tv-density=mini] #volumeNumber{font-size:22px}
+html[data-tv-density=mini] #volumeLabel{font-size:7px}
+html[data-tv-density=mini] #transportFeedback{padding:14px 19px;gap:11px;border-radius:18px}
+html[data-tv-density=mini] #transportSymbol{font-size:29px;min-width:27px}
+html[data-tv-density=mini] #transportLabel{font-size:17px}
+</style><div id="networkNotice" hidden="" role="status" aria-live="polite"><span class="networkNoticeIcon" aria-hidden="true">!</span><div><strong id="networkNoticeTitle"></strong><p id="networkNoticeMessage"></p></div></div>
+<style id="signal-screen-base">
+#signalScreen{position:fixed;inset:0;z-index:700;display:grid;place-items:center;overflow:hidden;pointer-events:none;text-align:center;color:#deebff;font-family:Segoe UI,Arial,sans-serif}
+#signalScreen[hidden]{display:none!important}.signalContent{position:relative;z-index:1;width:min(620px,88vw);padding:24px}.signalGlow{position:absolute;width:400px;height:400px;border:1px solid;border-radius:50%;left:50%;top:45%;transform:translate(-50%,-50%)}
+.signalBrand{font-size:15px;font-weight:650;letter-spacing:3px}.signalBrand>span{font-weight:300;margin-left:4px}.signalBrand i{display:inline-block;font-size:7px;font-style:normal;letter-spacing:1px;border:1px solid;padding:5px 7px;border-radius:20px;margin-left:12px}
+.signalOrb{position:relative;width:126px;height:126px;display:grid;place-items:center;margin:34px auto 24px;border-radius:36px}.signalOrbit{position:absolute;inset:-8px;border:2px solid transparent;border-radius:44px;animation:signalSpin 2.4s linear infinite}.signalCross{display:none}.signalWave{display:block}
+#signalChannel{font-size:14px;margin:20px 0 8px}#signalTitle{font-size:clamp(40px,5vw,68px);font-weight:550;letter-spacing:-2px;line-height:1.1;margin:0 0 17px}#signalDescription{font-size:15px;line-height:1.6;margin:0 auto;max-width:470px}.signalFoot{font-size:8px;letter-spacing:2px;margin-top:32px}.signalProgress{width:160px;height:3px;margin:25px auto 0;background:#31435c;border-radius:4px;overflow:hidden}.signalProgress span{display:block;width:55%;height:100%;animation:signalSlide 1.7s ease-in-out infinite}
+#signalScreen[data-phase=error] .signalOrbit,#signalScreen[data-phase=error] .signalProgress{display:none}#signalScreen[data-phase=error] .signalCross{display:block}#signalScreen[data-phase=error] .signalWave{display:none}
+@keyframes signalSpin{to{transform:rotate(360deg)}}@keyframes signalSlide{from{transform:translateX(-110%)}to{transform:translateX(190%)}}@keyframes signalBreathe{50%{opacity:.4}}
+html[data-tv-density=mini] #signalTitle{font-size:44px}html[data-tv-density=mini] #signalDescription{font-size:12px}html[data-tv-density=mini] .signalOrb{width:80px;height:80px;margin:20px auto 16px}html[data-tv-density=mini] .signalAntenna{width:44px;height:44px}html[data-tv-density=mini] #signalChannel{font-size:11px}html[data-tv-density=mini] .signalFoot{font-size:6px;margin-top:25px}
+@media(prefers-reduced-motion:reduce){.signalOrbit,.signalProgress span{animation:none}}
+</style><style>
+#signalScreen{background:radial-gradient(ellipse at 50% 38%,#22354d,#101925 48%,#070c13 85%)}.signalGlow{border-color:#9bc5ff12;box-shadow:0 0 0 70px #9bc5ff04,0 0 0 145px #9bc5ff03;background:radial-gradient(circle,#9bc5ff0e,transparent 70%)}.signalOrb{color:#bedbff;background:linear-gradient(145deg,#3d597a80,#15243b80);box-shadow:inset 0 1px #d2e7ff35,0 15px 40px #0004}.signalOrbit{border-top-color:#aacdff;border-right-color:#aacdff60}.signalProgress span{background:linear-gradient(90deg,transparent,#8cbcff)}#signalChannel{color:#88a7ce}#signalDescription{color:#6f8bb1}.signalBrand{color:#d9e9ff}.signalBrand i{color:#8daed7;border-color:#7ba7dc26}.signalBrand>span{color:#7292b9}.signalFoot{color:#405b7e}.signalStages{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px auto 0;font-size:10px;color:#3e5574}.signalStages>span{display:flex;gap:6px;align-items:center}.signalStages>span:before{content:'';height:5px;width:5px;background:#2e415c;border-radius:50%}.signalStages>.stageConnected{color:#6d96ca}.signalStages>.stageConnected:before{background:#8bb6f0;box-shadow:0 0 8px #8bb6f077}.signalStages>i{width:25px;height:1px;background:#344761}.signalStages>.stageReceiving{color:#7397c6;animation:signalBreathe 2s ease infinite}#signalScreen[data-phase=error] .signalStages{display:none}
+#networkNotice{position:fixed;z-index:890;left:50%;top:7%;transform:translateX(-50%);display:flex;align-items:center;gap:13px;width:min(470px,88vw);padding:17px 20px;border:1px solid #d5b27f3b;border-radius:20px;background:linear-gradient(125deg,#292a30f5,#22252ff2);backdrop-filter:blur(18px);box-shadow:0 15px 50px #0005;color:#decba8;pointer-events:none}#networkNotice[hidden]{display:none!important}.networkNoticeIcon{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:11px;background:#b68b4229;border:1px solid #d5b27f33;font-size:19px;font-weight:600}#networkNoticeTitle{display:block;font-size:15px;font-weight:550;letter-spacing:-.2px}#networkNoticeMessage{font-size:11px;line-height:1.6;color:#a99f8a;margin:5px 0 0}#networkNotice[data-kind=success]{border-color:#81c4ae38;color:#b5e1d4;background:#182d2af2}#networkNotice[data-kind=success] .networkNoticeIcon{background:#81c4ae19;border-color:#81c4ae33}#networkNotice[data-kind=offline]{border-color:#d88e833d;color:#e2b9b0}html[data-tv-compact=true] #networkNotice{width:min(350px,80vw);padding:12px 15px;border-radius:15px;top:7%}html[data-tv-compact=true] #networkNoticeTitle{font-size:12px}html[data-tv-compact=true] #networkNoticeMessage{font-size:9px}html[data-tv-compact=true] .signalStages{font-size:8px;gap:8px}html[data-tv-density=mini] #networkNotice{width:min(290px,78vw);padding:10px 12px}html[data-tv-density=mini] #networkNoticeTitle{font-size:10px}html[data-tv-density=mini] #networkNoticeMessage{font-size:8px}html[data-tv-density=mini] .networkNoticeIcon{width:26px;height:26px;flex-basis:26px;font-size:16px}html[data-tv-density=mini] .signalStages{font-size:7px;gap:6px}@media(prefers-reduced-motion:reduce){.signalStages>.stageReceiving{animation:none}}
+</style>
 </body></html>
