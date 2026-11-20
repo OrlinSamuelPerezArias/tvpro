@@ -15,7 +15,7 @@ export function newProfile(name = 'Principal', id = newId()) {
   return {
     id, name, favorites: [], hidden: [], order: [], favoriteCategories: [],
     last: '', recent: [], pin: null, blockedCategories: [],
-    playback: { audioLanguage: 'es', lowPower: false, preferNative: true, muted: false, volume: 0.8, timeout: 10000, resume: true },
+    playback: { audioLanguage: 'es', lowPower: false, preferNative: true, muted: false, volume: 0.8, timeout: 10000 },
     appearance: { position: 'left', scale: 'normal', fit: 'cover' }
   };
 }
@@ -72,7 +72,7 @@ function cleanProfile(value, upgradeViewport) {
       audioLanguage: /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/.test(audioLanguage) ? audioLanguage : 'es',
       lowPower: bool(playback.lowPower, false), preferNative: bool(playback.preferNative, true),
       muted: bool(playback.muted, false), volume: clamp(playback.volume, 0, 1, 0.8),
-      timeout: clamp(playback.timeout, 4000, 30000, 10000), resume: bool(playback.resume, true)
+      timeout: clamp(playback.timeout, 4000, 30000, 10000)
     },
     appearance: {
       position: appearance.position === 'right' ? 'right' : 'left',

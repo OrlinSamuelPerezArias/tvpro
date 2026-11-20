@@ -24,6 +24,8 @@ const guide = new Guide();
 const availability = new Availability({ onChange: () => queueRows() });
 const player = new Player(video, { onStatus: renderPlayback, onTracks: renderTracks, onStreamResult: (url, status) => availability.mark(url, status) });
 const CHANNEL_LIST_CODE = '1111';
+const SELECT_CHANNEL_CODE = '00';
+const CHANNEL_PANEL_CODES = [CHANNEL_LIST_CODE, SELECT_CHANNEL_CODE];
 
 let prefs = readPreferences();
 let profile = prefs.profiles.find(item => item.id === prefs.active);
@@ -191,12 +193,10 @@ function renderWelcome() {
 
 function startPlayback(gesture = true) {
   if (gesture) requestStartupFullscreen();
-  const visible = orderedChannels(channels, profile);
-  const last = profile.playback.resume && channelById.get(profile.last);
-  const first = last && !hidden(last) && !requiresPin(last) ? last : visible.find(channel => !requiresPin(channel)) || visible[0];
-  if (first) {
+  const initial = channelByNumber.get(0);
+  if (initial) {
     startRequested = false;
-    readyToTune(first, gesture);
+    readyToTune(initial, gesture);
   } else if (restoring || sources.updating) startRequested = true;
   else openPanel(channels.length ? 'channels' : 'settings');
 }
@@ -506,8 +506,7 @@ function makeRow(channel, index) {
   row.addEventListener('focus', () => { if (view === 'channels') { selection = index; queueRows(); } });
   row.addEventListener('click', () => {
     selection = index;
-    if (hidden(channel)) openManage(channel);
-    else readyToTune(channel);
+    selectFromList(channel);
   });
   row.addEventListener('contextmenu', event => { event.preventDefault(); openManage(channel); });
   return { row, state, star, channel };
@@ -982,17 +981,30 @@ function confirmDigits(gesture = false) {
   else toast(`El canal ${number} no está disponible.`);
 }
 
+function selectFromList(channel = rows[selection]) {
+  if (!channel) toast('No hay un canal seleccionado.');
+  else if (hidden(channel)) openManage(channel);
+  else readyToTune(channel);
+}
+
 function enterDigit(digit, { inList = false, preview = true } = {}) {
-  if (inList && digit !== CHANNEL_LIST_CODE[digitBuffer.length]) {
+  let next = (digitBuffer + digit).slice(0, 6);
+  if (inList && !CHANNEL_PANEL_CODES.some(code => code.startsWith(next))) {
     clearDigits();
-    return false;
+    if (!CHANNEL_PANEL_CODES.some(code => code.startsWith(digit))) return false;
+    next = digit;
   }
   if (!digitBuffer && current && !inList) activatePlayback();
-  digitBuffer = (digitBuffer + digit).slice(0, 6);
+  digitBuffer = next;
   if (digitBuffer === CHANNEL_LIST_CODE) {
     clearDigits();
     if (inList) closePanel();
     else openPanel('channels', { filter: 'all' });
+    return true;
+  }
+  if (inList && digitBuffer === SELECT_CHANNEL_CODE) {
+    clearDigits();
+    selectFromList();
     return true;
   }
   if (preview) {
@@ -1000,7 +1012,7 @@ function enterDigit(digit, { inList = false, preview = true } = {}) {
     $('number-entry').hidden = false;
   }
   clearTimeout(digitTimer);
-  const delay = CHANNEL_LIST_CODE.startsWith(digitBuffer) ? 1900 : 1250;
+  const delay = inList || CHANNEL_LIST_CODE.startsWith(digitBuffer) ? 1900 : 1250;
   digitTimer = setTimeout(inList ? clearDigits : confirmDigits, delay);
   return false;
 }
@@ -1094,6 +1106,15 @@ function handlePlaybackKey(key, target) {
 
 document.addEventListener('keydown', event => {
   const target = event.target instanceof Element ? event.target : document.body;
+  const key = remoteAction(event, registeredKeys);
+  const canStart = !current && !view && !event.isComposing && !event.ctrlKey && !event.altKey && !event.metaKey &&
+    !['Alt', 'Control', 'Meta', 'Shift'].includes(event.key);
+  if (canStart && !event.repeat) {
+    if (!startRequested) startPlayback();
+    else requestStartupFullscreen();
+    event.preventDefault();
+    return;
+  }
   if (event.key === 'Tab' && view) {
     const focusableItems = focusable(panel);
     if (!focusableItems.length) return;
@@ -1103,14 +1124,16 @@ document.addEventListener('keydown', event => {
     }
     return;
   }
-  const key = remoteAction(event, registeredKeys);
   if (!key) return;
   if (event.repeat && !target.matches('input:not([type=checkbox]):not([type=file]), textarea')) { event.preventDefault(); return; }
   if (view ? handlePanelKey(event, key, target) : handlePlaybackKey(key, target)) event.preventDefault();
 });
 
 document.addEventListener('tizenhwkey', event => {
-  if (event.keyName === 'back' && (view || current || digitBuffer)) { event.preventDefault(); back(); }
+  if (!current && !view && !startRequested) {
+    event.preventDefault();
+    startPlayback();
+  } else if (event.keyName === 'back' && (view || current || digitBuffer)) { event.preventDefault(); back(); }
 });
 
 function fullscreenElement() {
@@ -1144,7 +1167,6 @@ function fullscreen() {
 }
 
 for (const [id, action] of Object.entries({
-  'welcome-start': () => startPlayback(), 'welcome-sources': () => openPanel('settings'),
   'action-channels': () => openPanel('channels', { filter: 'all' }), 'action-favorites': () => openPanel('channels', { filter: 'favorites' }),
   'action-previous': jumpBack, 'action-tracks': () => openFromOptions('tracks'), 'action-guide': () => openFromOptions('guide'),
   'action-settings': () => openFromOptions('settings'), 'action-mute': mute, 'action-fullscreen': fullscreen,
@@ -1154,6 +1176,7 @@ for (const [id, action] of Object.entries({
   'playback-resume': resume, 'playback-retry': retryChannel
 })) $(id).addEventListener('click', action);
 
+$('welcome').addEventListener('click', () => { if (!current && !view) startPlayback(); });
 $('pin-form').addEventListener('submit', submitPin);
 $('quality-select').addEventListener('change', event => player.setQuality(Number(event.target.value)));
 $('audio-select').addEventListener('change', event => player.setAudio(Number(event.target.value)));

@@ -29,7 +29,6 @@
         <p id="welcome-text" class="welcome-status" role="status">Cargando las listas de canales…</p>
         <div class="welcome-actions">
           <button id="welcome-start" class="button-primary" type="button" aria-describedby="welcome-prompt">Ver TV</button>
-          <button id="welcome-sources" class="button-secondary" type="button">Configurar fuentes</button>
         </div>
       </div>
       <footer class="welcome-footer" aria-label="Controles del mando">
@@ -74,7 +73,11 @@
 
       <section id="channels-view" class="panel-view channels-view" aria-label="Catálogo de canales" hidden>
         <div class="channel-controls">
-          <p class="channel-remote-hint"><span><kbd>CH+</kbd> <kbd>CH−</kbd> Mover</span><span><kbd>1111</kbd> para salir</span></p>
+          <p class="channel-remote-hint">
+            <span><kbd>CH+</kbd> <kbd>CH−</kbd> Mover</span>
+            <span><kbd>00</kbd> para seleccionar</span>
+            <span><kbd>1111</kbd> para salir</span>
+          </p>
           <label class="channel-search-label" for="channel-search">Buscar por nombre o número</label>
           <div class="search-field">
             <span class="search-icon" aria-hidden="true"></span>

@@ -171,7 +171,6 @@ function playbackSettings(profile, actions) {
   const volume = select('playback-volume', volumes, settings.volume, value => set('volume', Number(value)));
   group.append(row('settings-grid', field('Idioma de audio preferido', audio), field('Tiempo de espera de la señal', timeout), field('Volumen inicial', volume)));
   group.append(row('settings-toggle-grid',
-    toggle('Continuar en el último canal', 'playback-resume-setting', settings.resume, value => set('resume', value)),
     toggle('Preferir reproducción nativa', 'playback-native', settings.preferNative, value => set('preferNative', value)),
     toggle('Modo de ahorro de recursos', 'playback-economy', settings.lowPower, value => set('lowPower', value)),
     toggle('Iniciar sin sonido', 'playback-muted-setting', settings.muted, value => set('muted', value))));

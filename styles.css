@@ -66,6 +66,7 @@ body[data-fit="contain"] .stage-video { object-fit: contain; }
   flex-direction: column;
   justify-content: space-between;
   overflow: auto;
+  cursor: pointer;
   padding: calc(clamp(26px, 6.1vh, 84px) + var(--safe-top)) var(--page-right) calc(clamp(22px, 5.1vh, 76px) + var(--safe-bottom)) var(--page-left);
   background: #0d141d;
   background: radial-gradient(ellipse at 91% 18%, #31493d 0%, #1c302f 25%, transparent 60%), linear-gradient(115deg, #0b1018 42%, #111d27 100%);
@@ -168,10 +169,13 @@ kbd { display: inline-grid; min-width: 1.64em; min-height: 1.64em; place-items: 
   top: 0;
   right: 0;
   bottom: 0;
+  width: 58%;
   width: clamp(470px, 43vw, 760px);
-  max-width: 100%;
+  max-width: 64%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
   border-left: 1px solid var(--stroke);
   background: var(--panel);
@@ -192,6 +196,7 @@ kbd { display: inline-grid; min-width: 1.64em; min-height: 1.64em; place-items: 
 
 .channel-controls { flex: none; padding: 2px var(--panel-edge) 0; }
 .channel-remote-hint { display: flex; flex-wrap: wrap; gap: .55em 1.15em; margin-bottom: .8em; color: var(--muted); font-size: clamp(.88rem, 1.2vw, 1.08rem); }
+.channel-remote-hint span { white-space: nowrap; }
 .channel-search-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: .96rem; }
 .search-field { position: relative; }
 #channel-search { width: 100%; padding-inline-start: 2.55em; }
@@ -322,30 +327,72 @@ body[data-panel-position="left"] .panel { right: auto; left: 0; border-right: 1p
 }
 
 @media (max-width: 660px) {
-  :root { --page-edge: 20px; --row-height: 72px; }
+  :root { --page-edge: 20px; --panel-edge: clamp(9px, 2.6vw, 20px); --row-height: 66px; }
   .welcome { padding-top: calc(25px + var(--safe-top)); }
-  .panel, .panel[data-view="settings"], .panel[data-view="guide"] { width: 100%; border: 0; }
-  .panel-header { padding-bottom: 9px; }
-  .channel-row { grid-template-columns: 4ch 39px minmax(0, 1fr) auto auto; gap: 0 7px; }
+  .panel, .panel[data-view="settings"], .panel[data-view="guide"] { width: 62%; }
+  .panel-header { gap: 8px; padding-bottom: 9px; }
+  .panel-header h2 { min-width: 0; overflow-wrap: anywhere; }
+  .channel-row { grid-template-columns: 3.2ch clamp(27px, 6vw, 39px) minmax(0, 1fr) auto; gap: 0 6px; padding-inline: 5px; }
+  .channel-copy { display: contents; }
+  .channel-copy .channel-name { align-self: end; }
+  .channel-meta { display: none; }
+  .channel-state { grid-area: 2 / 3; align-self: start; max-width: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .channel-star { grid-area: 1 / 4 / 3; }
+  .channel-remote-hint { gap: .35em .75em; }
   .channel-extra-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   #channel-category { grid-column: 1 / -1; }
   .channel-filters select, .channel-extra-filters select { padding-inline: .48em; font-size: .93rem; }
   .welcome-footer { display: none; }
 }
+@media (max-width: 660px) and (orientation: portrait) {
+  .panel, .panel[data-view="settings"], .panel[data-view="guide"] { width: 78%; max-width: 78%; }
+}
 @media (max-width: 390px) {
-  .channel-state { max-width: 8ch; }
   .settings-grid, .settings-toggle-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-height: 450px) {
+  :root { --row-height: 58px; }
+  body[data-ui-size="large"] { --row-height: 68px; }
   .welcome { padding-top: calc(16px + var(--safe-top)); padding-bottom: calc(16px + var(--safe-bottom)); }
   .welcome-main { padding: 14px 0; }
   .welcome h1 { font-size: clamp(2rem, 5vw, 3.4rem); }
   .welcome-actions { margin-top: 14px; }
   .welcome-footer { display: none; }
-  .panel-header { padding-top: calc(10px + var(--safe-top)); padding-bottom: 6px; }
+  .panel-header { padding-top: calc(8px + var(--safe-top)); padding-bottom: 5px; }
+  .panel-header h2 { font-size: clamp(1.25rem, 4.5vh, 1.75rem); }
+  .icon-button { font-size: 1.05rem; }
+  .channel-remote-hint { gap: .2em .6em; margin-bottom: .4em; line-height: 1.18; }
+  .channel-remote-hint kbd { min-height: 1.45em; }
+  .channel-search-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .channels-view input[type="search"], .channels-view select { min-height: 2.05em; padding-block: .21em; }
+  .channel-filters { margin-top: 5px; }
   .channel-summary { padding-top: 5px; padding-bottom: 4px; }
   .hud { padding-top: 26px; padding-bottom: calc(14px + var(--safe-bottom)); }
   .hud-actions { gap: 6px; }
+}
+@media (max-height: 280px) and (orientation: landscape) {
+  :root { --row-height: 48px; }
+  body[data-ui-size="large"] { --row-height: 54px; }
+  .panel-header { padding-block: calc(3px + var(--safe-top)) 3px; }
+  .panel-header h2 { font-size: 1.1rem; }
+  .panel-header .icon-button { width: 1.9em; min-height: 1.9em; font-size: .88rem; }
+  .channel-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 5px; }
+  .channel-remote-hint, .channel-extra-filters { grid-column: 1 / -1; }
+  .channel-remote-hint { display: grid; grid-template-columns: max-content max-content; margin-bottom: 1px; font-size: .71rem; }
+  .channel-remote-hint span:first-child { grid-column: 1 / -1; }
+  .channel-filters { gap: 3px; margin-top: 0; }
+  .channel-summary { padding-block: 2px; }
+  .channel-count { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .channel-utilities { width: 100%; flex-wrap: nowrap; gap: 4px; }
+  .channel-utilities button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .channel-options { min-height: 1.8em; padding: .15em .32em; font-size: .72rem; }
+  .channels-view input[type="search"], .channels-view select { min-height: 1.8em; padding-block: .1em; font-size: .79rem; }
+  .search-icon { display: none; }
+  #channel-search { padding-inline-start: .45em; }
+}
+@media (max-width: 360px) and (max-height: 280px) and (orientation: landscape) {
+  .channel-remote-hint { font-size: .66rem; }
+  .channel-remote-hint kbd { padding-inline: .22em; }
 }
 @media (prefers-reduced-motion: reduce) {
   .panel, .hud, .toast, .playback-spinner { animation: none !important; }
