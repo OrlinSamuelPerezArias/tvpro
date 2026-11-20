@@ -1,0 +1,7 @@
+{
+  "name": "tv-pro-local",
+  "version": "2.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"start": "node servir.mjs", "test": "node --test"}
+}
