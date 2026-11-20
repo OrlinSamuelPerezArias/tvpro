@@ -41,6 +41,21 @@ test('links authorized-list variants to a fixed station without confusing an ide
   assert.equal(channels[7].streams[0].url, colour.url);
 });
 
+test('keeps official viewing pages separate from streams and ignores navigation metadata from playlists', () => {
+  const fakePage = 'https://demo.example/pretend-official';
+  const incoming = { ...station('Telesistema 11', 'Telesistema11.do'), officialPage: fakePage };
+  const external = { ...station('Otro canal', 'OtroChannel.do'), officialPage: fakePage };
+  const channels = buildCatalog([incoming, external], {}, options);
+  const telesistema = channels.find(channel => channel.number === 5);
+  const colour = channels.find(channel => channel.number === 6);
+  assert.equal(telesistema.officialPage, 'https://telesistema11.com.do/en-vivo/');
+  assert.equal(colour.officialPage, 'https://colorvision.com.do/en-vivo/');
+  assert.deepEqual(telesistema.streams.map(stream => stream.url), [incoming.url]);
+  assert.equal(channels.find(channel => channel.name === external.name).officialPage, undefined);
+  const invalid = buildCatalog([], {}, { fixedLineup: [{ number: 5, name: 'Prueba', officialPage: 'javascript:alert(1)' }] });
+  assert.equal(invalid[0].officialPage, '');
+});
+
 test('migrates unrelated occupied slots once and keeps active, disappearing, and returning historical identities', () => {
   let numbers = {
     'tvg:publico.do': 0,

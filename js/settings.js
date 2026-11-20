@@ -280,14 +280,16 @@ export function renderChannelSettings(container, { channel, profile, channelHidd
   const metadata = [`Canal ${channel.number}`, profile.name, ...channel.categories].join(' · ');
   details.append(node('p', 'settings-note', metadata));
   const favorite = button(channelFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos', actions.favorite, 'channel-favorite', { kind: channelFavorite ? 'secondary' : 'primary' });
+  const channelActions = [favorite];
+  if (channel.officialPage) channelActions.push(button('Ver señal oficial', actions.official, 'channel-official'));
+  if (!channel.fixed) channelActions.push(button(channelHidden ? 'Mostrar canal' : 'Ocultar canal', actions.hide, 'channel-hide'));
+  details.append(row('settings-actions', ...channelActions));
+
   const back = row('settings-actions', button('Volver al catálogo', actions.back, 'channel-back'));
   if (channel.fixed) {
-    details.append(row('settings-actions', favorite));
     replaceSettings(container, [details, back]);
     return;
   }
-  details.append(row('settings-actions', favorite,
-    button(channelHidden ? 'Mostrar canal' : 'Ocultar canal', actions.hide, 'channel-hide')));
 
   const order = section('Orden de la lista');
   order.append(node('p', 'settings-note', channelHidden ? 'Muestra el canal para cambiar su posición.' : 'El orden cambia dentro del grupo y el canal conserva su número.'));

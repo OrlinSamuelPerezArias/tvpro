@@ -391,7 +391,9 @@ body[data-panel-position="left"] .panel { right: auto; left: 0; border-right: 1p
   #channel-search { padding-inline-start: .45em; }
 }
 @media (max-width: 360px) and (max-height: 280px) and (orientation: landscape) {
-  .channel-remote-hint { font-size: .66rem; }
+  .channel-remote-hint { display: flex; font-size: .66rem; }
+  .channel-remote-hint span:first-child { order: -2; }
+  #channel-official-hint { order: -1; }
   .channel-remote-hint kbd { padding-inline: .22em; }
 }
 @media (prefers-reduced-motion: reduce) {

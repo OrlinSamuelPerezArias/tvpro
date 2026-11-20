@@ -24,10 +24,12 @@ export const fixedLineup = [
     number: 4, name: 'Teleantillas', tvgIds: ['TeleAntillas.do'], names: ['Tele Antillas', 'Teleantillas 2', 'Teleantillas 10'], streams: []
   },
   {
-    number: 5, name: 'Telesistema 11', tvgIds: ['Telesistema11.do'], names: ['Telesistema', 'Telesistema Canal 11'], streams: []
+    number: 5, name: 'Telesistema 11', tvgIds: ['Telesistema11.do'], names: ['Telesistema', 'Telesistema Canal 11'],
+    officialPage: 'https://telesistema11.com.do/en-vivo/', streams: []
   },
   {
-    number: 6, name: 'Color Visión', tvgIds: ['ColorVision.do'], names: ['Color Visión 9', 'Color Visión Canal 9'], streams: []
+    number: 6, name: 'Color Visión', tvgIds: ['ColorVision.do'], names: ['Color Visión 9', 'Color Visión Canal 9'],
+    officialPage: 'https://colorvision.com.do/en-vivo/', streams: []
   }
 ];
 

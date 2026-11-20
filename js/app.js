@@ -25,7 +25,8 @@ const availability = new Availability({ onChange: () => queueRows() });
 const player = new Player(video, { onStatus: renderPlayback, onTracks: renderTracks, onStreamResult: (url, status) => availability.mark(url, status) });
 const CHANNEL_LIST_CODE = '1111';
 const SELECT_CHANNEL_CODE = '00';
-const CHANNEL_PANEL_CODES = [CHANNEL_LIST_CODE, SELECT_CHANNEL_CODE];
+const OFFICIAL_PAGE_CODE = '01';
+const CHANNEL_PANEL_CODES = [CHANNEL_LIST_CODE, SELECT_CHANNEL_CODE, OFFICIAL_PAGE_CODE];
 
 let prefs = readPreferences();
 let profile = prefs.profiles.find(item => item.id === prefs.active);
@@ -56,6 +57,7 @@ let rowFrame;
 let resizeTimer;
 let restoring = true;
 let startRequested = false;
+let startupPress = false;
 let storageWarning = false;
 let lastAutoAttempt = 0;
 let probeBudget = [];
@@ -270,6 +272,18 @@ function readyToTune(channel, gesture = true) {
   else tune(channel, gesture);
 }
 
+function isWindStream(url) {
+  return Boolean(url && /(?:^|\.)wind\.(?:com\.)?do$/i.test(new URL(url).hostname));
+}
+
+function rankedStreams(channel) {
+  const ranked = availability.rank(channel.streams);
+  const independent = [];
+  const wind = [];
+  for (const stream of ranked) (isWindStream(stream.url) ? wind : independent).push(stream);
+  return [...independent, ...wind];
+}
+
 function tune(channel, gesture = false) {
   if (!channel) return;
   restoring = false;
@@ -279,7 +293,7 @@ function tune(channel, gesture = false) {
   current = channel;
   renderWelcome();
   if (changed || ['no-signal', 'ended'].includes(player.status?.state)) {
-    player.tune(channel, profile.playback, availability.rank(channel.streams), { gesture });
+    player.tune(channel, profile.playback, rankedStreams(channel), { gesture });
   } else if (gesture) activatePlayback();
   if (!['autoplay', 'no-signal', 'ended'].includes(player.status?.state) && document.activeElement !== video) video.focus({ preventScroll: true });
   showHud();
@@ -313,7 +327,7 @@ function retryChannel() {
   const same = latest && latest.streams.length === current.streams.length && latest.streams.every((stream, index) => stream.url === current.streams[index].url);
   if (latest && !same) {
     current = latest;
-    player.tune(latest, profile.playback, availability.rank(latest.streams), { gesture: true });
+    player.tune(latest, profile.playback, rankedStreams(latest), { gesture: true });
   } else resume();
 }
 
@@ -361,7 +375,8 @@ function updateHud() {
   $('hud-number').textContent = String(current.number);
   $('hud-name').textContent = current.name;
   const status = player.status?.state === 'playing' ? 'Reproduciendo' : player.status?.message;
-  $('hud-detail').textContent = [status, navigator.onLine === false ? 'Sin conexión' : '', lineupLabels[current.lineupGroup] || current.categories[0], labelFor(current.country, countries)].filter(Boolean).join(' · ');
+  $('hud-detail').textContent = [status, navigator.onLine === false ? 'Sin conexión' : '', isWindStream(player.status.url) ? 'WindTV' : '', lineupLabels[current.lineupGroup] || current.categories[0], labelFor(current.country, countries)].filter(Boolean).join(' · ');
+  $('action-official').hidden = !current.officialPage;
   const hudLogo = $('hud-logo');
   if (hudLogo.dataset.url !== current.logo) {
     hudLogo.dataset.url = current.logo || '';
@@ -470,7 +485,7 @@ function channelStatus(channel) {
     if (status === 'loading') return ['Cargando', status];
   }
   if (!channel.streams.length) return ['Sin señal en las fuentes', 'down'];
-  const bestUrl = availability.rank(channel.streams)[0]?.url;
+  const bestUrl = rankedStreams(channel)[0]?.url;
   const state = bestUrl && availability.get(bestUrl)?.state;
   return [statusText[state] || 'No verificada', state || 'unverified'];
 }
@@ -514,6 +529,7 @@ function makeRow(channel, index) {
 
 function renderRows(focusSelected = false) {
   if (view !== 'channels') return;
+  $('channel-official-hint').hidden = !rows[selection]?.officialPage;
   const rowHeight = height();
   list.style.height = `${rows.length * rowHeight}px`;
   if (!rows.length) {
@@ -579,7 +595,7 @@ function planProbes() {
     const candidates = [...new Set([rows[selection], ...rows.slice(first, end).filter(favorite), ...rows.slice(first, end), ...profile.favorites.slice(0, 4).map(id => channelById.get(id))])];
     for (const channel of candidates) {
       if (!channel || hidden(channel) || requiresPin(channel) || hasChannel(refs(channel), current)) continue;
-      const url = availability.rank(channel.streams)[0]?.url;
+      const url = rankedStreams(channel)[0]?.url;
       if (!url || availability.get(url)) continue;
       availability.probe(url, favorite(channel) ? 8 : channel === rows[selection] ? 6 : 2);
       probeBudget.push(now);
@@ -813,6 +829,7 @@ function renderManage() {
         toast(nowHidden ? 'Canal oculto.' : 'Canal visible.');
       },
       move: step => orderChannel(channel, step), moveFirst: () => orderChannel(channel, -Infinity),
+      official: () => openOfficial(channel),
       back: () => openPanel('channels', { keepSelection: true })
     }
   });
@@ -987,6 +1004,13 @@ function selectFromList(channel = rows[selection]) {
   else readyToTune(channel);
 }
 
+function openOfficial(channel) {
+  if (!channel?.officialPage) { toast('Este canal no tiene un enlace oficial configurado.'); return; }
+  const navigate = () => window.location.assign(channel.officialPage);
+  if (requiresPin(channel)) runProtected(navigate, 'Introduce el PIN para abrir la señal oficial.');
+  else navigate();
+}
+
 function enterDigit(digit, { inList = false, preview = true } = {}) {
   let next = (digitBuffer + digit).slice(0, 6);
   if (inList && !CHANNEL_PANEL_CODES.some(code => code.startsWith(next))) {
@@ -1005,6 +1029,11 @@ function enterDigit(digit, { inList = false, preview = true } = {}) {
   if (inList && digitBuffer === SELECT_CHANNEL_CODE) {
     clearDigits();
     selectFromList();
+    return true;
+  }
+  if (inList && digitBuffer === OFFICIAL_PAGE_CODE) {
+    clearDigits();
+    openOfficial(rows[selection]);
     return true;
   }
   if (preview) {
@@ -1176,7 +1205,20 @@ for (const [id, action] of Object.entries({
   'playback-resume': resume, 'playback-retry': retryChannel
 })) $(id).addEventListener('click', action);
 
-$('welcome').addEventListener('click', () => { if (!current && !view) startPlayback(); });
+document.addEventListener('pointerdown', event => {
+  if (event.button > 0 || event.isPrimary === false) return;
+  startupPress = !current && !view;
+  if (startupPress && event.pointerType !== 'touch') startPlayback();
+}, true);
+document.addEventListener('pointercancel', () => { startupPress = false; }, true);
+document.addEventListener('click', event => {
+  if (!(event.button > 0) && !view) {
+    if (!current) startPlayback();
+    else if (startupPress) requestStartupFullscreen();
+  }
+  startupPress = false;
+}, true);
+$('action-official').addEventListener('click', () => openOfficial(current));
 $('pin-form').addEventListener('submit', submitPin);
 $('quality-select').addEventListener('change', event => player.setQuality(Number(event.target.value)));
 $('audio-select').addEventListener('change', event => player.setAudio(Number(event.target.value)));

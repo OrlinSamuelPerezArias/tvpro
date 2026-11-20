@@ -401,7 +401,7 @@ function prepareFixedLineup(items) {
     });
     const aliases = [`fixed:${number}`, ...idKeys.map(id => `tvg:${id}`),
       ...nameKeys.flatMap(key => [`name:DO:${key}`, `name:-:${key}`]), ...streams.map(({ url }) => `url:${hashUrl(url)}`)];
-    stations.set(number, { number, aliases, tvgIds });
+    stations.set(number, { number, aliases, tvgIds, officialPage: safeUrl(item.officialPage) });
     for (const id of idKeys) if (!byId.has(id)) byId.set(id, number);
     for (const key of nameKeys) if (!byName.has(key)) byName.set(key, number);
     const seed = { ...item, name, tvgId: tvgIds[0] || '', countries: ['DO'], languages: ['es'], fixedSeed: true, fixedNumber: number };
@@ -565,7 +565,7 @@ export function buildCatalog(entries, numbers = Object.create(null), { fixedLine
       tvgId, tvgIds,
       streams: [...streams.values()]
     };
-    if (station) Object.assign(channel, { fixed: true, lineupGroup: 'fixed', number: station.number });
+    if (station) Object.assign(channel, { fixed: true, lineupGroup: 'fixed', number: station.number, officialPage: station.officialPage });
     else if (fixed.stations.size) {
       const national = importantDRRank(channel);
       const cable = national < 0 ? cableBrandRank(channel) : -1;

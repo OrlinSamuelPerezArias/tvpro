@@ -1,4 +1,4 @@
-# TV PRO 2.1.1
+# TV PRO 2.1.2
 
 Reproductor IPTV web pensado para usar con el mando del televisor. Conserva siete canales fijos y completa el catálogo con las fuentes activas. La instalación inicial incluye dos directorios públicos de IPTV-org, uno de República Dominicana y otro de canales en español. Puedes sustituirlos o añadir fuentes autorizadas en **Configuración → Fuentes IPTV**.
 
@@ -24,6 +24,7 @@ Marca **1111** para abrir la lista lateral. Recorre sus canales con **CH+ / CH�
 | CH+ / CH− | Cambiar de canal | Moverse por la lista |
 | 1111 | Abrir la lista | Salir de la lista |
 | 00 | Sintonizar el canal 0 | Sintonizar el canal resaltado |
+| 01 | Sintonizar el canal 1 | Abrir la web oficial del canal resaltado cuando aparezca **01 señal oficial** |
 | Menú / Lista / rojo / C | Abrir canales | — |
 | Verde / F | Abrir favoritos | — |
 | Info / I | Mostrar información del canal | — |
@@ -44,6 +45,10 @@ El video llena la pantalla conservando sus proporciones. Puede recortar parte de
 4. Resto de canales dominicanos y demás canales.
 
 Al actualizar desde una versión anterior, las posiciones 0–6 quedan reservadas para los canales fijos. Si otro canal ocupaba una de esas posiciones, recibe un número libre. Puedes guardar cualquier canal en favoritos. **Opciones del canal** permite ocultar y reordenar los demás canales dentro de su grupo. **Recientes** guarda los últimos 20 canales que empezaron a reproducirse.
+
+## Señales de WindTV
+
+Cuando un canal tiene fuentes distintas, TV PRO intenta primero las que no provienen de WindTV. Si la señal disponible muestra un aviso regional, abre la lista con **1111**, resalta **Telesistema 11 (5)** o **Color Visión (6)** y marca **01**. Se abrirá la página del canal en el mismo navegador. También puedes usar **Ver señal oficial** en las opciones del canal. La reproducción en esa página depende del canal y de tu conexión. [Telesistema 11 en vivo](https://telesistema11.com.do/en-vivo/) · [Color Visión en vivo](https://colorvision.com.do/en-vivo/)
 
 ## Fuentes, guía y perfiles
 
