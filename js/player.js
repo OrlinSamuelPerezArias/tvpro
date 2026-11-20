@@ -10,12 +10,17 @@ const transient = new Set(['network', 'timeout']);
 const unavailable = {
   down: 'La señal no está disponible en el servidor.',
   format: 'El dispositivo no pudo reproducir el formato de la señal.',
+  'mixed-content': 'Señal HTTP bloqueada por el navegador. Se necesita una señal HTTPS.',
   network: 'No se pudo conectar. Puede ser un problema de red o de permisos del origen.',
   'rate-limited': 'El servidor limitó las solicitudes. Vuelve a intentar más tarde.',
   region: 'La fuente indica que la señal está restringida en esta región.',
   restricted: 'La fuente denegó el acceso a la señal.',
   timeout: 'La señal tardó demasiado en responder.'
 };
+
+export function isHttpBlocked(url, pageProtocol = globalThis.location?.protocol) {
+  return pageProtocol === 'https:' && typeof url === 'string' && /^http:/i.test(url.trim());
+}
 
 function candidateUrls(streams) {
   return [...new Set((streams || []).map(stream => safeUrl(stream?.url)).filter(Boolean))];
@@ -96,9 +101,10 @@ function hlsConfig(settings) {
 }
 
 export class Player {
-  constructor(video, { onStatus, onTracks, onStreamResult, Hls } = {}) {
+  constructor(video, { onStatus, onTracks, onStreamResult, Hls, pageProtocol = globalThis.location?.protocol } = {}) {
     this.video = video;
     this.engine = Hls;
+    this.pageProtocol = pageProtocol;
     this.onStatus = onStatus;
     this.onTracks = onTracks;
     this.onStreamResult = onStreamResult;
@@ -108,7 +114,7 @@ export class Player {
     this.retryTimer = null;
     this.soundBlocked = false;
     this.tracks = { ...emptyTracks };
-    this.playback = { state: 'idle', message: '', channel: null, url: '' };
+    this.playback = { state: 'idle', message: '', channel: null, url: '', cause: null };
   }
 
   get status() {
@@ -133,10 +139,13 @@ export class Player {
   }
 
   tune(channel, settings, streams = channel.streams, { gesture = false } = {}) {
-    return this.start(channel, settings, candidateUrls(streams), gesture);
+    const urls = candidateUrls(streams);
+    const playable = urls.filter(url => !isHttpBlocked(url, this.pageProtocol));
+    const cause = urls.length && !playable.length ? 'mixed-content' : null;
+    return this.start(channel, settings, playable, gesture, cause);
   }
 
-  start(channel, settings, urls, gesture) {
+  start(channel, settings, urls, gesture, cause = null) {
     this.release();
     this.session = null;
     this.configure(settings);
@@ -144,7 +153,7 @@ export class Player {
     this.video.muted = Boolean(this.settings.muted || (this.soundBlocked && !gesture));
     if (gesture) this.soundBlocked = false;
     if (!urls.length) {
-      this.report('no-signal', 'El canal no tiene una URL de reproducción válida.');
+      this.report('no-signal', unavailable[cause] || 'El canal no tiene una URL de reproducción válida.', cause);
       return false;
     }
     this.openAttempt();
@@ -158,7 +167,7 @@ export class Player {
   }
 
   resume({ sound = true } = {}) {
-    if (!this.session) return false;
+    if (!this.session || this.playback.cause === 'mixed-content') return false;
     const wasSoundBlocked = this.soundBlocked;
     if (sound) {
       this.settings.muted = false;
@@ -226,10 +235,10 @@ export class Player {
     return true;
   }
 
-  report(state, message) {
+  report(state, message, cause = null) {
     const channel = this.session?.channel || null;
     const url = this.attempt?.url || this.session?.urls[this.session.index] || '';
-    this.playback = { state, message, channel, url };
+    this.playback = { state, message, channel, url, cause };
     this.onStatus?.(this.status);
   }
 
@@ -464,7 +473,7 @@ export class Player {
     }
     this.onStreamResult?.(attempt.url, state);
     if (!retry && !nextCandidate) {
-      this.report('no-signal', unavailable[state] || 'La señal no está disponible.');
+      this.report('no-signal', unavailable[state] || 'La señal no está disponible.', state);
       return;
     }
     if (retry) session.retries += 1;

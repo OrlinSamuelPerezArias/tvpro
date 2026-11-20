@@ -257,7 +257,7 @@ input[type="checkbox"], input[type="radio"] { width: 1.1em; height: 1.1em; margi
 .channel-copy .channel-name, .channel-copy .channel-meta { align-self: auto; }
 .channel-state { grid-area: 1 / 4 / 3; max-width: 13ch; overflow-wrap: anywhere; color: var(--muted); font-size: .72em; line-height: 1.15; }
 .channel-state[data-state="playing"], .channel-state[data-state="reachable"] { color: var(--accent); }
-.channel-state[data-state="down"], .channel-state[data-state="region"], .channel-state[data-state="restricted"], .channel-state[data-state="format"] { color: var(--warm); }
+.channel-state[data-state="down"], .channel-state[data-state="region"], .channel-state[data-state="restricted"], .channel-state[data-state="format"], .channel-state[data-state="mixed-content"] { color: var(--warm); }
 .channel-star { grid-area: 1 / 5 / 3; color: var(--accent); font-size: .94em; }
 
 #settings-content, #guide-content { font-size: clamp(.99rem, 1.4vw, 1.2rem); overflow-wrap: anywhere; }

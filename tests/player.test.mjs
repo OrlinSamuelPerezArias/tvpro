@@ -1,7 +1,7 @@
 import { setTimeout as wait } from 'node:timers/promises';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Player } from '../js/player.js';
+import { isHttpBlocked, Player } from '../js/player.js';
 
 class Video extends EventTarget {
   src = '';
@@ -65,13 +65,14 @@ function engineClass() {
   };
 }
 
-function fixture(t) {
+function fixture(t, pageProtocol) {
   const video = new Video();
   const Hls = engineClass();
   const statuses = [];
   const results = [];
   const player = new Player(video, {
     Hls,
+    pageProtocol,
     onStatus: status => statuses.push(status),
     onStreamResult: (...result) => results.push(result)
   });
@@ -82,6 +83,58 @@ function fixture(t) {
 function channel(id, extensions = ['m3u8']) {
   return { id, name: id, streams: extensions.map((extension, index) => ({ url: `https://fixture.example/${id}-${index}.${extension}` })) };
 }
+
+test('avisa del contenido mixto sin iniciar HLS ni asignar una señal HTTP al video', t => {
+  const { player, video, Hls, results } = fixture(t, 'https:');
+  const streams = [{ url: 'http://fixture.example/live.m3u8' }, { url: 'http://fixture.example/live.mp4' }];
+  video.native = true;
+  assert.equal(player.tune({ streams }, {}), false);
+  assert.equal(player.status.state, 'no-signal');
+  assert.equal(player.status.cause, 'mixed-content');
+  assert.equal(player.status.message, 'Señal HTTP bloqueada por el navegador. Se necesita una señal HTTPS.');
+  assert.equal(player.resume(), false);
+  assert.equal(player.status.cause, 'mixed-content');
+  assert.equal(video.src, '');
+  assert.equal(Hls.instances.length, 0);
+  assert.deepEqual(results, []);
+});
+
+test('omite las señales HTTP y conserva el orden de alternativas HTTPS, incluso cuando falla una', async t => {
+  const { player, video, Hls, results } = fixture(t, 'https:');
+  const streams = [
+    { url: 'http://fixture.example/live.m3u8' },
+    { url: 'https://fixture.example/first.m3u8' },
+    { url: 'http://fixture.example/live.mp4' },
+    { url: 'https://fixture.example/second.mp4' }
+  ];
+  assert.equal(player.tune({ streams }, {}), true);
+  assert.equal(Hls.instances[0].url, streams[1].url);
+  Hls.instances[0].emit('ERROR', { fatal: true, type: 'network', response: { code: 404 } });
+  await wait(290);
+  assert.equal(video.src, streams[3].url);
+  video.startPlaying();
+  assert.equal(player.status.state, 'playing');
+  assert.deepEqual(results, [[streams[1].url, 'down'], [streams[3].url, 'playing']]);
+});
+
+test('mantiene el diagnóstico HTTPS cuando se descarta una señal HTTP', t => {
+  const { player, Hls } = fixture(t, 'https:');
+  const streams = [{ url: 'http://fixture.example/live.m3u8' }, { url: 'https://fixture.example/down.m3u8' }];
+  player.tune({ streams }, {});
+  Hls.instances[0].emit('ERROR', { fatal: true, type: 'network', response: { code: 404 } });
+  assert.equal(player.status.cause, 'down');
+  assert.equal(player.status.message, 'La señal no está disponible en el servidor.');
+});
+
+test('mantiene las señales HTTP si TV PRO se abre por HTTP', t => {
+  const { player, Hls } = fixture(t, 'http:');
+  const url = 'http://fixture.example/live.m3u8';
+  assert.equal(player.tune({ streams: [{ url }] }, {}), true);
+  assert.equal(Hls.instances[0].url, url);
+  assert.equal(isHttpBlocked(url, 'http:'), false);
+  assert.equal(isHttpBlocked(url, 'https:'), true);
+  assert.equal(isHttpBlocked('https://fixture.example/live.m3u8', 'https:'), false);
+});
 
 test('el manifiesto no acredita reproducción y las variantes y el audio se pueden seleccionar', t => {
   const { player, video, Hls, results } = fixture(t);

@@ -1,4 +1,4 @@
-# TV PRO 2.1.2
+# TV PRO 2.1.3
 
 Reproductor IPTV web pensado para usar con el mando del televisor. Conserva siete canales fijos y completa el catálogo con las fuentes activas. La instalación inicial incluye dos directorios públicos de IPTV-org, uno de República Dominicana y otro de canales en español. Puedes sustituirlos o añadir fuentes autorizadas en **Configuración → Fuentes IPTV**.
 
@@ -9,6 +9,8 @@ Reproductor IPTV web pensado para usar con el mando del televisor. Conserva siet
 3. Abre [TV PRO en localhost](http://127.0.0.1:8080/). En «Presiona OK para comenzar», pulsa una tecla del mando o haz clic en cualquier punto de la aplicación. TV PRO solicita pantalla completa e inicia siempre en el canal **0, La Voz de María**. Si el navegador bloquea la pantalla completa, TV PRO ocupa el área disponible. Si el puerto está ocupado, ejecuta `node servir.mjs --port 8090`.
 
 `index.html` debe servirse por HTTP o HTTPS para que el navegador cargue los módulos. Para una prueba en tu propia red local, ejecuta `node servir.mjs --host 0.0.0.0` y abre desde el televisor `http://IP-DE-TU-EQUIPO:8080/`. El equipo debe permanecer encendido y el cortafuegos debe permitir el acceso desde esa red. Para instalarlo de forma habitual, sirve `index.html`, `styles.css`, `js/` y `vendor/` en un alojamiento estático HTTPS. El PIN necesita HTTPS o localhost. Un televisor que abra una página HTTPS puede bloquear señales HTTP por contenido mixto.
+
+Al abrir TV PRO por HTTPS, el reproductor intenta las señales HTTPS del canal. Cuando la lista solo trae señales HTTP, el catálogo indica **Requiere HTTPS** y el reproductor muestra **Señal HTTP bloqueada por el navegador. Se necesita una señal HTTPS.** Para añadir una alternativa, usa una lista autorizada en **Configuración → Fuentes IPTV**. Tanto la lista HLS como los fragmentos de video deben poder cargarse por HTTPS.
 
 ## Controles
 

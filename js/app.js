@@ -1,7 +1,7 @@
 import { Availability, buildCatalogAsync, lineupRank, orderedChannels, safeUrl } from './catalog.js';
 import { Guide } from './guide.js';
 import { fixedLineup, lineupLabels } from './lineup.js';
-import { Player } from './player.js';
+import { isHttpBlocked, Player } from './player.js';
 import { checkPin, cleanSource, cleanText, makePin, newId, newProfile, readPreferences, savePreferences, sourcePresets, validatePreferences } from './preferences.js';
 import { focusable, moveFocus, registerRemote, remoteAction } from './remote.js';
 import { renderChannelSettings, renderSettings } from './settings.js';
@@ -68,7 +68,7 @@ const statusText = {
   playing: 'Reproducción confirmada', reachable: 'Muestra de señal recibida', manifest: 'Lista HLS sin confirmar',
   down: 'Servidor sin señal', region: 'Restricción legal o regional', restricted: 'Acceso restringido', timeout: 'Sin respuesta',
   network: 'Error de red o CORS', unreachable: 'Red o CORS', format: 'Formato sin confirmar',
-  'rate-limited': 'Límite del servidor', unverified: 'No verificada'
+  'rate-limited': 'Límite del servidor', 'mixed-content': 'Requiere HTTPS', unverified: 'No verificada'
 };
 
 function displayNames(type) {
@@ -284,6 +284,10 @@ function rankedStreams(channel) {
   return [...independent, ...wind];
 }
 
+function firstAllowedStream(channel) {
+  return rankedStreams(channel).find(stream => !isHttpBlocked(stream.url));
+}
+
 function tune(channel, gesture = false) {
   if (!channel) return;
   restoring = false;
@@ -478,15 +482,17 @@ function queueRows() {
 
 function channelStatus(channel) {
   if (hasChannel(refs(channel), current) && player.status?.state) {
-    const status = player.status.state;
+    const { state: status, cause } = player.status;
     if (status === 'playing') return ['Reproduciendo', status];
+    if (status === 'no-signal' && cause === 'mixed-content') return [statusText[cause], cause];
     if (status === 'no-signal') return ['Sin señal', status];
     if (status === 'reconnecting') return ['Reconectando', 'loading'];
     if (status === 'loading') return ['Cargando', status];
   }
   if (!channel.streams.length) return ['Sin señal en las fuentes', 'down'];
-  const bestUrl = rankedStreams(channel)[0]?.url;
-  const state = bestUrl && availability.get(bestUrl)?.state;
+  const stream = firstAllowedStream(channel);
+  if (!stream) return [statusText['mixed-content'], 'mixed-content'];
+  const state = availability.get(stream.url)?.state;
   return [statusText[state] || 'No verificada', state || 'unverified'];
 }
 
@@ -595,7 +601,7 @@ function planProbes() {
     const candidates = [...new Set([rows[selection], ...rows.slice(first, end).filter(favorite), ...rows.slice(first, end), ...profile.favorites.slice(0, 4).map(id => channelById.get(id))])];
     for (const channel of candidates) {
       if (!channel || hidden(channel) || requiresPin(channel) || hasChannel(refs(channel), current)) continue;
-      const url = rankedStreams(channel)[0]?.url;
+      const url = firstAllowedStream(channel)?.url;
       if (!url || availability.get(url)) continue;
       availability.probe(url, favorite(channel) ? 8 : channel === rows[selection] ? 6 : 2);
       probeBudget.push(now);
